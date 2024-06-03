@@ -32,7 +32,7 @@ function Navbar({ transparent }) {
 
   return (
     <nav
-      className={`py-4 px-3 fixed top-0 w-full z-50 transition-colors duration-500 ${
+      className={`py-4 px-3 mb-8 fixed top-0 w-full z-50 transition-colors duration-500 ${
         isScrolled || !transparent ? "bg-white shadow" : "bg-transparent"
       }`}
     >

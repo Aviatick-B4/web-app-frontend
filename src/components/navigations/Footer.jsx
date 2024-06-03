@@ -9,7 +9,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="text-center md:text-left">
             <img
-              src="/logo-blue.png"
+              src=".\src\assets\logo-blue-1.png"
               alt="Aviatick Logo"
               className="mx-auto md:mx-0 mb-4 w-[65px]"
             />
