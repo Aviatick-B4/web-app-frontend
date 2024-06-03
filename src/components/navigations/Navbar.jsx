@@ -53,8 +53,8 @@ function Navbar({ transparent }) {
               href="/"
               className={`${
                 isScrolled || !transparent || window.location.pathname === "/"
-                  ? "text-sm font-medium text-primary"
-                  : "text-sm font-medium text-white"
+                  ? "text-sm font-medium text-primary hover:underline"
+                  : "text-sm font-medium text-white hover:underline"
               }`}
             >
               Beranda
@@ -63,8 +63,8 @@ function Navbar({ transparent }) {
               href="#"
               className={`${
                 isScrolled || !transparent
-                  ? "text-sm font-medium text-primary"
-                  : "text-sm font-medium text-white"
+                  ? "text-sm font-medium text-primary hover:underline"
+                  : "text-sm font-medium text-white hover:underline"
               }`}
             >
               Tentang Kami
@@ -73,8 +73,8 @@ function Navbar({ transparent }) {
               href="#"
               className={`${
                 isScrolled || !transparent
-                  ? "text-sm font-medium text-primary"
-                  : "text-sm font-medium text-white"
+                  ? "text-sm font-medium text-primary hover:underline"
+                  : "text-sm font-medium text-white hover:underline"
               }`}
             >
               Promo
