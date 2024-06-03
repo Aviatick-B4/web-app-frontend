@@ -6,7 +6,7 @@ import {
   FaExchangeAlt,
 } from "react-icons/fa";
 import { BsArrowRight } from "react-icons/bs";
-import UnifiedModal from "./modal";
+import UnifiedModal from "../../modals/Modal";
 
 const FlightSchedule = () => {
   const [tripType, setTripType] = useState("round-trip");
@@ -57,27 +57,32 @@ const FlightSchedule = () => {
   };
 
   return (
-    <div className="relative z-20 p-4 bg-white shadow-lg rounded-lg w-full mx-auto -mt-20 max-w-6xl">
-      <div className="flex justify-start mb-4">
-        <button
-          className={`px-4 py-2 rounded-l-lg ${
-            tripType === "one-way" ? "bg-primary text-white" : "bg-gray-200"
-          }`}
-          onClick={() => setTripType("one-way")}
-        >
-          Sekali Jalan
-        </button>
-        <button
-          className={`px-4 py-2 rounded-r-lg ${
-            tripType === "round-trip" ? "bg-primary text-white" : "bg-gray-200"
-          }`}
-          onClick={() => setTripType("round-trip")}
-        >
-          Pulang-Pergi
-        </button>
+    <div className="relative z-20 py-4 px-6 bg-white shadow-lg rounded-tr-xl rounded-br-xl rounded-bl-xl w-full mx-auto -mt-24">
+      {/* Oneway/Rountrip button */}
+      <div className="absolute top-0 left-0 w-full flex justify-start -translate-y-10">
+        <div className="bg-white rounded-t-xl flex">
+          <button
+            className={`px-4 py-2 rounded-tl-xl ${
+              tripType === "one-way" ? "bg-primary text-white" : "bg-gray-200"
+            }`}
+            onClick={() => setTripType("one-way")}
+          >
+            Sekali Jalan
+          </button>
+          <button
+            className={`px-4 py-2 rounded-tr-xl ${
+              tripType === "round-trip"
+                ? "bg-primary text-white"
+                : "bg-gray-200"
+            }`}
+            onClick={() => setTripType("round-trip")}
+          >
+            Pulang-Pergi
+          </button>
+        </div>
       </div>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-6 md:gap-2 items-center">
-        <div className="flex flex-col border border-gray-300 p-4 rounded-xl">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-6 md:gap-2 items-center mt-8">
+        <div className="flex flex-col border border-neutral p-3 rounded-xl">
           <label className="mb-2 flex items-center text-primary">
             <FaPlaneDeparture className="mr-2 text-secondary" />
             Dari
@@ -90,13 +95,14 @@ const FlightSchedule = () => {
             readOnly
           />
         </div>
+        {/* Swap button */}
         <button
           onClick={swapLocations}
-          className="swap-button p-2 bg-gray-200 rounded-full shadow hidden md:block"
+          className="absolute left-[17.5%] transform -translate-x-1/2 bg-gray-200 p-2 rounded-full shadow"
         >
           <FaExchangeAlt className="text-primary" />
         </button>
-        <div className="flex flex-col border border-gray-300 p-4 rounded-xl">
+        <div className="flex flex-col border border-neutral p-3 rounded-xl">
           <label className="mb-2 flex items-center text-primary">
             <FaPlaneArrival className="mr-2 text-secondary" />
             Ke
@@ -109,7 +115,7 @@ const FlightSchedule = () => {
             readOnly
           />
         </div>
-        <div className="flex flex-col border border-gray-300 p-4 rounded-xl">
+        <div className="flex flex-col border border-neutral p-3 rounded-xl">
           <label className="mb-2 flex items-center text-primary">
             <FaCalendarAlt className="mr-2 text-secondary" />
             Keberangkatan
@@ -127,7 +133,7 @@ const FlightSchedule = () => {
           />
         </div>
         {tripType === "round-trip" && (
-          <div className="flex flex-col border border-gray-300 p-4 rounded-xl">
+          <div className="flex flex-col border border-neutral p-3 rounded-xl">
             <label className="mb-2 flex items-center text-primary">
               <FaCalendarAlt className="mr-2 text-secondary" />
               Kepulangan
@@ -145,7 +151,7 @@ const FlightSchedule = () => {
             />
           </div>
         )}
-        <div className="flex flex-col border border-gray-300 p-4 rounded-xl">
+        <div className="flex flex-col border border-neutral p-3 rounded-xl">
           <label className="mb-2 flex items-center text-primary">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -169,7 +175,7 @@ const FlightSchedule = () => {
             readOnly
           />
         </div>
-        <div className="flex flex-col border border-gray-300 p-4 rounded-xl">
+        <div className="flex flex-col border border-neutral p-3 rounded-xl">
           <label className="mb-2 flex items-center text-primary">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -195,10 +201,13 @@ const FlightSchedule = () => {
         </div>
       </div>
       <div className="flex justify-center md:justify-end mt-4">
-        <button className="px-4 py-2 bg-primary text-white rounded-full border-2 border-primary hover:bg-white hover:text-primary">
+        <a
+          href="/hasil-pencarian"
+          className="px-4 py-2 bg-primary text-white rounded-full border-2 border-primary hover:bg-white hover:text-primary"
+        >
           Cari Penerbangan
           <BsArrowRight className="inline-block ml-2" />
-        </button>
+        </a>
       </div>
       <UnifiedModal
         isOpen={isModalOpen}

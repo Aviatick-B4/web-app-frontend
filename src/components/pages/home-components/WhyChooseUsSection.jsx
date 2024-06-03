@@ -10,7 +10,7 @@ const Card = ({ icon, title, description }) => (
 
 const WhyChooseUs = () => {
   return (
-    <div className="px-8">
+    <div className="container">
       <h2 className="font-bold text-3xl">Why Us?</h2>
       <p>Mengapa harus pilih Aviatick?</p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 my-10">

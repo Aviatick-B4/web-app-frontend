@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Beranda from "./pages/Beranda.jsx";
 import Pemesanan from "./pages/Pemesanan.jsx";
-import Pembayaran from "./pages/Pembayaran.jsx";
+import Pembayaran from "./pages/user/Pembayaran.jsx";
 import PaymentSuccess from "./pages/PaymentSuccess.jsx";
 import HasilPencarian from "./pages/HasilPencarian.jsx";
 import RiwayatPemesanan from "./pages/user/RiwayatPemesanan.jsx";
@@ -16,7 +16,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/pemesanan" element={<Pemesanan />} />
-        <Route path="/pembayaran" element={<Pembayaran />} />
+        <Route path="/user/pembayaran" element={<Pembayaran />} />
         <Route path="/success" element={<PaymentSuccess />} />
         <Route path="/" element={<Beranda />} />
         <Route path="/daftar" element={<Register />} />

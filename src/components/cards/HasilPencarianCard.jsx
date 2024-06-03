@@ -67,9 +67,9 @@ const HasilPencarianCard = ({ flight }) => {
                   /pax
                 </span>
               </div>
-              <button className="inline-block bg-primary text-white px-12 py-2 rounded-full">
+              <a href="/pemesanan" className="inline-block bg-primary hover:bg-darkprimary text-white px-12 py-2 rounded-full">
                 Pilih
-              </button>
+              </a>
               <button
                 onClick={toggleExpand}
                 className="text-primary font-medium text-xs mt-2 focus:outline-none flex items-center"
@@ -214,9 +214,9 @@ const HasilPencarianCard = ({ flight }) => {
                 </span>
               </div>
             </div>
-            <button className="inline-block bg-primary text-white text-xs px-6 py-2 rounded-full">
+            <a href="/pemesanan" className="inline-block bg-primary hovver:bg-darkprimary text-white text-xs px-6 py-2 rounded-full">
               Pilih
-            </button>
+            </a>
           </div>
 
           <div className="flex items-center justify-between p-4">

@@ -85,7 +85,7 @@ export default function HasilPencarian() {
   };
 
   return (
-    <div className="bg-background">
+    <div className="">
       <Navbar transparent={false} />
 
       {/* Hasil Pencarian Section */}

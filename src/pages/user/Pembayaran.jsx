@@ -1,5 +1,5 @@
-import Footer from "../components/navigations/Footer";
-import Navbar from "../components/navigations/Navbar";
+import Footer from "../../components/navigations/Footer";
+import Navbar from "../../components/navigations/Navbar";
 import * as React from "react";
 import { useState } from "react";
 import Accordion from "@mui/material/Accordion";

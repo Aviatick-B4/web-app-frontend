@@ -2,7 +2,7 @@ import React, { Component, useEffect, useState } from "react";
 import Navbar from "../components/navigations/Navbar";
 import Footer from "../components/navigations/Footer";
 import { Navigate, useNavigate } from "react-router-dom";
-import BackToTopButton from "../components/BackToTop";
+import BackToTopButton from "../components/navigations/BackToTop";
 
 function PaymentSuccess() {
   const navigate = useNavigate();

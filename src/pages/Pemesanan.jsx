@@ -2,7 +2,7 @@ import React, { Component, useEffect, useState } from "react";
 import Navbar from "../components/navigations/Navbar";
 import Footer from "../components/navigations/Footer";
 import { Navigate, useNavigate } from "react-router-dom";
-import BackToTopButton from "../components/BackToTop";
+import BackToTopButton from "../components/navigations/BackToTop";
 
 function Pemesanan() {
   const [IsClick, SetIsClick] = useState(null);
@@ -455,7 +455,7 @@ function Pemesanan() {
                 <button
                   className="rounded-full bg-[#00A8D0] text-white p-2 w-full my-5 hover:bg-[#FFB423]"
                   onClick={() => {
-                    navigate("/pembayaran");
+                    navigate("/user/pembayaran");
                   }}
                 >
                   Lanjut Bayar{" "}

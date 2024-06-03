@@ -6,7 +6,7 @@ import "slick-carousel/slick/slick-theme.css";
 
 function EmailVerification() {
   return (
-    <div className="relative flex min-h-screen flex-col justify-center overflow-hidden bg-gray-50 py-12">
+    <div className="relative flex min-h-screen flex-col justify-center overflow-hidden bg-gray-50 py-12 ">
       <img
         src="/bg/plane.jpg"
         className="hidden lg:block absolute inset-0 w-full h-screen object-cover"

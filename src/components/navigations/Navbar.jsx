@@ -52,9 +52,9 @@ function Navbar({ transparent }) {
             <a
               href="/"
               className={`${
-                isScrolled || !transparent || window.location.pathname === "/"
-                  ? "text-sm font-medium text-primary hover:underline"
-                  : "text-sm font-medium text-white hover:underline"
+                isScrolled || !transparent
+                  ? "text-sm font-medium text-primary hover:border-b-2 hover:border-primary pb-1"
+                  : "text-sm font-medium text-white hover:border-b-2 hover:border-primary pb-1"
               }`}
             >
               Beranda
@@ -63,8 +63,8 @@ function Navbar({ transparent }) {
               href="#"
               className={`${
                 isScrolled || !transparent
-                  ? "text-sm font-medium text-primary hover:underline"
-                  : "text-sm font-medium text-white hover:underline"
+                  ? "text-sm font-medium text-primary hover:border-b-2 hover:border-primary pb-1"
+                  : "text-sm font-medium text-white hover:border-b-2 hover:border-primary pb-1"
               }`}
             >
               Tentang Kami
@@ -73,8 +73,8 @@ function Navbar({ transparent }) {
               href="#"
               className={`${
                 isScrolled || !transparent
-                  ? "text-sm font-medium text-primary hover:underline"
-                  : "text-sm font-medium text-white hover:underline"
+                  ? "text-sm font-medium text-primary hover:border-b-2 hover:border-primary pb-1"
+                  : "text-sm font-medium text-white hover:border-b-2 hover:border-primary pb-1"
               }`}
             >
               Promo
@@ -84,7 +84,7 @@ function Navbar({ transparent }) {
 
         {/* Desktop Login Button */}
         <Link
-          to="/login"
+          to="/masuk"
           className={`${
             isScrolled || !transparent
               ? "hidden md:block text-sm font-medium text-primary bg-none border-2 border-primary hover:bg-primary hover:text-white rounded-full px-4 py-2 items-center"

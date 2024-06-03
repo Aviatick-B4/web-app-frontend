@@ -3,6 +3,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { Link } from "react-router-dom";
 
 function ForgotPassword() {
   const settings = {
@@ -19,20 +20,23 @@ function ForgotPassword() {
   };
 
   return (
-    <div className="min-h-screen flex mx-3 md:mx-0">
+    <div className="min-h-screen flex mx-3 md:mx-0 bg-white">
       <div className="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
         <div className="mx-auto w-full max-w-sm lg:w-96">
           <div>
-            <img
-              className="h-12 w-auto"
-              src="/logo-blue.png"
-              alt="Aviatick Logo"
-            />
+            <Link to="/">
+              <img
+                className="h-12 w-auto"
+                src="/logo-blue.png"
+                alt="Aviatick Logo"
+              />
+            </Link>
             <h2 className="mt-6 text-2xl md:text-3xl font-bold text-main">
               Forgot Password
             </h2>
             <p className="mt-2 text-xs md:text-sm font-medium text-main">
-              Tautan <span className="text-primary">reset password</span> akan dikirim ke email Anda.
+              Tautan <span className="text-primary">reset password</span> akan
+              dikirim ke email Anda.
             </p>
           </div>
 
@@ -60,12 +64,12 @@ function ForgotPassword() {
                 </div>
 
                 <div>
-                  <button
-                    type="submit"
+                  <a
+                    href="/verifikasi-email"
                     className="w-full flex justify-center py-2 px-4 border border-transparent rounded-full shadow-sm text-sm md:text-base font-medium text-white bg-primary hover:bg-darkprimary focus:outline-none"
                   >
                     Kirim Tautan
-                  </button>
+                  </a>
                 </div>
               </form>
             </div>
