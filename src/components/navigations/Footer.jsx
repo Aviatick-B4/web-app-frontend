@@ -4,14 +4,14 @@ import { FaXTwitter } from "react-icons/fa6";
 
 export default function Footer() {
   return (
-    <footer className="bg-main text-white py-12">
+    <footer className="bg-main text-white py-12 mt-8">
       <div className="container mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="text-center md:text-left">
             <img
               src=".\src\assets\logo-blue-1.png"
               alt="Aviatick Logo"
-              className="mx-auto md:mx-0 mb-4 w-24"
+              className="mx-auto md:mx-0 mb-4 w-[65px]"
             />
             <p className="text-gray-300">
               Aviatick adalah platform pemesanan tiket pesawat yang terpercaya,
