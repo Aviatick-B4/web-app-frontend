@@ -41,7 +41,7 @@ function Navbar({ transparent }) {
         <Link to="/">
           <img
             src="/logo-blue.png"
-            className="w-[60px] md:w-[76px]"
+            className="w-[50px] md:w-[76px]"
             alt="Logo Aviatick"
           />
         </Link>

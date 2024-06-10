@@ -14,7 +14,7 @@ const Card = () => {
       price: "IDR 1.500.000",
       discount: "Diskon 50%",
       tripType: "Sekali Jalan",
-      image: "/bg/turkey.jpg"
+      image: "/bg/turkey.jpg",
     },
     {
       id: 2,
@@ -25,7 +25,7 @@ const Card = () => {
       price: "IDR 1.675.000",
       discount: "Diskon 50%",
       tripType: "Pulang-Pergi",
-      image: "/bg/sydney.jpg"
+      image: "/bg/sydney.jpg",
     },
     {
       id: 3,
@@ -36,7 +36,7 @@ const Card = () => {
       price: "IDR 1.500.000",
       discount: "Diskon 50%",
       tripType: "Sekali Jalan",
-      image: "/bg/turkey.jpg"
+      image: "/bg/turkey.jpg",
     },
     {
       id: 4,
@@ -47,7 +47,7 @@ const Card = () => {
       price: "IDR 1.675.000",
       discount: "Diskon 50%",
       tripType: "Pulang-Pergi",
-      image: "/bg/sydney.jpg"
+      image: "/bg/sydney.jpg",
     },
     {
       id: 5,
@@ -58,7 +58,7 @@ const Card = () => {
       price: "IDR 1.675.000",
       discount: "Diskon 50%",
       tripType: "Pulang-Pergi",
-      image: "/bg/sydney.jpg"
+      image: "/bg/sydney.jpg",
     },
     // Tambahkan destinasi lainnya sesuai kebutuhan
   ];
@@ -68,72 +68,27 @@ const Card = () => {
   };
 
   return (
-    <div className="mt-10">
+    <div className="mt-4 md:mt-10">
       <div className="flex flex-wrap justify-between mb-5">
-        <div className="flex flex-wrap space-x-2 mb-4 w-full md:mb-0">
-          <button
-            className={`px-4 py-2 rounded-full border-2 ${
-              selectedButton === "Semua"
-                ? "bg-primary text-white border-primary"
-                : "bg-gray-200 text-primary"
-            }`}
-            onClick={() => handleButtonClick("Semua")}
-          >
-            Semua
-          </button>
-          <button
-            className={`px-4 py-2 rounded-full border-2 ${
-              selectedButton === "Asia"
-                ? "bg-primary text-white border-primary"
-                : "bg-gray-200 text-primary"
-            }`}
-            onClick={() => handleButtonClick("Asia")}
-          >
-            Asia
-          </button>
-          <button
-            className={`px-4 py-2 rounded-full border-2 ${
-              selectedButton === "Amerika"
-                ? "bg-primary text-white border-primary"
-                : "bg-gray-200 text-primary"
-            }`}
-            onClick={() => handleButtonClick("Amerika")}
-          >
-            Amerika
-          </button>
-          <button
-            className={`px-4 py-2 rounded-full border-2 ${
-              selectedButton === "Australia"
-                ? "bg-primary text-white border-primary"
-                : "bg-gray-200 text-primary"
-            }`}
-            onClick={() => handleButtonClick("Australia")}
-          >
-            Australia
-          </button>
-          <button
-            className={`px-4 py-2 rounded-full border-2 ${
-              selectedButton === "Eropa"
-                ? "bg-primary text-white border-primary"
-                : "bg-gray-200 text-primary"
-            }`}
-            onClick={() => handleButtonClick("Eropa")}
-          >
-            Eropa
-          </button>
-          <button
-            className={`px-4 py-2 rounded-full border-2 ${
-              selectedButton === "Afrika"
-                ? "bg-primary text-white border-primary"
-                : "bg-gray-200 text-primary"
-            }`}
-            onClick={() => handleButtonClick("Afrika")}
-          >
-            Afrika
-          </button>
+        <div className="flex flex-wrap space-x-1 md:space-x-2 w-full">
+          {["Semua", "Asia", "Amerika", "Australia", "Eropa", "Afrika"].map(
+            (label) => (
+              <button
+                key={label}
+                className={`px-3 md:px-4 py-2 text-xs md:text-sm rounded-full border-2 mt-2 md:mt-0 ${
+                  selectedButton === label
+                    ? "bg-primary text-white border-primary"
+                    : "bg-gray-200 text-primary"
+                }`}
+                onClick={() => handleButtonClick(label)}
+              >
+                {label}
+              </button>
+            )
+          )}
         </div>
-        
       </div>
+
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
         {destinations.map((destination) => (
           <div className="relative w-full bg-white rounded-lg shadow-md h-full bg-transparent overflow-visible text-main hover:shadow-lg cursor-pointer">

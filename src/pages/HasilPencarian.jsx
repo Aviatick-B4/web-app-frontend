@@ -3,12 +3,29 @@ import Footer from "../components/navigations/Footer";
 import Navbar from "../components/navigations/Navbar";
 import FlightCard from "../components/cards/HasilPencarianCard";
 import FilterButton from "../components/buttons/FilterButton";
+import { useSelector } from "react-redux";
 
 export default function HasilPencarian() {
   const [selectedDay, setSelectedDay] = useState("2024-05-23");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [modalContent, setModalContent] = useState("");
+  const [sortOption, setSortOption] = useState(null);
+  const [selectedFacilities, setSelectedFacilities] = useState([]);
+  const [priceRange, setPriceRange] = useState([0, Infinity]);
+  const searchResultsDeparture = useSelector(
+    (state) => state?.search?.flightSearchResults?.tickets?.departure || []
+  );
+  const searchResultsReturn = useSelector(
+    (state) => state?.search.flightSearchResults.tickets.return
+  );
+  const searchResults = useSelector(
+    (state) => state?.search.flightSearchResults.tickets
+  );
+
+  useEffect(() => {
+    console.log("search", searchResults);
+  }, [searchResultsDeparture]);
 
   const days = [
     { day: "Rabu", date: "22 Mei 2024", value: "2024-05-22" },
@@ -21,54 +38,57 @@ export default function HasilPencarian() {
     { day: "Rabu", date: "29 Mei 2024", value: "2024-05-29" },
   ];
 
-  const flightData = [
-    {
-      logo: "/airasia-logo.png",
-      airline: "AirAsia",
-      class: "Ekonomi",
-      price: "IDR 4.950.000",
-      departureTime: "07:00",
-      departureDate: "23 Mei 2024",
-      departureCode: "CGK",
-      departureLocation: "Soekarno Hatta - Terminal 1A Domestik",
-      arrivalTime: "11:00",
-      arrivalDate: "23 Mei 2024",
-      arrivalCode: "SYD",
-      arrivalLocation: "Sydney Airport",
-      duration: "19j 45m",
-      transit: "2 transit",
-      transitTime: ["10:00", "10:30"],
-      transitLocation: ["Kuala Lumpur", "Turki"],
-      information: [
-        "Baggage 20 kg",
-        "Cabin baggage 7 kg",
-        "In Flight Entertainment",
-      ],
-    },
-    {
-      logo: "/garuda-logo.png",
-      airline: "Garuda Indonesia",
-      class: "Ekonomi",
-      price: "IDR 5.550.000",
-      departureTime: "07:00",
-      departureDate: "23 Mei 2024",
-      departureCode: "CGK",
-      departureLocation: "Soekarno Hatta - Terminal 1A Domestik",
-      arrivalTime: "11:00",
-      arrivalDate: "23 Mei 2024",
-      arrivalCode: "SYD",
-      arrivalLocation: "Sydney Airport",
-      duration: "19j 45m",
-      transit: "1 transit",
-      transitTime: "10:00",
-      transitLocation: "Kuala Lumpur",
-      information: [
-        "Baggage 20 kg",
-        "Cabin baggage 7 kg",
-        "In Flight Entertainment",
-      ],
-    },
-  ];
+  const handleSortChange = (option) => {
+    setSortOption(option);
+  };
+
+  const handleFacilityChange = (facility) => {
+    setSelectedFacilities((prev) => {
+      if (prev.includes(facility)) {
+        return prev.filter((f) => f !== facility);
+      } else {
+        return [...prev, facility];
+      }
+    });
+  };
+
+  const handlePriceRangeChange = (range) => {
+    if (range === "IDR 0 - 2.000.000") setPriceRange([0, 2000000]);
+    else if (range === "IDR 2.000.000 - 4.000.000")
+      setPriceRange([2000000, 4000000]);
+    else if (range === "IDR 4.000.000 - 6.000.000")
+      setPriceRange([4000000, 6000000]);
+    else if (range === "IDR 6.000.000 - 8.000.000")
+      setPriceRange([6000000, 8000000]);
+    else setPriceRange([0, Infinity]);
+  };
+
+  const sortedAndFilteredResults = searchResultsDeparture
+    .filter((flight) => {
+      const facilitiesMatch =
+        selectedFacilities.length === 0 ||
+        (flight.facilities &&
+          selectedFacilities.every((facility) =>
+            flight.facilities.includes(facility)
+          ));
+      const priceMatch =
+        flight.price >= priceRange[0] && flight.price <= priceRange[1];
+      return facilitiesMatch && priceMatch;
+    })
+    .sort((a, b) => {
+      if (sortOption === "Termurah") {
+        return a.price - b.price;
+      } else if (sortOption === "Terpendek") {
+        return (
+          new Date(a.arrival_time) -
+          new Date(a.departure_time) -
+          (new Date(b.arrival_time) - new Date(b.departure_time))
+        );
+      }
+      return 0;
+    });
+
+
 
   const openModal = (content) => {
     setModalContent(content);
@@ -427,25 +447,16 @@ export default function HasilPencarian() {
 
             {/* Vertical Line */}
             <div className="h-[20px] w-[1px] bg-gray"></div>
-            
+
             <FilterButton
-              label="Urutkan"
-              options={[
-                "Harga Terendah",
-                "Harga Tertinggi",
-                "Durasi Terpendek",
-              ]}
-              iconSrc="/icons/filter.svg"
-            />
-            <FilterButton
-              label="Transit"
-              options={["Langsung", "1 Transit", "2 Transit"]}
-              iconSrc="/icons/transit.svg"
+              label="Sort"
+              options={["Termurah", "Terpendek"]}
+              onOptionSelect={handleSortChange}
             />
             <FilterButton
               label="Fasilitas"
-              options={["Wi-Fi", "Makanan", "Hiburan"]}
-              iconSrc="/icons/facility.svg"
+              options={["Wifi", "Makanan", "Bagasi 20kg"]}
+              onOptionSelect={handleFacilityChange}
             />
             <FilterButton
               label="Harga"
@@ -453,8 +464,9 @@ export default function HasilPencarian() {
                 "IDR 0 - 2.000.000",
                 "IDR 2.000.000 - 4.000.000",
                 "IDR 4.000.000 - 6.000.000",
+                "IDR 6.000.000 - 8.000.000",
               ]}
-              iconSrc="/icons/price.svg"
+              onOptionSelect={handlePriceRangeChange}
             />
           </div>
 
@@ -473,23 +485,14 @@ export default function HasilPencarian() {
               }}
             >
               <FilterButton
-                label="Urutkan"
-                options={[
-                  "Harga Terendah",
-                  "Harga Tertinggi",
-                  "Durasi Terpendek",
-                ]}
-                iconSrc="/icons/filter.svg"
-              />
-              <FilterButton
-                label="Transit"
-                options={["Langsung", "1 Transit", "2 Transit"]}
-                iconSrc="/icons/transit.svg"
+                label="Sort"
+                options={["Termurah", "Terpendek"]}
+                onOptionSelect={handleSortChange}
               />
               <FilterButton
                 label="Fasilitas"
-                options={["Wi-Fi", "Makanan", "Hiburan"]}
-                iconSrc="/icons/facility.svg"
+                options={["Wifi", "Makanan", "Bagasi 20kg"]}
+                onOptionSelect={handleFacilityChange}
               />
               <FilterButton
                 label="Harga"
@@ -497,17 +500,22 @@ export default function HasilPencarian() {
                   "IDR 0 - 2.000.000",
                   "IDR 2.000.000 - 4.000.000",
                   "IDR 4.000.000 - 6.000.000",
+                  "IDR 6.000.000 - 8.000.000",
                 ]}
-                iconSrc="/icons/price.svg"
+                onOptionSelect={handlePriceRangeChange}
               />
             </div>
           </>
 
           {/* Card */}
           <div className="mt-3 md:mt-5">
-            {flightData.map((flight, index) => (
-              <FlightCard key={index} flight={flight} />
-            ))}
+            {sortedAndFilteredResults.length > 0 ? (
+              sortedAndFilteredResults.map((flight, index) => (
+                <FlightCard key={index} flight={flight} />
+              ))
+            ) : (
+              <p>No flights found.</p>
+            )}
           </div>
         </div>
       </section>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const FilterButton = ({ label, options, iconSrc }) => {
+const FilterButton = ({ label, options, iconSrc, onOptionSelect }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
 
@@ -10,6 +10,11 @@ const FilterButton = ({ label, options, iconSrc }) => {
       setIsOpen(false);
       setIsClosing(false);
     }, 300);
+  };
+
+  const handleOptionClick = (option) => {
+    onOptionSelect(option);
+    closeModal();
   };
 
   return (
@@ -56,6 +61,7 @@ const FilterButton = ({ label, options, iconSrc }) => {
                 <a
                   href="#"
                   key={index}
+                  onClick={() => handleOptionClick(option)}
                   className="block px-4 py-2 font-medium text-sm text-main hover:bg-primary/20"
                   role="menuitem"
                 >
@@ -91,14 +97,17 @@ const FilterButton = ({ label, options, iconSrc }) => {
               aria-labelledby="options-menu"
             >
               <div className="flex justify-between items-center px-4">
-                <button className="text-main font-medium" onClick={closeModal}>
+                <button
+                  className="text-gray-600 hover:text-gray-800"
+                  onClick={closeModal}
+                >
                   <svg
-                    className="h-5 w-5"
+                    className="w-5 h-5"
+                    aria-hidden="true"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
-                    aria-hidden="true"
                   >
                     <path
                       strokeLinecap="round"
@@ -108,17 +117,16 @@ const FilterButton = ({ label, options, iconSrc }) => {
                     />
                   </svg>
                 </button>
-                <span className="text-sm font-medium text-main">{label}</span>
-                <button className="text-danger text-sm font-medium">
-                  Reset
-                </button>
+                <h2 className="text-lg font-semibold">{label}</h2>
+                <div></div>
               </div>
-              <div className="py-1" role="none">
+              <div className="py-1">
                 {options.map((option, index) => (
                   <a
                     href="#"
                     key={index}
-                    className="block px-4 py-2 font-medium text-xs text-main hover:bg-primary/20"
+                    onClick={() => handleOptionClick(option)}
+                    className="block px-4 py-2 font-medium text-sm text-main hover:bg-primary/20"
                     role="menuitem"
                   >
                     {option}

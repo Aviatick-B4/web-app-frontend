@@ -3,6 +3,7 @@ import Footer from "../../components/navigations/Footer";
 import Navbar from "../../components/navigations/Navbar";
 import RiwayatPemesananCard from "../../components/cards/RiwayatPemesananCard";
 import FilterDate from "../../components/buttons/FilterDate";
+import MobileNavbar from "../../components/navigations/MobileNavbar";
 
 export default function RiwayatPemesanan() {
   const [activeTab, setActiveTab] = useState("semua");
@@ -111,17 +112,26 @@ export default function RiwayatPemesanan() {
 
   return (
     <div className="bg-background">
-      <Navbar transparent={false} />
+      {/* Desktop Navbar */}
+      <div className="hidden md:block">
+        <Navbar transparent={false} />
+      </div>
+
+      {/* Mobile Navbar */}
+      <div className="block md:hidden">
+        <MobileNavbar />
+      </div>
 
       {/* Booking History Section */}
-      <section className="pt-28 pb-8">
+      <section className="pt-6 md:pt-28 pb-8">
         <div className="container">
           {/* Breadcrumb */}
-          <div className="flex gap-1.5 text-main text-xs font-medium -mt-4 md:-mt-0 mb-10 md:mb-5">
+          <div className="hidden md:flex gap-1.5 text-main text-xs font-medium -mt-4 md:-mt-0 mb-10 md:mb-5">
             <span>Beranda</span>
             <img src="/icons/right-chev.svg" alt="chevron" />
             <span>Riwayat Pemesanan</span>
           </div>
+          <h1 className="block md:hidden text-xl font-bold text-main mb-10">Riwayat Pemesanan</h1>
 
           {/* Search History Desktop*/}
           <div className="hidden md:block relative mt-6 mb-5">
@@ -475,7 +485,7 @@ export default function RiwayatPemesanan() {
                   <h1 className="font-bold text-xl my-2">
                     Jakarta &rarr; Sydney
                   </h1>
-                  
+
                   <div className="grid grid-cols-2 divide-x divide-neutral border border-neutral rounded-lg items-center mb-4 md:p-2 lg:p-4">
                     <div className="flex items-center">
                       <img
