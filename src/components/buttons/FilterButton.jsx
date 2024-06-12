@@ -1,8 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
-const FilterButton = ({ label, options, iconSrc, onOptionSelect }) => {
+const FilterButton = ({
+  label,
+  options,
+  iconSrc,
+  onOptionSelect,
+  selectedOption,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (ref.current && !ref.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [ref]);
 
   const closeModal = () => {
     setIsClosing(true);
@@ -33,7 +54,7 @@ const FilterButton = ({ label, options, iconSrc, onOptionSelect }) => {
             onClick={() => setIsOpen(!isOpen)}
           >
             {iconSrc && <img src={iconSrc} alt="icon" className="mr-2" />}
-            {label}
+            {selectedOption || label}
             <svg
               className="ml-1 -mr-1 h-5 w-5"
               xmlns="http://www.w3.org/2000/svg"
@@ -82,7 +103,7 @@ const FilterButton = ({ label, options, iconSrc, onOptionSelect }) => {
           >
             <div className="flex flex-col items-center gap-1">
               {iconSrc && <img src={iconSrc} alt="icon" />}
-              {label}
+              {selectedOption || label}
             </div>
           </button>
         </div>
@@ -96,31 +117,7 @@ const FilterButton = ({ label, options, iconSrc, onOptionSelect }) => {
               aria-orientation="vertical"
               aria-labelledby="options-menu"
             >
-              <div className="flex justify-between items-center px-4">
-                <button
-                  className="text-gray-600 hover:text-gray-800"
-                  onClick={closeModal}
-                >
-                  <svg
-                    className="w-5 h-5"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-                <h2 className="text-lg font-semibold">{label}</h2>
-                <div></div>
-              </div>
-              <div className="py-1">
+              <div className="py-1" role="none">
                 {options.map((option, index) => (
                   <a
                     href="#"
@@ -133,6 +130,26 @@ const FilterButton = ({ label, options, iconSrc, onOptionSelect }) => {
                   </a>
                 ))}
               </div>
+              <button
+                className="absolute top-4 left-4 text-gray-600 hover:text-gray-800"
+                onClick={closeModal}
+              >
+                <svg
+                  className="w-5 h-5"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
             </div>
           </div>
         )}

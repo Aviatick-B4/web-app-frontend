@@ -4,23 +4,31 @@ import "react-toastify/dist/ReactToastify.css";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { login } from "../redux/actions/authActions";
+import { useDispatch } from "react-redux";
 
 function Login() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
+  const [emailOrPhoneNumber, setEmailOrPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    let data = {
+      emailOrPhoneNumber,
+      password,
+    };
+
+    dispatch(login(data, navigate, setMessage));
+  };
 
   const toggleShowPassword = () => {
     setShowPassword((prevShowPassword) => !prevShowPassword);
-  };
-
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-  };
-
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
   };
 
   const settings = {
@@ -35,32 +43,6 @@ function Login() {
     cssEase: "linear",
     arrows: false,
   };
-
-  useEffect(() => {
-    fetchLogin();
-  }, []); // Dipanggil sekali saat komponen dimuat
-
-  async function fetchLogin() {
-    try {
-      const response = await axios.post(
-        `https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/login`,
-        {
-          // Data yang harus dikirimkan ke server
-          email: email,
-          password: password,
-        },
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      console.log("Data received with Async/Await:", response.data);
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  }
 
   return (
     <div className="min-h-screen flex mx-3 md:mx-0 bg-white">
@@ -87,7 +69,12 @@ function Login() {
 
           <div className="mt-8">
             <div className="mt-6">
-              <form action="#" method="POST" className="space-y-6">
+              <form
+                action="#"
+                method="POST"
+                className="space-y-6"
+                onSubmit={handleSubmit}
+              >
                 <div>
                   <label
                     htmlFor="email"
@@ -99,12 +86,11 @@ function Login() {
                     <input
                       id="email"
                       name="email"
-                      type="email"
+                      type="text"
                       autoComplete="email"
                       placeholder="Masukkan email/no telepon"
-                      required
-                      value={email}
-                      onChange={handleEmailChange}
+                      value={emailOrPhoneNumber}
+                      onChange={(e) => setEmailOrPhoneNumber(e.target.value)}
                       className="appearance-none block w-full px-3 py-2 border-b border-gray placeholder-neutral focus:outline-none focus:ring-primary focus:border-primary text-sm"
                     />
                   </div>
@@ -124,9 +110,8 @@ function Login() {
                       type={showPassword ? "text" : "password"}
                       autoComplete="current-password"
                       placeholder="*******"
-                      required
                       value={password}
-                      onChange={handlePasswordChange}
+                      onChange={(e) => setPassword(e.target.value)}
                       className="appearance-none block w-full px-3 py-2 border-b border-gray placeholder-neutral focus:outline-none focus:ring-primary focus:border-primary text-sm"
                     />
                     <button
@@ -183,6 +168,7 @@ function Login() {
                   </div>
                 </div>
 
+                <p className="text-sm text-red-500 font-medium">{message}</p>
                 <div>
                   <button
                     type="submit"

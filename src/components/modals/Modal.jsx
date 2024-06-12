@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import {
   getCities,
   getCitySearchResults,
-  getFlightSearchResults,
 } from "../../redux/actions/searchFlightActions";
 import { setCityKeyword } from "../../redux/reducers/searchFlightReducers";
 import { useDebounce } from "../../utils/debounce";
@@ -28,20 +27,25 @@ const UnifiedModal = ({
   initialData,
 }) => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const searchTerm = useSelector((state) => state?.search.cityKeyword);
   const citySearchResult = useSelector(
     (state) => state?.search.citySearchResults
   );
-  const [selectedClass, setSelectedClass] = useState(initialData || "Economy");
-  const [selectedCity, setSelectedCity] = useState(initialData || "Jakarta");
-  const [passengers, setPassengers] = useState(
-    initialData || { adults: 1, children: 0, infants: 0 }
+
+  const [selectedClass, setSelectedClass] = useState(
+    initialData?.selectedClass || "Economy"
   );
+  const [selectedCity, setSelectedCity] = useState(
+    initialData?.selectedCity || "Jakarta"
+  );
+  const [passengers, setPassengers] = useState(
+    initialData?.passengers || { adults: 1, children: 0, infants: 0 }
+  );
+
   const [state, setState] = useState([
     {
       startDate: new Date(),
-      endDate: addDays(new Date(), 7),
+      endDate: new Date(),
       key: "selection",
     },
   ]);
@@ -50,6 +54,14 @@ const UnifiedModal = ({
     dispatch(getCities());
     dispatch(getCitySearchResults());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (type === "passenger" && initialData) {
+      setPassengers(
+        initialData.passengers || { adults: 1, children: 0, infants: 0 }
+      );
+    }
+  }, [initialData, type]);
 
   const searchCity = (term) => {
     dispatch(getCitySearchResults());
@@ -70,7 +82,16 @@ const UnifiedModal = ({
 
   const handleSave = () => {
     if (type === "date") {
-      onSave(state[0].startDate, state[0].endDate);
+      const stripTime = (date) => {
+        const newDate = new Date(date);
+        newDate.setHours(12, 0, 0, 0);
+        return newDate;
+      };
+
+      const startDate = stripTime(state[0].startDate);
+      const endDate = state[0].endDate ? stripTime(state[0].endDate) : null;
+
+      onSave(startDate, endDate);
     } else if (type === "class") {
       onSave(selectedClass);
     } else if (type === "passenger") {
@@ -80,6 +101,7 @@ const UnifiedModal = ({
     }
     onRequestClose();
   };
+
 
   return (
     <Modal

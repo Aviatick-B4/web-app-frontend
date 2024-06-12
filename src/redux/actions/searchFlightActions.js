@@ -47,12 +47,15 @@ export const getFlightSearchResults =
     const totalPassenger = adults + children + infants;
 
     try {
-      const response = await axios.get(
-        `https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/tickets?limit=10&page=1&from=${from}&to=${to}&departure=${departureDate}&return=${returnDate}&passengers=${totalPassenger}&seat_class=${flightClass}`
-      );
-      // console.log(response.data.data);
+      let url = `https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/tickets?limit=10&page=1&from=${from}&to=${to}&departure=${departureDate}&passengers=${totalPassenger}&seat_class=${flightClass}`;
+
+      if (returnDate) {
+        url += `&return=${returnDate}`;
+      }
+
+      const response = await axios.get(url);
       dispatch(setFlightSearchResults(response.data.data || []));
-      navigate("/hasil-pencarian");
+      // navigate("/hasil-pencarian");
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error(error.message);
@@ -61,3 +64,4 @@ export const getFlightSearchResults =
       console.error(error.message);
     }
   };
+

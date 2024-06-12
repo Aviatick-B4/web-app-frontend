@@ -4,11 +4,18 @@ import Navbar from "../../components/navigations/Navbar";
 import RiwayatPemesananCard from "../../components/cards/RiwayatPemesananCard";
 import FilterDate from "../../components/buttons/FilterDate";
 import MobileNavbar from "../../components/navigations/MobileNavbar";
+import { getUserBookingHistory } from "../../redux/actions/historyActions";
+import { useDispatch } from "react-redux";
 
 export default function RiwayatPemesanan() {
+  const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState("semua");
   const [selectedFlight, setSelectedFlight] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
+
+  useEffect(() => {
+    dispatch(getUserBookingHistory());
+  }, [dispatch]);
 
   const flightData = [
     {
