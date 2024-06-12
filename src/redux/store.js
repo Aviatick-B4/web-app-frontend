@@ -3,14 +3,23 @@ import { thunk } from "redux-thunk";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import searchFlightReducers from "./reducers/searchFlightReducers";
+import promoReducers from "./reducers/promoReducers";
+import favoriteDestination from "./reducers/favoriteDestinationReducers";
+import authReducers from "./reducers/authReducers";
+import historyReducers from "./reducers/historyReducers";
 
 const rootReducer = combineReducers({
-  search: searchFlightReducers
+  auth: authReducers,
+  search: searchFlightReducers,
+  promo: promoReducers,
+  favDestination: favoriteDestination,
+  history: historyReducers
 });
 
 const persistConfig = {
   key: "root",
   storage,
+  whitelist: ["auth"],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

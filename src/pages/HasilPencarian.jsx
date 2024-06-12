@@ -3,44 +3,174 @@ import Footer from "../components/navigations/Footer";
 import Navbar from "../components/navigations/Navbar";
 import FlightCard from "../components/cards/HasilPencarianCard";
 import FilterButton from "../components/buttons/FilterButton";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { addDays, format, parseISO } from "date-fns";
+import { id } from "date-fns/locale";
+import UnifiedModal from "../components/modals/Modal";
+import { getFlightSearchResults } from "../redux/actions/searchFlightActions";
+import { setFlightKeyword } from "../redux/reducers/searchFlightReducers";
+import { toast } from "react-toastify";
 
 export default function HasilPencarian() {
+  const dispatch = useDispatch();
   const [selectedDay, setSelectedDay] = useState("2024-05-23");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isClosing, setIsClosing] = useState(false);
-  const [modalContent, setModalContent] = useState("");
+  const [modalType, setModalType] = useState("");
+  const [modalData, setModalData] = useState(null);
   const [sortOption, setSortOption] = useState(null);
   const [selectedFacilities, setSelectedFacilities] = useState([]);
   const [priceRange, setPriceRange] = useState([0, Infinity]);
+  const [isAllSelected, setIsAllSelected] = useState(true);
+  const [changedFlightKeyword, setChangedFlightKeyword] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [from, setFrom] = useState("JKT");
+  const [to, setTo] = useState("SYD");
+
   const searchResultsDeparture = useSelector(
     (state) => state?.search?.flightSearchResults?.tickets?.departure || []
   );
   const searchResultsReturn = useSelector(
-    (state) => state?.search.flightSearchResults.tickets.return
+    (state) => state?.search?.flightSearchResults?.tickets?.return
   );
   const searchResults = useSelector(
-    (state) => state?.search.flightSearchResults.tickets
+    (state) => state?.search?.flightSearchResults?.tickets
+  );
+  const flightKeyword = useSelector(
+    (state) => state?.search?.flightKeyword || {}
   );
 
-  useEffect(() => {
-    console.log("search", searchResults);
-  }, [searchResultsDeparture]);
+  const { departureDate, returnDate, passengers, flightClass } = flightKeyword;
 
-  const days = [
-    { day: "Rabu", date: "22 Mei 2024", value: "2024-05-22" },
-    { day: "Kamis", date: "23 Mei 2024", value: "2024-05-23" },
-    { day: "Jumat", date: "24 Mei 2024", value: "2024-05-24" },
-    { day: "Sabtu", date: "25 Mei 2024", value: "2024-05-25" },
-    { day: "Minggu", date: "26 Mei 2024", value: "2024-05-26" },
-    { day: "Senin", date: "27 Mei 2024", value: "2024-05-27" },
-    { day: "Selasa", date: "28 Mei 2024", value: "2024-05-28" },
-    { day: "Rabu", date: "29 Mei 2024", value: "2024-05-29" },
-  ];
+  const {
+    adults = 0,
+    children = 0,
+    infants = 0,
+  } = flightKeyword?.passengers || {};
+  const totalPassenger = adults + children + infants;
+
+  const changedPassengers = changedFlightKeyword?.passengers || {};
+  const {
+    adults: changedAdults = 0,
+    children: changedChildren = 0,
+    infants: changedInfants = 0,
+  } = changedPassengers;
+  const totalChangedPassengers =
+    changedAdults + changedChildren + changedInfants;
+
+  useEffect(() => {
+    console.log("flight keywordd", flightKeyword);
+  }, [searchResults, flightKeyword]);
+
+  const initialData = {
+    passengers: {
+      adults: adults,
+      children: children,
+      infants: infants,
+    },
+  };
+
+  const openModal = (type, data) => {
+    setModalType(type);
+    if (type === "date") {
+      setModalData(
+        data === "departure"
+          ? {
+              startDate: parseISO(departureDate),
+              endDate: parseISO(returnDate),
+            }
+          : {
+              startDate: parseISO(departureDate),
+              endDate: parseISO(returnDate),
+            }
+      );
+    } else {
+      setModalData(data);
+    }
+    setIsModalOpen(true);
+  };
+
+  const handleSave = (data, endDate) => {
+    if (modalType === "city") {
+      if (modalData === "from" && data === to) {
+        toast.error("Kota keberangkatan tidak boleh sama dengan kota tujuan.");
+        return;
+      }
+      if (modalData === "to" && data === from) {
+        toast.error("Kota tujuan tidak boleh sama dengan kota keberangkatan.");
+        return;
+      }
+
+      setChangedFlightKeyword((prev) => ({
+        ...prev,
+        [modalData]: data,
+      }));
+    } else if (modalType === "date") {
+      const departureDate = data.toISOString().split("T")[0];
+      const returnDate = endDate ? endDate.toISOString().split("T")[0] : null;
+
+      setChangedFlightKeyword((prev) => ({
+        ...prev,
+        departureDate: departureDate,
+        returnDate: returnDate,
+      }));
+    } else if (modalType === "class") {
+      setChangedFlightKeyword((prev) => ({
+        ...prev,
+        flightClass: data,
+      }));
+    } else if (modalType === "passenger") {
+      setChangedFlightKeyword((prev) => ({
+        ...prev,
+        passengers: data,
+      }));
+    }
+    setIsModalOpen(false);
+  };
+
+  const handleSaveToState = () => {
+    const updatedKeyword = {
+      ...flightKeyword,
+      ...changedFlightKeyword,
+      departureDate: format(
+        parseISO(
+          changedFlightKeyword?.departureDate ||
+            departureDate ||
+            new Date().toISOString().split("T")[0]
+        ),
+        "yyyy-MM-dd"
+      ),
+      returnDate: changedFlightKeyword?.returnDate
+        ? format(parseISO(changedFlightKeyword.returnDate), "yyyy-MM-dd")
+        : returnDate
+        ? format(parseISO(returnDate), "yyyy-MM-dd")
+        : null,
+    };
+
+    setLoading(true);
+    dispatch(getFlightSearchResults(updatedKeyword)).then(() => {
+      setLoading(false);
+    });
+    dispatch(setFlightKeyword(updatedKeyword));
+  };
+
+  const handleAllClick = () => {
+    setIsAllSelected(true);
+    setSortOption(null);
+    setSelectedFacilities([]);
+    setPriceRange([0, Infinity]);
+  };
 
   const handleSortChange = (option) => {
     setSortOption(option);
   };
+
+  const uniqueFacilities = Array.from(
+    new Set(
+      searchResultsDeparture.flatMap(
+        (flight) => flight.airplaneSeatClass.airplane.inFlightFacility || []
+      )
+    )
+  );
 
   const handleFacilityChange = (facility) => {
     setSelectedFacilities((prev) => {
@@ -53,59 +183,116 @@ export default function HasilPencarian() {
   };
 
   const handlePriceRangeChange = (range) => {
-    if (range === "IDR 0 - 2.000.000") setPriceRange([0, 2000000]);
-    else if (range === "IDR 2.000.000 - 4.000.000")
-      setPriceRange([2000000, 4000000]);
-    else if (range === "IDR 4.000.000 - 6.000.000")
-      setPriceRange([4000000, 6000000]);
-    else if (range === "IDR 6.000.000 - 8.000.000")
-      setPriceRange([6000000, 8000000]);
-    else setPriceRange([0, Infinity]);
+    if (range === "IDR 0 - 4.000.000") {
+      setPriceRange([0, 4000000]);
+    } else if (range === "IDR 4.000.000 - 8.000.000") {
+      setPriceRange([4000000, 8000000]);
+    } else if (range === "> IDR 8.000.000") {
+      setPriceRange([8000000, Infinity]);
+    } else {
+      setPriceRange([0, Infinity]);
+    }
   };
 
   const sortedAndFilteredResults = searchResultsDeparture
     .filter((flight) => {
       const facilitiesMatch =
         selectedFacilities.length === 0 ||
-        (flight.facilities &&
+        (flight.airplaneSeatClass.airplane.inFlightFacility &&
           selectedFacilities.every((facility) =>
-            flight.facilities.includes(facility)
+            flight.airplaneSeatClass.airplane.inFlightFacility.includes(
+              facility
+            )
           ));
       const priceMatch =
         flight.price >= priceRange[0] && flight.price <= priceRange[1];
       return facilitiesMatch && priceMatch;
     })
     .sort((a, b) => {
-      if (sortOption === "Termurah") {
+      if (sortOption === "Harga - Terendah ke Tertinggi") {
         return a.price - b.price;
-      } else if (sortOption === "Terpendek") {
-        return (
-          new Date(a.arrival_time) -
-          new Date(a.departure_time) -
-          (new Date(b.arrival_time) - new Date(b.departure_time))
-        );
+      } else if (sortOption === "Harga - Tertinggi ke Terendah") {
+        return b.price - a.price;
+      } else if (sortOption === "Durasi - Terpendek ke Terlama") {
+        const durationA =
+          new Date(a.flight.arrivalTime) - new Date(a.flight.departureTime);
+        const durationB =
+          new Date(b.flight.arrivalTime) - new Date(b.flight.departureTime);
+        return durationA - durationB;
+      } else if (sortOption === "Durasi - Terlama ke Terpendek") {
+        const durationA =
+          new Date(a.flight.arrivalTime) - new Date(a.flight.departureTime);
+        const durationB =
+          new Date(b.flight.arrivalTime) - new Date(b.flight.departureTime);
+        return durationB - durationA;
       }
       return 0;
     });
 
-
-
-  const openModal = (content) => {
-    setModalContent(content);
-    setIsModalOpen(true);
-    setIsClosing(false);
+  const generateDateList = () => {
+    const today = new Date();
+    const days = [];
+    for (let i = 0; i < 7; i++) {
+      const date = addDays(today, i);
+      const formattedDate = {
+        day: format(date, "EEEE", { locale: id }),
+        date: format(date, "d MMMM yyyy", { locale: id }),
+        value: format(date, "yyyy-MM-dd"),
+      };
+      days.push(formattedDate);
+    }
+    return days;
   };
 
-  const closeModal = () => {
-    setIsClosing(true);
-    setTimeout(() => {
-      setIsModalOpen(false);
-      setIsClosing(false);
-    }, 300);
+  const formatDateToDayMonthYear = (dateString) => {
+    if (!dateString || typeof dateString !== "string") {
+      return "";
+    }
+
+    const [year, month, day] = dateString.split("-");
+    const date = new Date(Date.UTC(year, month - 1, day));
+
+    return date.toLocaleDateString("id-ID", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  };
+
+  const days = generateDateList();
+
+  const handleDateClick = (dateValue) => {
+    const departureDate = dateValue;
+    const arrivalDate = addDays(new Date(dateValue), 1)
+      .toISOString()
+      .split("T")[0];
+
+    setSelectedDay(dateValue);
+
+    const updatedKeyword = {
+      ...flightKeyword,
+      departureDate: departureDate,
+      returnDate: arrivalDate,
+    };
+
+    setLoading(true);
+    dispatch(getFlightSearchResults(updatedKeyword)).then(() => {
+      setLoading(false);
+    });
+    dispatch(setFlightKeyword(updatedKeyword));
+  };
+
+  const swapLocations = () => {
+    setFrom((prevFrom) => {
+      const newFrom = to;
+      setTo(prevFrom);
+      return newFrom;
+    });
   };
 
   return (
-    <div className="">
+    <div className="bg-background">
       <Navbar transparent={false} />
 
       {/* Hasil Pencarian Section */}
@@ -152,9 +339,9 @@ export default function HasilPencarian() {
                   <div className="ps-8 flex gap-2 items-center">
                     <span
                       className="cursor-pointer"
-                      onClick={() => openModal("departure")}
+                      onClick={() => openModal("city", "from")}
                     >
-                      Jakarta (JKTA)
+                      {changedFlightKeyword?.from || from}
                     </span>
                     <button className="mx-2 p-2 rounded-full bg-gray-200 hover:bg-gray-300 focus:outline-none">
                       <img
@@ -165,9 +352,9 @@ export default function HasilPencarian() {
                     </button>
                     <span
                       className="cursor-pointer"
-                      onClick={() => openModal("arrival")}
+                      onClick={() => openModal("city", "to")}
                     >
-                      Sydney (SYD)
+                      {changedFlightKeyword?.to || to}
                     </span>
                   </div>
 
@@ -175,12 +362,29 @@ export default function HasilPencarian() {
                   <div className="h-[27px] w-[1px] bg-gray"></div>
 
                   {/* Date */}
-                  <span
-                    className="cursor-pointer"
-                    onClick={() => openModal("date")}
-                  >
-                    Sabtu, 25 Mei 2024
-                  </span>
+                  <div className="flex items-center gap-4">
+                    <span
+                      className="cursor-pointer"
+                      onClick={() => openModal("date", "departure")}
+                    >
+                      {formatDateToDayMonthYear(
+                        changedFlightKeyword?.departureDate || departureDate
+                      )}
+                    </span>
+                    {returnDate && (
+                      <>
+                        <span>-</span>
+                        <span
+                          className="cursor-pointer"
+                          onClick={() => openModal("date", "return")}
+                        >
+                          {formatDateToDayMonthYear(
+                            changedFlightKeyword?.returnDate || returnDate
+                          )}
+                        </span>
+                      </>
+                    )}
+                  </div>
 
                   {/* Vertical Line */}
                   <div className="h-[27px] w-[1px] bg-gray"></div>
@@ -188,69 +392,39 @@ export default function HasilPencarian() {
                   {/* Passengers */}
                   <span
                     className="cursor-pointer"
-                    onClick={() => openModal("passengers")}
+                    onClick={() => openModal("passenger")}
                   >
-                    1 Penumpang, Ekonomi
+                    {totalChangedPassengers || totalPassenger} Penumpang
+                  </span>
+
+                  {/* Vertical Line */}
+                  <div className="h-[27px] w-[1px] bg-gray"></div>
+
+                  {/* Class */}
+                  <span
+                    className="cursor-pointer"
+                    onClick={() => openModal("class")}
+                  >
+                    {changedFlightKeyword?.flightClass || flightClass}
                   </span>
                 </div>
                 {/* Button Change Search */}
-                <button className="bg-primary hover:bg-darkprimary rounded-full text-white text-sm lg:text-base font-medium px-8 lg:px-12 py-2.5">
+                <button
+                  onClick={handleSaveToState}
+                  className="bg-primary hover:bg-darkprimary rounded-full text-white text-sm lg:text-base font-medium px-8 lg:px-12 py-2.5"
+                >
                   Ubah
                 </button>
               </div>
             </div>
 
-            {/* Modal */}
-            {isModalOpen && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div className="bg-white p-8 rounded-lg shadow-lg w-[400px] relative">
-                  <button
-                    className="absolute top-4 right-4 text-gray-600 hover:text-gray-800"
-                    onClick={closeModal}
-                  >
-                    <svg
-                      className="w-3 h-3"
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 14 14"
-                    >
-                      <path
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-                      />
-                    </svg>
-                  </button>
-                  <h2 className="text-xl font-semibold mb-4 text-main">
-                    Edit {modalContent}
-                  </h2>
-                  {/* Modal Content based on modalContent */}
-                  {modalContent === "departure" && (
-                    <div className="text-main text-sm font-medium">
-                      Edit Departure
-                    </div>
-                  )}
-                  {modalContent === "arrival" && (
-                    <div className="text-main text-sm font-medium">
-                      Edit Arrival
-                    </div>
-                  )}
-                  {modalContent === "date" && (
-                    <div className="text-main text-sm font-medium">
-                      Edit Date
-                    </div>
-                  )}
-                  {modalContent === "passengers" && (
-                    <div className="text-main text-sm font-medium">
-                      Edit Passengers
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
+            <UnifiedModal
+              isOpen={isModalOpen}
+              onRequestClose={() => setIsModalOpen(false)}
+              type={modalType}
+              onSave={handleSave}
+              initialData={initialData}
+            />
           </div>
 
           {/* Search Flight Mobile */}
@@ -286,13 +460,7 @@ export default function HasilPencarian() {
                   {/* Destination */}
                   <div className="ps-8 flex gap-2 items-center">
                     <span className="cursor-pointer">Jakarta</span>
-                    <button className="mx-2 p-2 rounded-full bg-gray-200 hover:bg-gray-300 focus:outline-none">
-                      <img
-                        src="/icons/exchange.svg"
-                        alt="exchange"
-                        className="w-6 h-6"
-                      />
-                    </button>
+                    <SwapButton onClick={swapLocations} />
                     <span className="cursor-pointer">Sydney</span>
                   </div>
                 </div>
@@ -305,96 +473,6 @@ export default function HasilPencarian() {
                 </button>
               </div>
             </div>
-
-            {/* Modal */}
-            {isModalOpen && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end z-50">
-                <div
-                  className={`w-full bg-white rounded-t-lg p-8 shadow-lg transform transition-transform ${
-                    isClosing ? "animate-slide-down" : "animate-slide-up"
-                  } relative`}
-                >
-                  <button
-                    className="absolute top-4 left-4 text-gray-600 hover:text-gray-800"
-                    onClick={closeModal}
-                  >
-                    <svg
-                      className="w-5 h-5"
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                  {modalContent === "change-mobile-search" && (
-                    <>
-                      <h2 className="text-lg font-semibold mb-4 text-main text-center">
-                        Ubah Pencarian
-                      </h2>
-                      <div className="space-y-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">
-                            Departure
-                          </label>
-                          <input
-                            type="text"
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
-                            placeholder="Departure"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">
-                            Arrival
-                          </label>
-                          <input
-                            type="text"
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
-                            placeholder="Arrival"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">
-                            Date
-                          </label>
-                          <input
-                            type="date"
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">
-                            Passengers
-                          </label>
-                          <input
-                            type="number"
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
-                            placeholder="Number of passengers"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">
-                            Class
-                          </label>
-                          <select className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm">
-                            <option>Economy</option>
-                            <option>Business</option>
-                            <option>First Class</option>
-                          </select>
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Date List Desktop */}
@@ -408,7 +486,7 @@ export default function HasilPencarian() {
                   } hover:bg-primary/20 active:bg-primary/20 transition-colors duration-200 ${
                     index !== 0 ? "border-l border-neutral" : ""
                   }`}
-                  onClick={() => setSelectedDay(day.value)}
+                  onClick={() => handleDateClick(day.value)}
                 >
                   <h5 className="text-base font-semibold text-main">
                     {day.day}
@@ -423,57 +501,83 @@ export default function HasilPencarian() {
 
           {/* Date List Mobile */}
           <div className="block md:hidden overflow-x-auto whitespace-nowrap border-b-2 border-primary">
-            {days.map((item, index) => (
+            {days.map((day, index) => (
               <div
-                key={index}
+                key={day.value}
                 className={`inline-block text-center px-4 py-2 cursor-pointer ${
-                  selectedDay === item.date ? "bg-primary/20" : ""
+                  selectedDay === day.value ? "bg-primary/20" : "bg-white"
+                } hover:bg-primary/20 active:bg-primary/20 transition-colors duration-200 ${
+                  index !== 0 ? "border-l border-neutral" : ""
                 }`}
-                onClick={() => setSelectedDay(item.date)}
+                onClick={() => handleDateClick(day.value)}
               >
-                <div className="font-semibold text-xs text-main">
-                  {item.day}
-                </div>
-                <div className="font-normal text-xs text-main">{item.date}</div>
+                <div className="font-semibold text-xs text-main">{day.day}</div>
+                <div className="font-normal text-xs text-main">{day.date}</div>
               </div>
             ))}
           </div>
 
           {/* Filter Desktop */}
           <div className="hidden md:flex space-x-3 items-center mt-5">
-            <button className="bg-primary rounded-full text-sm font-medium py-2 px-6 text-white">
+            <button
+              onClick={handleAllClick}
+              className={`text-xs md:text-sm font-medium rounded-full px-4 py-2 border-2 ${
+                isAllSelected
+                  ? "bg-primary text-white"
+                  : "bg-white text-primary border-primary"
+              }`}
+            >
               Semua
             </button>
-
-            {/* Vertical Line */}
-            <div className="h-[20px] w-[1px] bg-gray"></div>
-
             <FilterButton
-              label="Sort"
-              options={["Termurah", "Terpendek"]}
+              label="Urutkan"
+              options={[
+                "Harga - Terendah ke Tertinggi",
+                "Harga - Tertinggi ke Terendah",
+                "Durasi - Terpendek ke Terlama",
+                "Durasi - Terlama ke Terpendek",
+              ]}
+              iconSrc="/icons/filter.svg"
               onOptionSelect={handleSortChange}
+              selectedOption={sortOption}
             />
             <FilterButton
               label="Fasilitas"
-              options={["Wifi", "Makanan", "Bagasi 20kg"]}
+              options={uniqueFacilities}
+              iconSrc="/icons/facility.svg"
               onOptionSelect={handleFacilityChange}
+              selectedOption={selectedFacilities.join(", ")}
             />
             <FilterButton
               label="Harga"
               options={[
-                "IDR 0 - 2.000.000",
-                "IDR 2.000.000 - 4.000.000",
-                "IDR 4.000.000 - 6.000.000",
-                "IDR 6.000.000 - 8.000.000",
+                "IDR 0 - 4.000.000",
+                "IDR 4.000.000 - 8.000.000",
+                "> IDR 8.000.000",
               ]}
+              iconSrc="/icons/price.svg"
               onOptionSelect={handlePriceRangeChange}
+              selectedOption={
+                priceRange[0] === 0 && priceRange[1] === Infinity
+                  ? null
+                  : priceRange[1] === Infinity
+                  ? `> IDR 8.000.000`
+                  : `IDR ${priceRange[0].toLocaleString()} - ${priceRange[1].toLocaleString()}`
+              }
             />
           </div>
 
           {/* Filter Mobile */}
           <>
             <div className="flex md:hidden items-center mt-3">
-              <button className="bg-primary rounded-full text-xs font-medium py-2 px-6 text-white">
+              <button
+                className={`rounded-full text-xs font-medium py-2 px-6 ${
+                  isAllSelected
+                    ? "bg-primary text-white"
+                    : "bg-white border border-primary text-primary"
+                }`}
+                onClick={handleAllClick}
+              >
                 Semua
               </button>
             </div>
@@ -485,36 +589,69 @@ export default function HasilPencarian() {
               }}
             >
               <FilterButton
-                label="Sort"
-                options={["Termurah", "Terpendek"]}
+                label="Urutkan"
+                options={[
+                  "Harga - Terendah ke Tertinggi",
+                  "Harga - Tertinggi ke Terendah",
+                  "Durasi - Terpendek ke Terlama",
+                  "Durasi - Terlama ke Terpendek",
+                ]}
+                iconSrc="/icons/filter.svg"
                 onOptionSelect={handleSortChange}
+                selectedOption={sortOption}
               />
               <FilterButton
                 label="Fasilitas"
-                options={["Wifi", "Makanan", "Bagasi 20kg"]}
+                options={uniqueFacilities}
+                iconSrc="/icons/facility.svg"
                 onOptionSelect={handleFacilityChange}
+                selectedOption={selectedFacilities.join(", ")}
               />
               <FilterButton
                 label="Harga"
                 options={[
-                  "IDR 0 - 2.000.000",
-                  "IDR 2.000.000 - 4.000.000",
-                  "IDR 4.000.000 - 6.000.000",
-                  "IDR 6.000.000 - 8.000.000",
+                  "IDR 0 - 4.000.000",
+                  "IDR 4.000.000 - 8.000.000",
+                  "> IDR 8.000.000",
                 ]}
+                iconSrc="/icons/price.svg"
                 onOptionSelect={handlePriceRangeChange}
+                selectedOption={
+                  priceRange[0] === 0 && priceRange[1] === Infinity
+                    ? null
+                    : priceRange[1] === Infinity
+                    ? `> IDR 8.000.000`
+                    : `IDR ${priceRange[0].toLocaleString()} - ${priceRange[1].toLocaleString()}`
+                }
               />
             </div>
           </>
 
           {/* Card */}
           <div className="mt-3 md:mt-5">
-            {sortedAndFilteredResults.length > 0 ? (
+            {loading ? (
+              <div className="flex flex-col items-center justify-center text-center font-medium text-sm mt-16">
+                <img
+                  src="/animations/loading.gif"
+                  alt="Loading"
+                  className="w-[99px]"
+                />
+                <p className="text-main">Mencari penerbangan terbaik...</p>
+              </div>
+            ) : sortedAndFilteredResults.length > 0 ? (
               sortedAndFilteredResults.map((flight, index) => (
                 <FlightCard key={index} flight={flight} />
               ))
             ) : (
-              <p>No flights found.</p>
+              <div className="flex flex-col items-center justify-center text-center font-medium text-sm mt-16">
+                <img
+                  src="/animations/notfound.gif"
+                  alt="Not found"
+                  className="w-[99px]"
+                />
+                <p className="text-main">Maaf, pencarian tidak ditemukan</p>
+                <p className="text-primary">Coba cari penerbangan lainnya!</p>
+              </div>
             )}
           </div>
         </div>
@@ -524,3 +661,12 @@ export default function HasilPencarian() {
     </div>
   );
 }
+
+const SwapButton = ({ onClick }) => (
+  <button
+    onClick={onClick}
+    className="absolute md:top-[35%] left-[80%] md:left-[17.5%] transform md:-translate-x-1/2 bg-gray-200 p-2 rounded-full bg-white shadow"
+  >
+    <img src="/icons/exchange.svg" alt="exchange" className="w-6 h-6" />
+  </button>
+);
