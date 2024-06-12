@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
@@ -7,9 +8,19 @@ import { Link } from "react-router-dom";
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const toggleShowPassword = () => {
     setShowPassword((prevShowPassword) => !prevShowPassword);
+  };
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+  };
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
   };
 
   const settings = {
@@ -22,8 +33,34 @@ function Login() {
     autoplay: true,
     autoplaySpeed: 2800,
     cssEase: "linear",
-    arrows: false
+    arrows: false,
   };
+
+  useEffect(() => {
+    fetchLogin();
+  }, []); // Dipanggil sekali saat komponen dimuat
+
+  async function fetchLogin() {
+    try {
+      const response = await axios.post(
+        `https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/login`,
+        {
+          // Data yang harus dikirimkan ke server
+          email: email,
+          password: password,
+        },
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log("Data received with Async/Await:", response.data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
 
   return (
     <div className="min-h-screen flex mx-3 md:mx-0 bg-white">
@@ -66,6 +103,8 @@ function Login() {
                       autoComplete="email"
                       placeholder="Masukkan email/no telepon"
                       required
+                      value={email}
+                      onChange={handleEmailChange}
                       className="appearance-none block w-full px-3 py-2 border-b border-gray placeholder-neutral focus:outline-none focus:ring-primary focus:border-primary text-sm"
                     />
                   </div>
@@ -86,6 +125,8 @@ function Login() {
                       autoComplete="current-password"
                       placeholder="*******"
                       required
+                      value={password}
+                      onChange={handlePasswordChange}
                       className="appearance-none block w-full px-3 py-2 border-b border-gray placeholder-neutral focus:outline-none focus:ring-primary focus:border-primary text-sm"
                     />
                     <button

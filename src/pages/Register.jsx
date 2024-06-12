@@ -1,16 +1,121 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+// import { useHistory } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Register() {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const navigate = useNavigate();
+  // const history = useHistory();
 
   const toggleShowPassword = () => {
     setShowPassword((prevShowPassword) => !prevShowPassword);
   };
+
+  const registerUser = async () => {
+    if (!email || !fullName || !phoneNumber || !password) {
+      alert("Mohon lengkapi semua inputan untuk melakukan registrasi.");
+      return;
+    }
+
+    try {
+      const responseRegister = await axios.post(
+        `https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/register`,
+        {
+          email,
+          fullName,
+          phoneNumber,
+          password,
+        },
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (responseRegister.status === 200) {
+        alert("Register Berhasil");
+        localStorage.setItem("token", responseRegister.data.token);
+        navigate("/", {
+          state: { token: responseRegister.data.token },
+        });
+      } else {
+        alert(responseRegister.data.message);
+      }
+    } catch (error) {
+      console.error("Error during registration: ", error);
+      if (error.response) {
+        console.error("Server response data: ", error.response.data);
+        alert("Registrasi gagal. " + error.response.data.message);
+      } else if (error.request) {
+        console.error("No response received: ", error.request);
+        alert("Tidak ada respons dari server.");
+      } else {
+        console.error("Error setting up request: ", error.message);
+        alert("Terjadi kesalahan saat mengirim permintaan.");
+      }
+    }
+  };
+
+  // const handleChange = (e) => {
+  //   const { value } = e.target;
+  //   setFullName(value);
+  // };
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setError("");
+  //   setSuccess("");
+
+  //   if (formData.password !== formData.confirmPassword) {
+  //     setError("Password dan konfirmasi password tidak cocok");
+  //     return;
+  //   }
+
+  //   try {
+  //     const { email, fullName, phoneNumber, password, confirmPassword } =
+  //       formData;
+  //     const response = await axios.post(
+  //       `https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/register`,
+  //       {
+  //         email: email,
+  //         fullName: fullName,
+  //         phoneNumber: phoneNumber,
+  //         password: password,
+  //         confirmPassword: confirmPassword,
+  //       }
+  //     );
+  //     const responseData = response.data;
+  //     setSuccess("Registrasi berhasil!");
+  //     setError("");
+  //     console.log(responseData); // Log respons untuk debugging
+  //     // Redirect to login page after successful registration
+  //     // history.push("/masuk");
+  //   } catch (error) {
+  //     if (error.response) {
+  //       // Server responded with a status other than 200 range
+  //       setError(
+  //         error.response.data.message || "Registrasi gagal. Silakan coba lagi."
+  //       );
+  //     } else {
+  //       // Something else happened while setting up the request
+  //       setError("Registrasi gagal. Silakan coba lagi.");
+  //     }
+  //     setSuccess("");
+  //   }
+  // };
 
   const settings = {
     dots: false,
@@ -26,7 +131,6 @@ function Register() {
     waitForAnimate: false,
     pauseOnHover: false,
   };
-
 
   return (
     <div className="min-h-screen flex mx-3 md:mx-0 bg-white">
@@ -69,6 +173,8 @@ function Register() {
                       autoComplete="email"
                       placeholder="Masukkan email"
                       required
+                      value={email} // value diatur menjadi nilai dari state email
+                      onChange={(e) => setEmail(e.target.value)} // setiap kali nilai input berubah, state email akan diupdate
                       className="appearance-none block w-full px-3 py-2 border-b border-gray placeholder-neutral focus:outline-none focus:ring-primary focus:border-primary text-sm"
                     />
                   </div>
@@ -76,19 +182,21 @@ function Register() {
 
                 <div className="space-y-1">
                   <label
-                    htmlFor="nama"
+                    htmlFor="fullName"
                     className="block text-xs md:text-sm font-medium text-gray"
                   >
                     Nama Lengkap
                   </label>
                   <div className="mt-1">
                     <input
-                      id="nama"
-                      name="nama"
+                      id="fullName"
+                      name="fullName"
                       type="text"
-                      autoComplete="nama"
+                      autoComplete="fullName"
                       placeholder="Masukkan Nama"
                       required
+                      value={fullName} // value diatur menjadi nilai dari state email
+                      onChange={(e) => setFullName(e.target.value)} // setiap kali nilai input berubah, state email akan diupdate
                       className="appearance-none block w-full px-3 py-2 border-b border-gray placeholder-neutral focus:outline-none focus:ring-primary focus:border-primary text-sm"
                     />
                   </div>
@@ -96,19 +204,21 @@ function Register() {
 
                 <div className="space-y-1">
                   <label
-                    htmlFor="nomor"
+                    htmlFor="phoneNumber"
                     className="block text-xs md:text-sm font-medium text-gray"
                   >
                     Nomor Telepon
                   </label>
                   <div className="mt-1">
                     <input
-                      id="nomor"
-                      name="nomor"
+                      id="phoneNumber"
+                      name="phoneNumber"
                       type="text"
-                      autoComplete="nomor"
+                      autoComplete="phoneNumber"
                       placeholder="+62"
                       required
+                      value={phoneNumber} // value diatur menjadi nilai dari state email
+                      onChange={(e) => setPhoneNumber(e.target.value)} // setiap kali nilai input berubah, state email akan diupdate
                       className="appearance-none block w-full px-3 py-2 border-b border-gray placeholder-neutral focus:outline-none focus:ring-primary focus:border-primary text-sm"
                     />
                   </div>
@@ -129,6 +239,8 @@ function Register() {
                       autoComplete="current-password"
                       placeholder="*******"
                       required
+                      value={password} // value diatur menjadi nilai dari state email
+                      onChange={(e) => setPassword(e.target.value)} // setiap kali nilai input berubah, state email akan diupdate
                       className="appearance-none block w-full px-3 py-2 border-b border-gray placeholder-neutral focus:outline-none focus:ring-primary focus:border-primary text-sm"
                     />
                     <button
@@ -208,6 +320,7 @@ function Register() {
                   <button
                     type="submit"
                     className="w-full flex justify-center py-2 px-4 border border-transparent rounded-full shadow-sm text-sm md:text-base font-medium text-white bg-primary hover:bg-darkprimary focus:outline-none"
+                    onClick={registerUser}
                   >
                     Daftar
                   </button>
