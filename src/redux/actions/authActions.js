@@ -14,9 +14,9 @@ export const login = (data, navigate, setMessage) => async (dispatch) => {
       }
     );
 
-    const { token } = response.data.data.token;
+    const token = response.data.data.token;
 
-    console.log(response.data.data.user);
+    console.log(response.data.data.token);
 
     if (response.status === 200) {
       toast.success("Login successful");

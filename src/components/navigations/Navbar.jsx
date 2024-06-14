@@ -102,28 +102,32 @@ function Navbar({ transparent }) {
 
         {/* Desktop Login Button */}
         {isLoggedIn ? (
-          <div className="relative hidden md:block">
+          <div className="relative hidden md:flex">
             <div
               className="flex items-center cursor-pointer"
               onClick={() => setShowDropdown(!showDropdown)}
             >
-              <div className="flex justify-between gap-2 items-center">
-                <div className="rounded-full bg-secondary py-1 px-1.5 items-center text-white font-medium text-lg">
-                  {getInitials(user.fullName)}
-                </div>
-                <p
-                  className={`${
-                    isScrolled || !transparent
-                      ? "text-sm font-medium text-primary"
-                      : "text-sm font-medium text-white"
+              <Link to="/notifikasi">
+                <svg
+                  className={`w-6 h-6 hover:fill-primary mr-4 ${
+                    isScrolled || !transparent ? "fill-darkgray" : "fill-white"
                   }`}
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 448 512"
                 >
-                  {user && user.fullName}
-                </p>
+                  <path d="M224 0c-17.7 0-32 14.3-32 32V51.2C119 66 64 130.6 64 208v18.8c0 47-17.3 92.4-48.5 127.6l-7.4 8.3c-8.4 9.4-10.4 22.9-5.3 34.4S19.4 416 32 416H416c12.6 0 24-7.4 29.2-18.9s3.1-25-5.3-34.4l-7.4-8.3C401.3 319.2 384 273.9 384 226.8V208c0-77.4-55-142-128-156.8V32c0-17.7-14.3-32-32-32zm45.3 493.3c12-12 18.7-28.3 18.7-45.3H224 160c0 17 6.7 33.3 18.7 45.3s28.3 18.7 45.3 18.7s33.3-6.7 45.3-18.7z" />
+                </svg>
+              </Link>
+
+              <div className="rounded-full bg-gray/70 w-9 h-9 text-center text-white font-medium text-base flex items-center justify-center">
+                {getInitials(user.fullName)}
               </div>
             </div>
             {showDropdown && (
-              <div className="absolute top-full left-0 mt-1 bg-white shadow-md rounded-md w-48">
+              <div className="absolute top-full right-0 mt-1 bg-white shadow-md rounded-md w-48">
+                <p className="block w-full text-left px-4 py-2 text-sm font-medium text-primary rounded-t-md border-b border-neutral">
+                  {user && user.fullName}
+                </p>
                 <Link
                   to="/akun-saya"
                   className="block w-full text-left px-4 py-2 text-sm font-medium text-main hover:bg-primary/15 rounded-t-md"
