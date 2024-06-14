@@ -4,101 +4,56 @@ import Navbar from "../../components/navigations/Navbar";
 import RiwayatPemesananCard from "../../components/cards/RiwayatPemesananCard";
 import FilterDate from "../../components/buttons/FilterDate";
 import MobileNavbar from "../../components/navigations/MobileNavbar";
-import { getUserBookingHistory } from "../../redux/actions/historyActions";
-import { useDispatch } from "react-redux";
+import {
+  getBookingHistoryDetail,
+  getHistoryByDate,
+  getHistorySearchResults,
+  getUserBookingHistory,
+} from "../../redux/actions/historyActions";
+import { useDispatch, useSelector } from "react-redux";
+import { useDebounce } from "../../utils/debounce";
+
+import { FaCalendarAlt } from "react-icons/fa";
+import { setHistoryKeyword } from "../../redux/reducers/historyReducers";
 
 export default function RiwayatPemesanan() {
   const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState("semua");
   const [selectedFlight, setSelectedFlight] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const {
+    bookingHistory: flightData = [],
+    bookingHistoryDetail: bookingDetail,
+    historyKeyword: searchTerm,
+    historySearchResults: searchResults,
+    date: selectedDate,
+    historyByDate,
+  } = useSelector((state) => state.history);
+
+  const searchHistory = (term) => {
+    dispatch(getHistorySearchResults());
+  };
+
+  const delayedSearch = useDebounce(searchHistory, 300);
+
+  const handleSearchInputChange = (e) => {
+    dispatch(setHistoryKeyword(e.target.value));
+    delayedSearch(e.target.value);
+  };
 
   useEffect(() => {
-    dispatch(getUserBookingHistory());
-  }, [dispatch]);
+    const fetchData = async () => {
+      setLoading(true);
+      await dispatch(getUserBookingHistory());
+      await dispatch(getHistoryByDate(selectedDate));
+      await dispatch(getHistorySearchResults());
+      setLoading(false);
+    };
 
-  const flightData = [
-    {
-      logo: "/airasia-logo.png",
-      airline: "AirAsia",
-      class: "Ekonomi",
-      price: "IDR 4.980.000",
-      departureTime: "07:00",
-      departureDate: "23 Mei 2024",
-      departureCode: "CGK",
-      departureLocation: "Soekarno Hatta - Terminal 1A Domestik",
-      arrivalTime: "11:00",
-      arrivalDate: "23 Mei 2024",
-      arrivalCode: "SYD",
-      arrivalLocation: "Sydney Airport",
-      duration: "19j 45m",
-      transit: "2 transit",
-      transitTime: ["10:00", "10:30"],
-      transitLocation: ["Kuala Lumpur", "Turki"],
-      bookingId: "QWERTu323kj",
-      status: "diterbitkan",
-    },
-    {
-      logo: "/garuda-logo.png",
-      airline: "Garuda Indonesia",
-      class: "Ekonomi",
-      price: "IDR 5.550.000",
-      departureTime: "07:00",
-      departureDate: "23 Mei 2024",
-      departureCode: "CGK",
-      departureLocation: "Soekarno Hatta - Terminal 1A Domestik",
-      arrivalTime: "11:00",
-      arrivalDate: "23 Mei 2024",
-      arrivalCode: "SYD",
-      arrivalLocation: "Sydney Airport",
-      duration: "19j 45m",
-      transit: "1 transit",
-      transitTime: "10:00",
-      transitLocation: "Kuala Lumpur",
-      bookingId: "QWERTu323kj",
-      status: "belum bayar",
-    },
-    {
-      logo: "/lionair-logo.png",
-      airline: "Lion Air",
-      class: "Ekonomi",
-      price: "IDR 4.550.000",
-      departureTime: "07:00",
-      departureDate: "23 Mei 2024",
-      departureCode: "CGK",
-      departureLocation: "Soekarno Hatta - Terminal 1A Domestik",
-      arrivalTime: "11:00",
-      arrivalDate: "23 Mei 2024",
-      arrivalCode: "SYD",
-      arrivalLocation: "Sydney Airport",
-      duration: "19j 45m",
-      transit: "1 transit",
-      transitTime: "10:00",
-      transitLocation: "Kuala Lumpur",
-      bookingId: "QWERTu323kj",
-      status: "dibatalkan",
-    },
-    {
-      logo: "/citilink-logo.png",
-      airline: "Citilink",
-      class: "Ekonomi",
-      price: "IDR 6.550.000",
-      departureTime: "07:00",
-      departureDate: "23 Mei 2024",
-      departureCode: "CGK",
-      departureLocation: "Soekarno Hatta - Terminal 1A Domestik",
-      arrivalTime: "11:00",
-      arrivalDate: "23 Mei 2024",
-      arrivalCode: "SYD",
-      arrivalLocation: "Sydney Airport",
-      duration: "19j 45m",
-      transit: "4 transit",
-      transitTime: "10:00",
-      transitLocation: "Kuala Lumpur",
-      bookingId: "QWERTu323kj",
-      status: "diterbitkan",
-    },
-  ];
+    fetchData();
+  }, [dispatch, selectedDate]);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -110,12 +65,49 @@ export default function RiwayatPemesanan() {
 
   const handleCardClick = (flight) => {
     setSelectedFlight(selectedFlight === flight ? null : flight);
+    dispatch(getBookingHistoryDetail(flight.id));
   };
 
   const filteredFlightData =
     activeTab === "semua"
       ? flightData
       : flightData.filter((flight) => flight.status === activeTab);
+
+  const displayedHistory = searchTerm
+    ? searchResults
+    : selectedDate
+    ? historyByDate
+    : filteredFlightData;
+
+  const convertToTime = (dateString) => {
+    const date = new Date(dateString);
+    let hours = date.getUTCHours();
+    let minutes = date.getUTCMinutes();
+
+    if (hours < 10) hours = "0" + hours;
+    if (minutes < 10) minutes = "0" + minutes;
+
+    return `${hours}.${minutes}`;
+  };
+
+  const formatPrice = (price) => {
+    return `IDR ${new Intl.NumberFormat("id-ID", {
+      minimumFractionDigits: 0,
+    }).format(price)}`;
+  };
+
+  const formatDateToDayMonthYear = (dateString) => {
+    if (!dateString || typeof dateString !== "string") {
+      return "";
+    }
+    const date = new Date(dateString);
+    return date.toLocaleDateString("id-ID", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  };
 
   return (
     <div className="bg-background">
@@ -138,7 +130,9 @@ export default function RiwayatPemesanan() {
             <img src="/icons/right-chev.svg" alt="chevron" />
             <span>Riwayat Pemesanan</span>
           </div>
-          <h1 className="block md:hidden text-xl font-bold text-main mb-10">Riwayat Pemesanan</h1>
+          <h1 className="block md:hidden text-xl font-bold text-main mb-10">
+            Riwayat Pemesanan
+          </h1>
 
           {/* Search History Desktop*/}
           <div className="hidden md:block relative mt-6 mb-5">
@@ -171,10 +165,9 @@ export default function RiwayatPemesanan() {
                   type="text"
                   placeholder="Cari Riwayat..."
                   className="w-full bg-white text-main rounded-full text-base shadow-md ps-14 pr-36 py-4 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary"
+                  value={searchTerm}
+                  onChange={handleSearchInputChange}
                 />
-                <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-primary hover:bg-darkprimary rounded-full text-white text-base font-medium px-12 py-2.5">
-                  Cari Riwayat
-                </button>
               </div>
             </div>
           </div>
@@ -210,10 +203,9 @@ export default function RiwayatPemesanan() {
                 type="text"
                 placeholder="Cari Riwayat..."
                 className="w-full bg-white text-main rounded-full text-sm shadow-md ps-14 pr-36 py-4 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary"
+                value={searchTerm}
+                onChange={handleSearchInputChange}
               />
-              <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-primary hover:bg-darkprimary rounded-full text-white text-xs font-medium px-4 py-2">
-                Cari Riwayat
-              </button>
             </div>
           </div>
 
@@ -240,9 +232,9 @@ export default function RiwayatPemesanan() {
                 </li>
                 <li className="me-1 md:me-2">
                   <a
-                    onClick={() => handleTabClick("belum bayar")}
+                    onClick={() => handleTabClick("UNPAID")}
                     className={`cursor-pointer inline-flex items-center justify-center p-2 md:p-3 text-xs md:text-sm font-medium border-b-2 rounded-t-lg ${
-                      activeTab === "belum bayar"
+                      activeTab === "UNPAID"
                         ? "text-primary border-primary"
                         : "border-transparent"
                     }`}
@@ -252,9 +244,9 @@ export default function RiwayatPemesanan() {
                 </li>
                 <li className="me-1 md:me-2">
                   <a
-                    onClick={() => handleTabClick("diterbitkan")}
+                    onClick={() => handleTabClick("PAID")}
                     className={`cursor-pointer inline-flex items-center justify-center p-2 md:p-3 text-xs md:text-sm font-medium border-b-2 rounded-t-lg ${
-                      activeTab === "diterbitkan"
+                      activeTab === "PAID"
                         ? "text-primary border-primary"
                         : "border-transparent"
                     }`}
@@ -264,9 +256,9 @@ export default function RiwayatPemesanan() {
                 </li>
                 <li className="me-1 md:me-2">
                   <a
-                    onClick={() => handleTabClick("dibatalkan")}
+                    onClick={() => handleTabClick("CANCELED")}
                     className={`cursor-pointer inline-flex items-center justify-center p-2 md:p-3 text-xs md:text-sm font-medium border-b-2 rounded-t-lg ${
-                      activeTab === "dibatalkan"
+                      activeTab === "CANCELED"
                         ? "text-primary border-primary"
                         : "border-transparent"
                     }`}
@@ -290,27 +282,19 @@ export default function RiwayatPemesanan() {
               <div className="block md:hidden w-full max-w-sm mx-auto bg-white shadow-lg rounded-lg overflow-hidden text-main self-start">
                 <div className="px-6 py-4">
                   <p className="text-xs font-medium text-gray">
-                    Booking ID:{" "}
+                    Booking Code:{" "}
                     <span className="font-normal">
-                      {selectedFlight.bookingId}
+                      {selectedFlight.booking_code}
                     </span>
                   </p>
                   <h1 className="font-bold text-lg my-2">
-                    Jakarta &rarr; Sydney
+                    {selectedFlight.flight_detail?.departure_city} →{" "}
+                    {selectedFlight.flight_detail?.arrival_city}
                   </h1>
-                  <div className="grid grid-cols-2 divide-x divide-neutral border border-neutral rounded-lg items-center mb-4 p-4">
-                    <div className="flex items-center">
-                      <img
-                        className="w-7 h-7 mr-3 object-contain"
-                        src={selectedFlight.logo}
-                        alt={selectedFlight.airline}
-                      />
-                      <p className="text-main text-sm font-medium leading-none">
-                        {selectedFlight.airline}
-                      </p>
-                    </div>
-                    <p className="ps-4 text-main font-normal text-sm">
-                      {selectedFlight.departureDate}
+                  <div className="flex gap-3 border border-neutral rounded-lg items-center mb-4 py-2 px-3">
+                    <FaCalendarAlt className="text-gray" />
+                    <p className="text-main font-normal text-sm lg:text-base">
+                      {formatDateToDayMonthYear(selectedFlight.date)}
                     </p>
                   </div>
 
@@ -369,7 +353,9 @@ export default function RiwayatPemesanan() {
                               <div className="w-2.5 h-2.5 bg-neutral rounded-full"></div>
                               <p className="font-semibold text-xs">
                                 <span className="text-main">
-                                  {selectedFlight.departureTime}
+                                  {convertToTime(
+                                    selectedFlight.flight_detail?.departure_time
+                                  )}
                                 </span>{" "}
                                 -{" "}
                                 <span className="text-primary">
@@ -380,45 +366,13 @@ export default function RiwayatPemesanan() {
                             <div className="ml-1 h-[27px] w-[1px] bg-neutral"></div>
                           </div>
 
-                          {Array.isArray(selectedFlight.transitTime) ? (
-                            selectedFlight.transitTime.map((time, index) => (
-                              <div key={index} className="flex flex-col">
-                                <div className="flex items-center space-x-2">
-                                  <div className="w-2.5 h-2.5 bg-neutral rounded-full"></div>
-                                  <p className="font-semibold text-xs">
-                                    <span className="text-main">{time}</span> -{" "}
-                                    <span className="text-primary">
-                                      Transit di{" "}
-                                      {selectedFlight.transitLocation[index]}
-                                    </span>
-                                  </p>
-                                </div>
-                                <div className="ml-1 h-[27px] w-[1px] bg-neutral"></div>
-                              </div>
-                            ))
-                          ) : (
-                            <div className="flex flex-col">
-                              <div className="flex items-center space-x-2">
-                                <div className="w-2.5 h-2.5 bg-neutral rounded-full"></div>
-                                <p className="font-semibold text-xs">
-                                  <span className="text-main">
-                                    {selectedFlight.transitTime}
-                                  </span>{" "}
-                                  -{" "}
-                                  <span className="text-primary">
-                                    Transit di {selectedFlight.transitLocation}
-                                  </span>
-                                </p>
-                              </div>
-                              <div className="ml-1 h-[27px] w-[1px] bg-neutral"></div>
-                            </div>
-                          )}
-
                           <div className="flex items-center space-x-2">
                             <div className="w-2.5 h-2.5 bg-neutral rounded-full"></div>
                             <p className="font-semibold text-xs">
                               <span className="text-main">
-                                {selectedFlight.arrivalTime}
+                                {convertToTime(
+                                  selectedFlight.flight_detail?.arrival_time
+                                )}
                               </span>{" "}
                               - <span className="text-primary">Kedatangan</span>
                             </p>
@@ -431,12 +385,19 @@ export default function RiwayatPemesanan() {
                             Rincian Harga
                           </p>
                           <div className="flex items-center justify-between text-xs text-main">
-                            <span className="font-normal">1 Dewasa</span>
-                            <span className="font-medium">IDR 4.950.000</span>
+                            <span className="font-normal">Pajak</span>
+                            <span className="font-medium">
+                              {formatPrice(bookingDetail?.price_detail?.tax)}
+                            </span>
                           </div>
                           <div className="flex items-center justify-between text-xs text-main">
-                            <span className="font-normal">Pajak</span>
-                            <span className="font-medium">IDR 300.000</span>
+                            <span className="font-normal">Harga</span>
+                            <span className="font-medium">
+                              {formatPrice(
+                                bookingDetail?.price_detail?.total_price -
+                                  bookingDetail?.price_detail?.tax
+                              )}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -445,7 +406,11 @@ export default function RiwayatPemesanan() {
                           <span className="text-xs font-medium text-gray">
                             Total Pembayaran
                           </span>
-                          <span className="font-medium">IDR 5.250.000</span>
+                          <span className="font-medium">
+                            {formatPrice(
+                              bookingDetail?.price_detail?.total_price
+                            )}
+                          </span>
                         </div>
                       </div>
                       {selectedFlight.status !== "dibatalkan" && (
@@ -467,45 +432,60 @@ export default function RiwayatPemesanan() {
               </div>
             )}
 
-            {/* Booking History Card */}
-            <div className="w-full md:w-3/5 lg:w-3/4">
-              {filteredFlightData.map((flight, index) => (
-                <RiwayatPemesananCard
-                  key={index}
-                  flight={flight}
-                  onClick={() => handleCardClick(flight)}
-                  isSelected={selectedFlight}
+            {loading ? (
+              <div className="flex flex-col !w-full items-center justify-center text-center font-medium text-sm mt-16">
+                <img
+                  src="/animations/loading.gif"
+                  alt="Loading"
+                  className="w-[99px]"
                 />
-              ))}
-            </div>
+                <p className="text-xs md:text-sm text-main">
+                  Mencari riwayat pemesanan...
+                </p>
+              </div>
+            ) : displayedHistory.length > 0 ? (
+              <div className="w-full md:w-3/5 lg:w-3/4">
+                {displayedHistory.map((flight) => (
+                  <RiwayatPemesananCard
+                    key={flight.id}
+                    flight={flight}
+                    onClick={() => handleCardClick(flight)}
+                    isSelected={selectedFlight}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col !w-full items-center justify-center text-center font-medium text-sm mt-16">
+                <img
+                  src="/animations/notfound.gif"
+                  alt="Not found"
+                  className="w-[99px]"
+                />
+                <p className="text-xs md:text-sm text-main">
+                  Maaf, data tidak ditemukan
+                </p>
+              </div>
+            )}
 
             {/* Detail Card Desktop*/}
-            {selectedFlight && (
+            {selectedFlight && bookingDetail && (
               <div className="hidden md:block md:w-1/5 lg:w-1/3 max-w-sm mx-auto bg-white shadow-lg rounded-lg overflow-hidden text-main self-start sticky top-0 z-10">
                 <div className="px-6 py-4">
                   <p className="text-sm font-medium text-gray">
-                    Booking ID:{" "}
+                    Booking Code:{" "}
                     <span className="font-normal">
-                      {selectedFlight.bookingId}
+                      {selectedFlight.booking_code}
                     </span>
                   </p>
                   <h1 className="font-bold text-xl my-2">
-                    Jakarta &rarr; Sydney
+                    {selectedFlight.flight_detail?.departure_city} →{" "}
+                    {selectedFlight.flight_detail?.arrival_city}
                   </h1>
 
-                  <div className="grid grid-cols-2 divide-x divide-neutral border border-neutral rounded-lg items-center mb-4 md:p-2 lg:p-4">
-                    <div className="flex items-center">
-                      <img
-                        className="w-7 h-7 mr-2 lg:mr-4 object-contain"
-                        src={selectedFlight.logo}
-                        alt={selectedFlight.airline}
-                      />
-                      <p className="text-main text-sm lg:text-base font-medium leading-none">
-                        {selectedFlight.airline}
-                      </p>
-                    </div>
-                    <p className="ps-2 lg:ps-4 text-main font-normal text-sm lg:text-base">
-                      {selectedFlight.departureDate}
+                  <div className="flex gap-3 border border-neutral rounded-lg items-center mb-4 py-2 px-3">
+                    <FaCalendarAlt className="text-gray" />
+                    <p className="text-main font-normal text-sm lg:text-base">
+                      {formatDateToDayMonthYear(selectedFlight.date)}
                     </p>
                   </div>
 
@@ -516,7 +496,9 @@ export default function RiwayatPemesanan() {
                           <div className="w-2.5 h-2.5 bg-neutral rounded-full"></div>
                           <p className="font-semibold text-sm">
                             <span className="text-main">
-                              {selectedFlight.departureTime}
+                              {convertToTime(
+                                selectedFlight.flight_detail?.departure_time
+                              )}
                             </span>{" "}
                             -{" "}
                             <span className="text-primary">Keberangkatan</span>
@@ -525,45 +507,13 @@ export default function RiwayatPemesanan() {
                         <div className="ml-1 h-[27px] w-[1px] bg-neutral"></div>
                       </div>
 
-                      {Array.isArray(selectedFlight.transitTime) ? (
-                        selectedFlight.transitTime.map((time, index) => (
-                          <div key={index} className="flex flex-col">
-                            <div className="flex items-center space-x-2">
-                              <div className="w-2.5 h-2.5 bg-neutral rounded-full"></div>
-                              <p className="font-semibold text-sm">
-                                <span className="text-main">{time}</span> -{" "}
-                                <span className="text-primary">
-                                  Transit di{" "}
-                                  {selectedFlight.transitLocation[index]}
-                                </span>
-                              </p>
-                            </div>
-                            <div className="ml-1 h-[27px] w-[1px] bg-neutral"></div>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="flex flex-col">
-                          <div className="flex items-center space-x-2">
-                            <div className="w-2.5 h-2.5 bg-neutral rounded-full"></div>
-                            <p className="font-semibold text-sm">
-                              <span className="text-main">
-                                {selectedFlight.transitTime}
-                              </span>{" "}
-                              -{" "}
-                              <span className="text-primary">
-                                Transit di {selectedFlight.transitLocation}
-                              </span>
-                            </p>
-                          </div>
-                          <div className="ml-1 h-[27px] w-[1px] bg-neutral"></div>
-                        </div>
-                      )}
-
                       <div className="flex items-center space-x-2">
                         <div className="w-2.5 h-2.5 bg-neutral rounded-full"></div>
                         <p className="font-semibold text-sm">
                           <span className="text-main">
-                            {selectedFlight.arrivalTime}
+                            {convertToTime(
+                              selectedFlight.flight_detail?.arrival_time
+                            )}
                           </span>{" "}
                           - <span className="text-primary">Kedatangan</span>
                         </p>
@@ -577,12 +527,19 @@ export default function RiwayatPemesanan() {
                         Rincian Harga
                       </p>
                       <div className="flex items-center justify-between text-sm text-main">
-                        <span className="font-normal">1 Dewasa</span>
-                        <span className="font-medium">IDR 4.950.000</span>
+                        <span className="font-normal">Pajak</span>
+                        <span className="font-medium">
+                          {formatPrice(bookingDetail?.price_detail?.tax)}
+                        </span>
                       </div>
                       <div className="flex items-center justify-between text-sm text-main">
-                        <span className="font-normal">Pajak</span>
-                        <span className="font-medium">IDR 300.000</span>
+                        <span className="font-normal">Harga</span>
+                        <span className="font-medium">
+                          {formatPrice(
+                            bookingDetail?.price_detail?.total_price -
+                              bookingDetail?.price_detail?.tax
+                          )}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -592,19 +549,21 @@ export default function RiwayatPemesanan() {
                       <span className="text-xs font-medium text-gray">
                         Total Pembayaran
                       </span>
-                      <span className="font-medium">IDR 5.250.000</span>
+                      <span className="font-medium">
+                        {formatPrice(bookingDetail?.price_detail?.total_price)}
+                      </span>
                     </div>
                   </div>
 
-                  {selectedFlight.status !== "dibatalkan" && (
+                  {selectedFlight.status !== "CANCELED" && (
                     <button
                       className={`text-white font-medium text-base py-2.5 px-10 rounded-full w-full mt-4 ${
-                        selectedFlight.status === "belum bayar"
+                        selectedFlight.status === "UNPAID"
                           ? "bg-secondary hover:bg-darksecondary"
                           : "bg-primary hover:bg-darkprimary"
                       }`}
                     >
-                      {selectedFlight.status === "belum bayar"
+                      {selectedFlight.status === "UNPAID"
                         ? "Lanjut Bayar"
                         : "Cetak Tiket"}
                     </button>

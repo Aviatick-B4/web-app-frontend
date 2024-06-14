@@ -23,15 +23,15 @@ export default function HasilPencarian() {
   const [isAllSelected, setIsAllSelected] = useState(true);
   const [changedFlightKeyword, setChangedFlightKeyword] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [from, setFrom] = useState("JKT");
-  const [to, setTo] = useState("SYD");
+  // const [from, setFrom] = useState("JKT");
+  // const [to, setTo] = useState("SYD");
 
   const searchResultsDeparture = useSelector(
     (state) => state?.search?.flightSearchResults?.tickets?.departure || []
   );
-  const searchResultsReturn = useSelector(
-    (state) => state?.search?.flightSearchResults?.tickets?.return
-  );
+  // const searchResultsReturn = useSelector(
+  //   (state) => state?.search?.flightSearchResults?.tickets?.return
+  // );
   const searchResults = useSelector(
     (state) => state?.search?.flightSearchResults?.tickets
   );
@@ -39,7 +39,7 @@ export default function HasilPencarian() {
     (state) => state?.search?.flightKeyword || {}
   );
 
-  const { departureDate, returnDate, passengers, flightClass } = flightKeyword;
+  const { from, to, departureDate, returnDate, passengers, flightClass } = flightKeyword;
 
   const {
     adults = 0,
@@ -296,7 +296,7 @@ export default function HasilPencarian() {
       <Navbar transparent={false} />
 
       {/* Hasil Pencarian Section */}
-      <section className="pt-28 pb-8">
+      <section className="pt-28 pb-8 md:pb-64">
         <div className="container">
           {/* Breadcrumb */}
           <div className="flex gap-1.5 text-main text-xs font-medium -mt-4 md:-mt-0 mb-10 md:mb-5">

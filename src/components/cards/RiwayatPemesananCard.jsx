@@ -1,11 +1,55 @@
 import React from "react";
 
 const RiwayatPemesananCard = ({ flight, onClick }) => {
+  const convertToTime = (dateString) => {
+    const date = new Date(dateString);
+    let hours = date.getUTCHours();
+    let minutes = date.getUTCMinutes();
+
+    if (hours < 10) hours = "0" + hours;
+    if (minutes < 10) minutes = "0" + minutes;
+
+    return `${hours}.${minutes}`;
+  };
+
+  const calculateDuration = (start, end) => {
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+
+    const durationMs = endDate - startDate;
+    const durationMinutes = Math.floor(durationMs / 60000);
+    const hours = Math.floor(durationMinutes / 60);
+    const minutes = durationMinutes % 60;
+
+    return `${hours}j ${minutes}m`;
+  };
+
+  const formatPrice = (price) => {
+    return `IDR ${new Intl.NumberFormat("id-ID", {
+      minimumFractionDigits: 0,
+    }).format(price)}`;
+  };
+
+  const formatDateToDayMonthYear = (dateString) => {
+    if (!dateString || typeof dateString !== "string") {
+      return "";
+    }
+
+    const date = new Date(dateString);
+
+    return date.toLocaleDateString("id-ID", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  };
+
   const getStatusImagePath = (status) => {
     switch (status) {
-      case "belum bayar":
+      case "UNPAID":
         return "/booking-history/unpaid.png";
-      case "diterbitkan":
+      case "PAID":
         return "/booking-history/issued.png";
       default:
         return "/booking-history/cancelled.png";
@@ -27,53 +71,59 @@ const RiwayatPemesananCard = ({ flight, onClick }) => {
         <div className="flex flex-col gap-4 p-4">
           <div className="flex-col lg:flex-row flex justify-between mt-8 lg:mt-4">
             <div className="flex items-center">
-              <img
+              {/* <img
                 src={flight.logo}
                 alt={`${flight.airline} logo`}
                 className="h-8 w-8 md:h-12 md:w-12 mr-2 md:mr-4 object-contain"
-              />
+              /> */}
               <div className="text-base md:text-lg font-bold text-main">
-                {flight.airline}
+                {flight.flight_detail?.departure_city} →{" "}
+                {flight.flight_detail?.arrival_city}
               </div>
             </div>
             <div className="flex items-center justify-between p-4">
-              <div>
-                <div className="text-xs font-semibold text-main">
-                  {flight.departureTime}
+              <div className="text-center">
+                <div className="text-base md:text-lg font-semibold text-main">
+                  {convertToTime(flight.flight_detail?.departure_time)}
                 </div>
                 <div className="text-xs font-medium text-darkgray">
-                  {flight.departureCode}
+                  {flight.flight_detail?.departure_city}
                 </div>
               </div>
               <div className="text-center divide-y w-80 divide-neutral">
                 <div className="text-xs font-medium text-main">
-                  {flight.duration}
+                  {calculateDuration(
+                    flight.flight_detail?.departure_time,
+                    flight.flight_detail?.arrival_time
+                  )}
                 </div>
                 <div className="text-xs font-medium text-darkgray">
-                  {flight.transit}
+                  {""}
                 </div>
               </div>
-              <div>
-                <div className="text-xs font-semibold text-main">
-                  {flight.arrivalTime}
+              <div className="text-center">
+                <div className="text-base md:text-lg font-semibold text-main">
+                  {convertToTime(flight.flight_detail?.arrival_time)}
                 </div>
                 <div className="text-xs font-medium text-darkgray">
-                  {flight.arrivalCode}
+                  {flight.flight_detail?.arrival_city}
                 </div>
               </div>
             </div>
           </div>
           <div className="flex justify-between w-full items-center border-t border-neutral pt-4">
-            <div className="flex flex-col text-main">
-              <p className="text-sm font-semibold">Booking ID:</p>
-              <p className="text-xs font-medium">{flight.bookingId}</p>
+            <div className="flex flex-col text-main gap-1">
+              <p className="text-sm font-semibold">Booking Code:</p>
+              <p className="text-xs font-medium">{flight.booking_code}</p>
             </div>
-            <div className="flex flex-col text-main">
-              <p className="text-sm font-semibold">Kelas:</p>
-              <p className="text-xs font-medium">{flight.class}</p>
+            <div className="flex flex-col text-main gap-1">
+              <p className="text-sm font-semibold">Tanggal Keberangkatan:</p>
+              <p className="text-xs font-medium">
+                {formatDateToDayMonthYear(flight.date)}
+              </p>
             </div>
-            <span className="text-base font-bold text-primary">
-              {flight.price}
+            <span className="text-sm md:text-base font-bold text-primary">
+              {formatPrice(flight.price)}
             </span>
           </div>
         </div>
