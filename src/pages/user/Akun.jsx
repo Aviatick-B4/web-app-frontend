@@ -1,9 +1,53 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Footer from "../../components/navigations/Footer";
 import Navbar from "../../components/navigations/Navbar";
 import MobileNavbar from "../../components/navigations/MobileNavbar";
+import { fetchUser, loadUserProfile } from "../../redux/actions/authActions";
+import { updateUserProfile } from "../../redux/actions/authActions";
+import { toast } from "react-toastify";
 
 export default function Akun() {
+  const dispatch = useDispatch();
+  const [fullName, setFullNama] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [email, setEmail] = useState("");
+  const user = useSelector((state) => state.auth.user);
+  // const token = useSelector((state) => state.auth.token);
+  // console.log("Token from Redux state:", token);
+
+  useEffect(() => {
+    if (!user) {
+      dispatch(loadUserProfile(setUser)); // Load user profile if user data is not available
+    } else {
+      setFullNama(user.fullName);
+      setPhoneNumber(user.phoneNumber);
+      setEmail(user.email);
+    }
+  }, [dispatch, user]);
+
+  const setUser = (user) => {
+    setFullNama(user.fullName);
+    setPhoneNumber(user.phoneNumber);
+    setEmail(user.email);
+  };
+
+  const handleUpdateProfile = async (e) => {
+    e.preventDefault();
+    try {
+      const user = { fullName, phoneNumber, email }; // Assume these are controlled inputs in your form
+      const success = await dispatch(updateUserProfile(user));
+      if (success) {
+        toast.success("Profile updated successfully");
+        // Optionally, you can update local state or take other actions upon successful update
+      } else {
+        toast.error("Failed to update profile");
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
   return (
     <div className="bg-background">
       {/* Desktop Navbar */}
@@ -94,19 +138,20 @@ export default function Akun() {
               <h1 className="text-xl md:text-2xl font-bold text-main mb-4">
                 Ubah Profil
               </h1>
-              <form action="#" method="POST" className="space-y-6">
+              <form onSubmit={handleUpdateProfile} className="space-y-6">
                 <div className="mt-4">
                   <label
-                    htmlFor="nama"
+                    htmlFor="fullName"
                     className="block text-xs md:text-sm font-medium text-main"
                   >
                     Nama Lengkap
                   </label>
                   <div className="mt-1">
                     <input
-                      id="nama"
-                      name="nama"
+                      id="fullName"
+                      name="fullName"
                       type="text"
+                      onChange={(e) => setFullNama(e.target.value)}
                       placeholder="Jane Doe"
                       required
                       className="appearance-none block w-full px-3 py-2 border-b border-gray placeholder-neutral focus:outline-none focus:ring-primary focus:border-b-2 focus:border-primary text-sm md:text-base text-main font-normal"
@@ -115,16 +160,17 @@ export default function Akun() {
                 </div>
                 <div>
                   <label
-                    htmlFor="nomor"
+                    htmlFor="phoneNumber"
                     className="block text-xs md:text-sm font-medium text-main"
                   >
                     No Telepon
                   </label>
                   <div className="mt-1">
                     <input
-                      id="nomor"
-                      name="nomor"
+                      id="phoneNumber"
+                      name="phoneNumber"
                       type="text"
+                      onChange={(e) => setPhoneNumber(e.target.value)}
                       placeholder="+6281260152"
                       required
                       className="appearance-none block w-full px-3 py-2 border-b border-gray placeholder-neutral focus:outline-none focus:ring-primary focus:border-b-2 focus:border-primary text-sm md:text-base text-main font-normal"
@@ -143,6 +189,7 @@ export default function Akun() {
                       id="email"
                       name="email"
                       type="email"
+                      onChange={(e) => setEmail(e.target.value)}
                       placeholder="janedoe@gmail.com"
                       required
                       className="appearance-none block w-full px-3 py-2 border-b border-gray placeholder-neutral focus:outline-none focus:ring-primary focus:border-b-2 focus:border-primary text-sm md:text-base text-main font-normal"
