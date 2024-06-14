@@ -98,7 +98,7 @@ const FilterButton = ({
       <div className="md:hidden relative inline-block text-left">
         <div>
           <button
-            className="text-main text-xs font-medium"
+            className="text-primary text-xs font-medium"
             onClick={() => setIsOpen(!isOpen)}
           >
             <div className="flex flex-col items-center gap-1">
@@ -117,7 +117,7 @@ const FilterButton = ({
               aria-orientation="vertical"
               aria-labelledby="options-menu"
             >
-              <div className="py-1" role="none">
+              <div className="py-1 mt-4" role="none">
                 {options.map((option, index) => (
                   <a
                     href="#"

@@ -27,7 +27,7 @@ const HasilPencarianCard = ({ flight }) => {
     const hours = Math.floor(durationMinutes / 60);
     const minutes = durationMinutes % 60;
 
-    return `${hours}h ${minutes}m`;
+    return `${hours}j ${minutes}m`;
   };
 
   const formatPrice = (price) => {
@@ -74,7 +74,7 @@ const HasilPencarianCard = ({ flight }) => {
                   )}
                 </div>
                 <div className="text-sm font-medium text-darkgray">
-                  Sekali Jalan
+                  {""}
                 </div>
               </div>
               <div>
