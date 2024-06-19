@@ -7,6 +7,7 @@ import "slick-carousel/slick/slick-theme.css";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../redux/actions/authActions";
 import { useDispatch } from "react-redux";
+import GoogleLogin from "./googleLogin";
 
 function Login() {
   const navigate = useNavigate();
@@ -176,6 +177,9 @@ function Login() {
                   >
                     Masuk
                   </button>
+                  <div className="flex justify-center mt-4">
+                    <GoogleLogin />
+                  </div>
                 </div>
 
                 <p className="text-xs md:text-sm font-regular text-main">

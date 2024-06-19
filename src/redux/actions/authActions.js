@@ -6,6 +6,8 @@ import {
   setToken,
   setUser,
 } from "../reducers/authReducers";
+import { jwtDecode } from "jwt-decode";
+import { useGoogleLogin } from "@react-oauth/google";
 
 export const login = (data, navigate, setMessage) => async (dispatch) => {
   try {
@@ -40,6 +42,33 @@ export const login = (data, navigate, setMessage) => async (dispatch) => {
       return;
     }
     toast.error(error.message);
+  }
+};
+
+export const register = (data, navigate, setMessage) => async (dispatch) => {
+  try {
+    const response = await axios.post(
+      "https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/register",
+      data
+    );
+
+    const { token } = response.data.data;
+
+    if (response.status === 201) {
+      toast.success("Account registration successful.");
+      dispatch(setToken(token));
+      dispatch(setIsLoggedIn(true));
+      dispatch(setLogin("login"));
+      setTimeout(() => {
+        navigate("/");
+      }, 1500);
+    }
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      setMessage(error.response.data.message);
+      return;
+    }
+    console.error(error.message);
   }
 };
 
@@ -144,6 +173,81 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
 
     toast.error(errorMessage);
     throw error;
+  }
+};
+
+export const googleLogin = async (accessToken, navigate, dispatch) => {
+  console.log("token ", accessToken);
+  try {
+    let data = JSON.stringify({
+      access_token: accessToken,
+    });
+
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: `https://shy-cloud-3319.fly.dev/api/v1/auth/google`,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: data,
+    };
+
+    const response = await axios.request(config);
+    const { token } = response.data.data;
+    console.log("response.data ", response.data);
+    localStorage.setItem("token", token);
+    dispatch(setToken(token));
+    dispatch(setIsLoggedIn(true));
+    dispatch(setLogin("google"));
+    toast.success("Login successful.");
+    setTimeout(() => {
+      navigate("/", { state: { token: token } });
+    }, 1500);
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error(error.response.data.message);
+      return;
+    }
+  }
+};
+
+// export const googleLogin =
+//   (credentialResponse, navigate) => async (dispatch) => {
+//     const token = credentialResponse.credential;
+//     dispatch(setToken(token));
+//     dispatch(setIsLoggedIn(true));
+//     dispatch(setLogin("google"));
+//     toast.success("Login successful.");
+//     setTimeout(() => {
+//       navigate("/", {
+//         state: { token: credentialResponse.credential },
+//       });
+//     }, 1500);
+//   };
+
+export const getUser = () => async (dispatch, getState) => {
+  const loginType = getState().auth.login;
+  const token = getState().auth.token;
+
+  if (loginType === "google") {
+    const decodedToken = jwtDecode(token);
+    console.log(decodedToken);
+    dispatch(setUser(decodedToken));
+  } else {
+    try {
+      const response = await axios.get(
+        "https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/users/profile",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      dispatch(setUser(response.data.data));
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
   }
 };
 

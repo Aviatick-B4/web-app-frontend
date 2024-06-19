@@ -6,6 +6,9 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { register } from "../redux/actions/authActions";
+import GoogleLogin from "./googleLogin";
 
 function Register() {
   const [showPassword, setShowPassword] = useState(false);
@@ -13,109 +16,76 @@ function Register() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const token = useSelector((state) => state?.auth.token);
+  const dispatch = useDispatch();
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
+
   // const history = useHistory();
+
+  useEffect(() => {
+    if (token) {
+      toast.error("Akunmu telah login.");
+      navigate("/");
+    }
+  }, []);
+
+  const handleSubmit = async () => {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const capitalLetterRegex = /[A-Z]/;
+    const numberRegex = /[0-9]/;
+    const phonePattern = /^[0-9]{10,15}$/; // Contoh pola untuk nomor telepon, disesuaikan dengan kebutuhan Anda
+
+    if (
+      email.trim() === "" ||
+      fullName.trim() === "" ||
+      password.trim() === "" ||
+      confirmPassword.trim() === "" ||
+      phoneNumber.trim() === ""
+    ) {
+      setMessage(
+        "Please enter your email, name, password, phone number, and confirm your password."
+      );
+      return;
+    }
+    if (!emailPattern.test(email)) {
+      setMessage("Please enter a valid email address.");
+      return;
+    }
+    if (!phonePattern.test(phoneNumber)) {
+      setMessage("Please enter a valid phone number.");
+      return;
+    }
+    if (password.trim().length < 8) {
+      setMessage("Password must be at least 8 characters.");
+      return;
+    }
+    if (!capitalLetterRegex.test(password) && !numberRegex.test(password)) {
+      setMessage(
+        "The first character must be an uppercase letter and combined with numbers."
+      );
+      return;
+    }
+    if (password !== confirmPassword) {
+      setMessage("Password and confirm password do not match.");
+      return;
+    }
+
+    let data = {
+      email,
+      fullName,
+      password,
+      phoneNumber,
+    };
+
+    dispatch(register(data, navigate, setMessage));
+  };
 
   const toggleShowPassword = () => {
     setShowPassword((prevShowPassword) => !prevShowPassword);
   };
-
-  const registerUser = async () => {
-    if (!email || !fullName || !phoneNumber || !password) {
-      alert("Mohon lengkapi semua inputan untuk melakukan registrasi.");
-      return;
-    }
-
-    try {
-      const responseRegister = await axios.post(
-        `https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/register`,
-        {
-          email,
-          fullName,
-          phoneNumber,
-          password,
-        },
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (responseRegister.status === 200) {
-        alert("Register Berhasil");
-        localStorage.setItem("token", responseRegister.data.token);
-        navigate("/", {
-          state: { token: responseRegister.data.token },
-        });
-      } else {
-        alert(responseRegister.data.message);
-      }
-    } catch (error) {
-      console.error("Error during registration: ", error);
-      if (error.response) {
-        console.error("Server response data: ", error.response.data);
-        alert("Registrasi gagal. " + error.response.data.message);
-      } else if (error.request) {
-        console.error("No response received: ", error.request);
-        alert("Tidak ada respons dari server.");
-      } else {
-        console.error("Error setting up request: ", error.message);
-        alert("Terjadi kesalahan saat mengirim permintaan.");
-      }
-    }
-  };
-
-  // const handleChange = (e) => {
-  //   const { value } = e.target;
-  //   setFullName(value);
-  // };
-
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   setError("");
-  //   setSuccess("");
-
-  //   if (formData.password !== formData.confirmPassword) {
-  //     setError("Password dan konfirmasi password tidak cocok");
-  //     return;
-  //   }
-
-  //   try {
-  //     const { email, fullName, phoneNumber, password, confirmPassword } =
-  //       formData;
-  //     const response = await axios.post(
-  //       `https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/register`,
-  //       {
-  //         email: email,
-  //         fullName: fullName,
-  //         phoneNumber: phoneNumber,
-  //         password: password,
-  //         confirmPassword: confirmPassword,
-  //       }
-  //     );
-  //     const responseData = response.data;
-  //     setSuccess("Registrasi berhasil!");
-  //     setError("");
-  //     console.log(responseData); // Log respons untuk debugging
-  //     // Redirect to login page after successful registration
-  //     // history.push("/masuk");
-  //   } catch (error) {
-  //     if (error.response) {
-  //       // Server responded with a status other than 200 range
-  //       setError(
-  //         error.response.data.message || "Registrasi gagal. Silakan coba lagi."
-  //       );
-  //     } else {
-  //       // Something else happened while setting up the request
-  //       setError("Registrasi gagal. Silakan coba lagi.");
-  //     }
-  //     setSuccess("");
-  //   }
-  // };
 
   const settings = {
     dots: false,
@@ -286,6 +256,8 @@ function Register() {
                       autoComplete="current-password"
                       placeholder="*******"
                       required
+                      value={confirmPassword} // value diatur menjadi nilai dari state email
+                      onChange={(e) => setConfirmPassword(e.target.value)} // setiap kali nilai input berubah, state email akan diupdate
                       className="appearance-none block w-full px-3 py-2 border-b border-gray placeholder-neutral focus:outline-none focus:ring-primary focus:border-primary text-sm"
                     />
                     <button
@@ -320,12 +292,14 @@ function Register() {
                   <button
                     type="submit"
                     className="w-full flex justify-center py-2 px-4 border border-transparent rounded-full shadow-sm text-sm md:text-base font-medium text-white bg-primary hover:bg-darkprimary focus:outline-none"
-                    onClick={registerUser}
+                    onClick={handleSubmit}
                   >
                     Daftar
                   </button>
+                  <div className="flex justify-center mt-4">
+                    <GoogleLogin />
+                  </div>
                 </div>
-
                 <p className="text-xs md:text-sm font-regular text-main">
                   Sudah punya akun?{" "}
                   <a
