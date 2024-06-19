@@ -226,18 +226,19 @@ const FavoriteDestinationSection = () => {
                           alt="Chicago"
                         />
                       )}
-                      {fav.arrivalCity === "Makassar" && (
+
+                      {/* Default image */}
+                      {![
+                        "Los Angeles",
+                        "Miami",
+                        "New York",
+                        "Houston",
+                        "Chicago",
+                      ].includes(fav.arrivalCity) && (
                         <img
                           className="w-full cursor-pointer object-cover h-[136px] rounded-t-lg"
-                          src="https://www.rumah123.com/seo-cms/assets/Makassar_Kota_b24c713415/Makassar_Kota_b24c713415.webp"
-                          alt="Chicago"
-                        />
-                      )}
-                      {fav.arrivalCity === "Jakarta" && (
-                        <img
-                          className="w-full cursor-pointer object-cover h-[136px] rounded-t-lg"
-                          src="https://lp-cms-production.imgix.net/image_browser/Jakarta_city_S.jpg"
-                          alt="Chicago"
+                          src="/bg/plane.jpg"
+                          alt="Default"
                         />
                       )}
                     </div>

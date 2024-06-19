@@ -7,13 +7,15 @@ import promoReducers from "./reducers/promoReducers";
 import favoriteDestination from "./reducers/favoriteDestinationReducers";
 import authReducers from "./reducers/authReducers";
 import historyReducers from "./reducers/historyReducers";
+import notifReducers from "./reducers/notifReducers";
 
 const rootReducer = combineReducers({
   auth: authReducers,
   search: searchFlightReducers,
   promo: promoReducers,
   favDestination: favoriteDestination,
-  history: historyReducers
+  history: historyReducers,
+  notif: notifReducers
 });
 
 const persistConfig = {
