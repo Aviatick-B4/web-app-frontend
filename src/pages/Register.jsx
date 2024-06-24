@@ -1,12 +1,87 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+// import { useHistory } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { register } from "../redux/actions/authActions";
+import GoogleLogin from "./googleLogin";
 
 function Register() {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const token = useSelector((state) => state?.auth.token);
+  const dispatch = useDispatch();
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const navigate = useNavigate();
+
+  // const history = useHistory();
+
+  useEffect(() => {
+    if (token) {
+      toast.error("Akunmu telah login.");
+      navigate("/");
+    }
+  }, []);
+
+  const handleSubmit = async () => {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const capitalLetterRegex = /[A-Z]/;
+    const numberRegex = /[0-9]/;
+    const phonePattern = /^[0-9]{10,15}$/; // Contoh pola untuk nomor telepon, disesuaikan dengan kebutuhan Anda
+
+    if (
+      email.trim() === "" ||
+      fullName.trim() === "" ||
+      password.trim() === "" ||
+      confirmPassword.trim() === "" ||
+      phoneNumber.trim() === ""
+    ) {
+      setMessage(
+        "Please enter your email, name, password, phone number, and confirm your password."
+      );
+      return;
+    }
+    if (!emailPattern.test(email)) {
+      setMessage("Please enter a valid email address.");
+      return;
+    }
+    if (!phonePattern.test(phoneNumber)) {
+      setMessage("Please enter a valid phone number.");
+      return;
+    }
+    if (password.trim().length < 8) {
+      setMessage("Password must be at least 8 characters.");
+      return;
+    }
+    if (!capitalLetterRegex.test(password) && !numberRegex.test(password)) {
+      setMessage(
+        "The first character must be an uppercase letter and combined with numbers."
+      );
+      return;
+    }
+    if (password !== confirmPassword) {
+      setMessage("Password and confirm password do not match.");
+      return;
+    }
+
+    let data = {
+      email,
+      fullName,
+      password,
+      phoneNumber,
+    };
+
+    dispatch(register(data, navigate, setMessage));
+  };
 
   const toggleShowPassword = () => {
     setShowPassword((prevShowPassword) => !prevShowPassword);
@@ -26,7 +101,6 @@ function Register() {
     waitForAnimate: false,
     pauseOnHover: false,
   };
-
 
   return (
     <div className="min-h-screen flex mx-3 md:mx-0 bg-white">
@@ -69,6 +143,8 @@ function Register() {
                       autoComplete="email"
                       placeholder="Masukkan email"
                       required
+                      value={email} // value diatur menjadi nilai dari state email
+                      onChange={(e) => setEmail(e.target.value)} // setiap kali nilai input berubah, state email akan diupdate
                       className="appearance-none block w-full px-3 py-2 border-b border-gray placeholder-neutral focus:outline-none focus:ring-primary focus:border-primary text-sm"
                     />
                   </div>
@@ -76,19 +152,21 @@ function Register() {
 
                 <div className="space-y-1">
                   <label
-                    htmlFor="nama"
+                    htmlFor="fullName"
                     className="block text-xs md:text-sm font-medium text-gray"
                   >
                     Nama Lengkap
                   </label>
                   <div className="mt-1">
                     <input
-                      id="nama"
-                      name="nama"
+                      id="fullName"
+                      name="fullName"
                       type="text"
-                      autoComplete="nama"
+                      autoComplete="fullName"
                       placeholder="Masukkan Nama"
                       required
+                      value={fullName} // value diatur menjadi nilai dari state email
+                      onChange={(e) => setFullName(e.target.value)} // setiap kali nilai input berubah, state email akan diupdate
                       className="appearance-none block w-full px-3 py-2 border-b border-gray placeholder-neutral focus:outline-none focus:ring-primary focus:border-primary text-sm"
                     />
                   </div>
@@ -96,19 +174,21 @@ function Register() {
 
                 <div className="space-y-1">
                   <label
-                    htmlFor="nomor"
+                    htmlFor="phoneNumber"
                     className="block text-xs md:text-sm font-medium text-gray"
                   >
                     Nomor Telepon
                   </label>
                   <div className="mt-1">
                     <input
-                      id="nomor"
-                      name="nomor"
+                      id="phoneNumber"
+                      name="phoneNumber"
                       type="text"
-                      autoComplete="nomor"
+                      autoComplete="phoneNumber"
                       placeholder="+62"
                       required
+                      value={phoneNumber} // value diatur menjadi nilai dari state email
+                      onChange={(e) => setPhoneNumber(e.target.value)} // setiap kali nilai input berubah, state email akan diupdate
                       className="appearance-none block w-full px-3 py-2 border-b border-gray placeholder-neutral focus:outline-none focus:ring-primary focus:border-primary text-sm"
                     />
                   </div>
@@ -129,6 +209,8 @@ function Register() {
                       autoComplete="current-password"
                       placeholder="*******"
                       required
+                      value={password} // value diatur menjadi nilai dari state email
+                      onChange={(e) => setPassword(e.target.value)} // setiap kali nilai input berubah, state email akan diupdate
                       className="appearance-none block w-full px-3 py-2 border-b border-gray placeholder-neutral focus:outline-none focus:ring-primary focus:border-primary text-sm"
                     />
                     <button
@@ -174,6 +256,8 @@ function Register() {
                       autoComplete="current-password"
                       placeholder="*******"
                       required
+                      value={confirmPassword} // value diatur menjadi nilai dari state email
+                      onChange={(e) => setConfirmPassword(e.target.value)} // setiap kali nilai input berubah, state email akan diupdate
                       className="appearance-none block w-full px-3 py-2 border-b border-gray placeholder-neutral focus:outline-none focus:ring-primary focus:border-primary text-sm"
                     />
                     <button
@@ -208,11 +292,14 @@ function Register() {
                   <button
                     type="submit"
                     className="w-full flex justify-center py-2 px-4 border border-transparent rounded-full shadow-sm text-sm md:text-base font-medium text-white bg-primary hover:bg-darkprimary focus:outline-none"
+                    onClick={handleSubmit}
                   >
                     Daftar
                   </button>
+                  <div className="flex justify-center mt-4">
+                    <GoogleLogin />
+                  </div>
                 </div>
-
                 <p className="text-xs md:text-sm font-regular text-main">
                   Sudah punya akun?{" "}
                   <a

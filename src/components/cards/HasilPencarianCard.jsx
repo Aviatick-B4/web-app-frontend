@@ -7,7 +7,34 @@ const HasilPencarianCard = ({ flight }) => {
     setIsExpanded(!isExpanded);
   };
 
-  const isMultipleTransits = Array.isArray(flight.transitTime);
+  const convertToTime = (dateString) => {
+    const date = new Date(dateString);
+    let hours = date.getUTCHours();
+    let minutes = date.getUTCMinutes();
+
+    if (hours < 10) hours = "0" + hours;
+    if (minutes < 10) minutes = "0" + minutes;
+
+    return `${hours}.${minutes}`;
+  };
+
+  const calculateDuration = (start, end) => {
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+
+    const durationMs = endDate - startDate;
+    const durationMinutes = Math.floor(durationMs / 60000);
+    const hours = Math.floor(durationMinutes / 60);
+    const minutes = durationMinutes % 60;
+
+    return `${hours}j ${minutes}m`;
+  };
+
+  const formatPrice = (price) => {
+    return `IDR ${new Intl.NumberFormat("id-ID", {
+      minimumFractionDigits: 0,
+    }).format(price)}`;
+  };
 
   return (
     <>
@@ -16,43 +43,46 @@ const HasilPencarianCard = ({ flight }) => {
         <div className="flex gap-12 p-8 items-center">
           <div className="flex w-1/4">
             <img
-              src={flight.logo}
-              alt={`${flight.airline} logo`}
+              src={flight.airplaneSeatClass.airplane.airline.logoUrl}
+              alt={`${flight.airplaneSeatClass.airplane.airline.name} logo`}
               className="h-12 w-12 mr-4 object-contain"
             />
             <div className="flex-1">
               <div className="text-lg font-bold text-main">
-                {flight.airline}
+                {flight.airplaneSeatClass.airplane.airline.name}
               </div>
               <div className="text-base font-medium text-darkgray">
-                {flight.class}
+                {flight.airplaneSeatClass.type}
               </div>
             </div>
           </div>
           <div className="w-2/4">
             <div className="flex items-center justify-between p-4">
               <div>
-                <div className="text-sm font-semibold text-main">
-                  {flight.departureTime}
+                <div className="text-lg font-semibold text-main">
+                  {convertToTime(flight.flight.departureTime)}
                 </div>
                 <div className="text-sm font-medium text-darkgray">
-                  {flight.departureCode}
+                  {flight.flight.departureAirport.airportCode}
                 </div>
               </div>
               <div className="text-center divide-y w-80 divide-neutral">
                 <div className="text-sm font-medium text-main">
-                  {flight.duration}
+                  {calculateDuration(
+                    flight.flight.departureTime,
+                    flight.flight.arrivalTime
+                  )}
                 </div>
                 <div className="text-sm font-medium text-darkgray">
-                  {flight.transit}
+                  {""}
                 </div>
               </div>
               <div>
-                <div className="text-sm font-semibold text-main">
-                  {flight.arrivalTime}
+                <div className="text-lg font-semibold text-main">
+                  {convertToTime(flight.flight.arrivalTime)}
                 </div>
                 <div className="text-sm font-medium text-darkgray">
-                  {flight.arrivalCode}
+                  {flight.flight.arrivalAirport.airportCode}
                 </div>
               </div>
             </div>
@@ -61,13 +91,16 @@ const HasilPencarianCard = ({ flight }) => {
             <div className="w-full flex flex-col items-end text-right space-y-2">
               <div className="flex items-center">
                 <span className="text-xl font-bold text-danger">
-                  {flight.price}
+                  {formatPrice(flight.price)}
                 </span>
                 <span className="text-base font-medium text-gray ml-1">
                   /pax
                 </span>
               </div>
-              <a href="/pemesanan" className="inline-block bg-primary hover:bg-darkprimary text-white px-12 py-2 rounded-full">
+              <a
+                href="/pemesanan"
+                className="inline-block bg-primary hover:bg-darkprimary text-white px-12 py-2 rounded-full"
+              >
                 Pilih
               </a>
               <button
@@ -118,78 +151,58 @@ const HasilPencarianCard = ({ flight }) => {
 
         {isExpanded && (
           <div className="flex gap-48 border-t border-neutral p-8">
+            <div className="text-main">
+              <div className="flex items-center mb-4">
+                <img
+                  src={flight.airplaneSeatClass.airplane.airline.logoUrl}
+                  alt={`${flight.airplaneSeatClass.airplane.airline.name} logo`}
+                  className="h-5 w-5 mr-4 object-contain"
+                />
+                <div className="text-base font-semibold text-main">
+                  {flight.airplaneSeatClass.airplane.airline.name} -{" "}
+                  {flight.airplaneSeatClass.type}
+                </div>
+              </div>
+              <div className="ms-9">
+                <div className="font-semibold text-sm">Informasi:</div>
+                <ul>
+                  <li className="font-normal text-sm">
+                    Bagasi: {flight.airplaneSeatClass.airplane.baggageCapacity}{" "}
+                    kg
+                  </li>
+                  <li className="font-normal text-sm">
+                    Kabin: {flight.airplaneSeatClass.airplane.cabinCapacity} kg
+                  </li>
+                  <li className="font-normal text-sm">
+                    Fasilitas:{" "}
+                    {flight.airplaneSeatClass.airplane.inFlightFacility}
+                  </li>
+                </ul>
+              </div>
+            </div>
             <div className="flex-col">
               <div className="flex flex-col">
                 <div className="flex items-center space-x-2">
                   <div className="w-2.5 h-2.5 bg-neutral rounded-full"></div>
                   <p className="font-semibold text-sm">
-                    <span className="text-main">{flight.departureTime}</span> -{" "}
-                    <span className="text-primary">Keberangkatan</span>
+                    <span className="text-main">
+                      {convertToTime(flight.flight.departureTime)}
+                    </span>{" "}
+                    - <span className="text-primary">Keberangkatan</span>
                   </p>
                 </div>
                 <div className="ml-1 h-[27px] w-[1px] bg-neutral"></div>
               </div>
 
-              {isMultipleTransits ? (
-                flight.transitTime.map((time, index) => (
-                  <div key={index} className="flex flex-col">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-2.5 h-2.5 bg-neutral rounded-full"></div>
-                      <p className="font-semibold text-sm">
-                        <span className="text-main">{time}</span> -{" "}
-                        <span className="text-primary">
-                          Transit di {flight.transitLocation[index]}
-                        </span>
-                      </p>
-                    </div>
-                    <div className="ml-1 h-[27px] w-[1px] bg-neutral"></div>
-                  </div>
-                ))
-              ) : (
-                <div className="flex flex-col">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2.5 h-2.5 bg-neutral rounded-full"></div>
-                    <p className="font-semibold text-sm">
-                      <span className="text-main">{flight.transitTime}</span> -{" "}
-                      <span className="text-primary">
-                        Transit di {flight.transitLocation}
-                      </span>
-                    </p>
-                  </div>
-                  <div className="ml-1 h-[27px] w-[1px] bg-neutral"></div>
-                </div>
-              )}
-
               <div className="flex flex-col">
                 <div className="flex items-center space-x-2">
                   <div className="w-2.5 h-2.5 bg-neutral rounded-full"></div>
                   <p className="font-semibold text-sm">
-                    <span className="text-main">{flight.arrivalTime}</span> -{" "}
-                    <span className="text-primary">Kedatangan</span>
+                    <span className="text-main">
+                      {convertToTime(flight.flight.arrivalTime)}
+                    </span>{" "}
+                    - <span className="text-primary">Kedatangan</span>
                   </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="text-main">
-              <div className="flex items-center mb-4">
-                <img
-                  src={flight.logo}
-                  alt={`${flight.airline} logo`}
-                  className="h-5 w-5 mr-4 object-contain"
-                />
-                <div className="text-sm font-semibold text-main">
-                  {flight.airline} - {flight.class}
-                </div>
-              </div>
-              <div className="ms-9">
-                <div className="font-semibold text-sm">Informasi:</div>
-                <div className="text-gray-700">
-                  {flight.information.map((info, index) => (
-                    <div key={index} className="font-normal text-sm">
-                      {info}
-                    </div>
-                  ))}
                 </div>
               </div>
             </div>
@@ -203,52 +216,58 @@ const HasilPencarianCard = ({ flight }) => {
           <div className="flex justify-between items-center">
             <div className="flex">
               <img
-                src={flight.logo}
-                alt={`${flight.airline} logo`}
+                src={flight.airplaneSeatClass.airplane.airline.logoUrl}
+                alt={`${flight.airplaneSeatClass.airplane.airline.name} logo`}
                 className="h-8 w-8 mr-2 object-contain"
               />
               <div className="flex flex-col text-sm font-bold text-main">
-                {flight.airline}{" "}
+                {flight.airplaneSeatClass.airplane.airline.name}{" "}
                 <span className="text-xs font-medium text-darkgray">
-                  {flight.class}
+                  {flight.airplaneSeatClass.type}
                 </span>
               </div>
             </div>
-            <a href="/pemesanan" className="inline-block bg-primary hovver:bg-darkprimary text-white text-xs px-6 py-2 rounded-full">
+            <a
+              href="/pemesanan"
+              className="inline-block bg-primary hovver:bg-darkprimary text-white text-xs px-6 py-2 rounded-full"
+            >
               Pilih
             </a>
           </div>
 
           <div className="flex items-center justify-between p-4">
             <div>
-              <div className="text-xs font-semibold text-main">
-                {flight.departureTime}
+              <div className="text-base font-semibold text-main">
+                {convertToTime(flight.flight.departureTime)}
               </div>
               <div className="text-xs font-medium text-darkgray">
-                {flight.departureCode}
+                {flight.flight.departureAirport.airportCode}
               </div>
             </div>
             <div className="text-center divide-y w-80 divide-neutral">
               <div className="text-xs font-medium text-main">
-                {flight.duration}
+                {calculateDuration(
+                  flight.flight.departureTime,
+                  flight.flight.arrivalTime
+                )}
               </div>
               <div className="text-xs font-medium text-darkgray">
-                {flight.transit}
+                Sekali Jalan
               </div>
             </div>
             <div>
-              <div className="text-xs font-semibold text-main">
-                {flight.arrivalTime}
+              <div className="text-base font-semibold text-main">
+                {convertToTime(flight.flight.arrivalTime)}
               </div>
               <div className="text-xs font-medium text-darkgray">
-                {flight.arrivalCode}
+                {flight.flight.arrivalAirport.airportCode}
               </div>
             </div>
           </div>
           <div className="flex justify-between w-full items-center border-t border-dashed border-neutral pt-4 mt-2">
             <div className="flex items-center">
               <span className="text-lg font-bold text-danger">
-                {flight.price}
+                {formatPrice(flight.price)}
               </span>
               <span className="text-xs font-medium text-gray ml-1">/pax</span>
             </div>
@@ -298,55 +317,29 @@ const HasilPencarianCard = ({ flight }) => {
           </div>
         </div>
         {isExpanded && (
-          <div className="flex flex-col py-4 border-t border-neutral mt-4">
+          <div className="flex flex-col gap-3 py-4 border-t border-neutral mt-4">
             <div className="flex-col">
               <div className="flex flex-col">
                 <div className="flex items-center space-x-2">
                   <div className="w-2.5 h-2.5 bg-neutral rounded-full"></div>
                   <p className="font-semibold text-xs">
-                    <span className="text-main">{flight.departureTime}</span> -{" "}
-                    <span className="text-primary">Keberangkatan</span>
+                    <span className="text-main">
+                      {convertToTime(flight.flight.departureTime)}
+                    </span>{" "}
+                    - <span className="text-primary">Keberangkatan</span>
                   </p>
                 </div>
                 <div className="ml-1 h-[27px] w-[1px] bg-neutral"></div>
               </div>
 
-              {isMultipleTransits ? (
-                flight.transitTime.map((time, index) => (
-                  <div key={index} className="flex flex-col">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-2.5 h-2.5 bg-neutral rounded-full"></div>
-                      <p className="font-semibold text-xs">
-                        <span className="text-main">{time}</span> -{" "}
-                        <span className="text-primary">
-                          Transit di {flight.transitLocation[index]}
-                        </span>
-                      </p>
-                    </div>
-                    <div className="ml-1 h-[27px] w-[1px] bg-neutral"></div>
-                  </div>
-                ))
-              ) : (
-                <div className="flex flex-col">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2.5 h-2.5 bg-neutral rounded-full"></div>
-                    <p className="font-semibold text-xs">
-                      <span className="text-main">{flight.transitTime}</span> -{" "}
-                      <span className="text-primary">
-                        Transit di {flight.transitLocation}
-                      </span>
-                    </p>
-                  </div>
-                  <div className="ml-1 h-[27px] w-[1px] bg-neutral"></div>
-                </div>
-              )}
-
               <div className="flex flex-col">
                 <div className="flex items-center space-x-2">
                   <div className="w-2.5 h-2.5 bg-neutral rounded-full"></div>
                   <p className="font-semibold text-xs">
-                    <span className="text-main">{flight.arrivalTime}</span> -{" "}
-                    <span className="text-primary">Kedatangan</span>
+                    <span className="text-main">
+                      {convertToTime(flight.flight.arrivalTime)}
+                    </span>{" "}
+                    - <span className="text-primary">Kedatangan</span>
                   </p>
                 </div>
               </div>
@@ -355,23 +348,30 @@ const HasilPencarianCard = ({ flight }) => {
             <div className="text-main mt-6">
               <div className="flex items-center mb-2">
                 <img
-                  src={flight.logo}
-                  alt={`${flight.airline} logo`}
+                  src={flight.airplaneSeatClass.airplane.airline.logoUrl}
+                  alt={`${flight.airplaneSeatClass.airplane.airline.name} logo`}
                   className="h-5 w-5 mr-4 object-contain"
                 />
                 <div className="text-xs font-semibold text-main">
-                  {flight.airline} - {flight.class}
+                  {flight.airplaneSeatClass.airplane.airline.name} -{" "}
+                  {flight.airplaneSeatClass.type}
                 </div>
               </div>
               <div className="ms-9">
                 <div className="font-semibold text-xs">Informasi:</div>
-                <div className="text-gray-700">
-                  {flight.information.map((info, index) => (
-                    <div key={index} className="font-normal text-xs">
-                      {info}
-                    </div>
-                  ))}
-                </div>
+                <ul>
+                  <li className="font-normal text-xs">
+                    Bagasi {flight.airplaneSeatClass.airplane.baggageCapacity}{" "}
+                    kg
+                  </li>
+                  <li className="font-normal text-xs">
+                    Kabin: {flight.airplaneSeatClass.airplane.cabinCapacity} kg
+                  </li>
+                  <li className="font-normal text-xs">
+                    Fasilitas:{" "}
+                    {flight.airplaneSeatClass.airplane.inFlightFacility}
+                  </li>
+                </ul>
               </div>
             </div>
           </div>

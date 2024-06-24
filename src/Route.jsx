@@ -10,24 +10,45 @@ import ResetPassword from "./pages/ResetPassword.jsx";
 import Register from "./pages/Register.jsx";
 import Login from "./pages/Login.jsx";
 import EmailVerification from "./pages/EmailVerification.jsx";
+import KonfirmasiPemesanan from "./pages/KonfirmasiPemesanan.jsx";
+import Akun from "./pages/user/Akun.jsx";
+import Notifikasi from "./pages/user/Notifikasi.jsx";
+import { ToastContainer } from "react-toastify";
+import { Provider } from "react-redux";
+import { persistor, store } from "./redux/store.js";
+import { PersistGate } from "redux-persist/integration/react";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/pemesanan" element={<Pemesanan />} />
-        <Route path="/user/pembayaran" element={<Pembayaran />} />
-        <Route path="/success" element={<PaymentSuccess />} />
-        <Route path="/" element={<Beranda />} />
-        <Route path="/daftar" element={<Register />} />
-        <Route path="/masuk" element={<Login />} />
-        <Route path="/lupa-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/verifikasi-email" element={<EmailVerification />} />
-        <Route path="/hasil-pencarian" element={<HasilPencarian />} />
-        <Route path="/user/riwayat-pemesanan" element={<RiwayatPemesanan />} />
-      </Routes>
-    </BrowserRouter>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <GoogleOAuthProvider clientId="418401514974-jb23d77jtvj8bg2jl31povog173514rj.apps.googleusercontent.com">
+          <BrowserRouter>
+            <Routes>
+              <Route path="/pemesanan" element={<Pemesanan />} />
+              <Route
+                path="/konfirmasi-pemesanan"
+                element={<KonfirmasiPemesanan />}
+              />
+              <Route path="/pembayaran" element={<Pembayaran />} />
+              <Route path="/success" element={<PaymentSuccess />} />
+              <Route path="/" element={<Beranda />} />
+              <Route path="/daftar" element={<Register />} />
+              <Route path="/masuk" element={<Login />} />
+              <Route path="/akun-saya" element={<Akun />} />
+              <Route path="/notifikasi" element={<Notifikasi />} />
+              <Route path="/lupa-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/verifikasi-email" element={<EmailVerification />} />
+              <Route path="/hasil-pencarian" element={<HasilPencarian />} />
+              <Route path="/riwayat-pemesanan" element={<RiwayatPemesanan />} />
+            </Routes>
+            <ToastContainer />
+          </BrowserRouter>
+        </GoogleOAuthProvider>
+      </PersistGate>
+    </Provider>
   );
 }
 

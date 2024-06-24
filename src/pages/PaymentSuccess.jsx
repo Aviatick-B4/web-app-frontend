@@ -38,9 +38,11 @@ function PaymentSuccess() {
         </div>
         <div className="flex flex-col justify-center items-center p-[150px] gap-5">
           <img src=".\src\assets\success.gif" alt="" className="w-[100px]" />
-          <p className="flex flex-col text-center">
-            <span className="text-[#00A8D0]">Selamat! </span>
-            <span className="">Transaksi Pembayaran Tiket sukses!</span>
+          <p className="flex text-lg flex-col text-center">
+            <span className="text-[#00A8D0] text-4xl">Selamat! </span>
+            <span className="text-sm my-2">
+              Transaksi Pembayaran Tiket sukses!
+            </span>
           </p>
           <button
             className="bg-[#00A8D0] text-white rounded-md p-2 w-[200px] hover:bg-[#FFB423]"

@@ -37,6 +37,11 @@ export default {
       },
     },
   },
+  variants: {
+    extend: {
+      scrollbar: ["rounded"],
+    },
+  },
   plugins: [
     plugin(function ({ addComponents }) {
       addComponents({
@@ -100,5 +105,6 @@ export default {
         },
       });
     }),
+    require("tailwind-scrollbar"),
   ],
 };

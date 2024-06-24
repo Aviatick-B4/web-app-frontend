@@ -19,38 +19,38 @@ export default function Pembayaran() {
   };
 
   return (
-    <div>
+    <>
       <Navbar />
-      <div className="mt-24 flex justify-center">
-        {/* Navigasi  */}
-        <div className="container fixed top-[89px] z-50 bg-white py-8 px-3">
-          <div className="flex gap-4">
-            <p>Beranda</p>
-            <p className="text-blue-300">
-              {" "}
-              <strong>{`>`} </strong>
-            </p>
-            <p>Cari Penerbangan</p>
-            <p className="text-blue-300">
-              {" "}
-              <strong>{`>`} </strong>
-            </p>
-            <p>Isi Data Diri</p>
-            <p className="text-blue-300">
-              {" "}
-              <strong>{`>`} </strong>
-            </p>
-            <p>Pembayaran</p>
-          </div>
-          <div>
-            <p className="text-center text-white p-2 bg-[#FF0000] rounded mt-3">
-              Selesaikan Pembayaran sampai 10 Mei 2024 12.00
-            </p>
-          </div>
+      {/* Navigasi  */}
+      <div className="container mt-36 bg-whitepx-3">
+        <div className="flex gap-4 text-sm">
+          <p>Beranda</p>
+          <p className="text-blue-300">
+            {" "}
+            <strong>{`>`} </strong>
+          </p>
+          <p>Cari Penerbangan</p>
+          <p className="text-blue-300">
+            {" "}
+            <strong>{`>`} </strong>
+          </p>
+          <p>Isi Data Diri</p>
+          <p className="text-blue-300">
+            {" "}
+            <strong>{`>`} </strong>
+          </p>
+          <p>Pembayaran</p>
         </div>
-        <div className="container px-3 flex gap-5 my-5 justify-between">
+        <div>
+          <p className="text-center text-white p-2 bg-[#FF0000] rounded mt-3">
+            Selesaikan Pembayaran sampai 10 Mei 2024 12.00
+          </p>
+        </div>
+      </div>
+      <div className="flex justify-center">
+        <div className="container px-3 lg:flex lg:gap-5 lg:my-5  ">
           {/* Sisi Kiri  */}
-          <section className=" flex flex-col w-2/3 gap-5 mt-36 shadow-md rounded p-4">
+          <section className=" flex flex-col lg:w-2/3 gap-5 mt-5 shadow-md rounded p-4">
             <p>
               <strong>Isi Data Pembayaran</strong>
             </p>
@@ -234,27 +234,27 @@ export default function Pembayaran() {
                             />
                           </div>
                         </div>
+                        <button
+                          className="bg-[#00A8D0] text-center mt-5 p-2 rounded-full text-white hover:bg-[#FFB423]"
+                          onClick={() => {
+                            navigate("/success");
+                          }}
+                        >
+                          Bayar
+                        </button>
                       </div>
                     </div>
                   </Typography>
                 </AccordionDetails>
               </Accordion>
             </div>
-            <button
-              className="bg-[#00A8D0] text-center p-2 rounded-full text-white hover:bg-[#FFB423]"
-              onClick={() => {
-                navigate("/success");
-              }}
-            >
-              Bayar
-            </button>
           </section>
           {/* Sisi Kanan */}
-          <section className="flex flex-col w-1/3 gap-4 mt-[38px] ">
+          <section className="flex flex-col lg:w-1/3 gap-4 lg:mt-[38px] ">
             {/* Detail Pemesanan  */}
-            <div className="rounded shadow-md my-3 mt-[100px]">
+            <div className="rounded shadow-md my-3 sm:mt-12 lg:mt-[100px]">
               {/* Route  */}
-              <p className="px-8">Order ID : 6723y2GHK</p>
+              <p className="px-8 pt-5">Order ID : 6723y2GHK</p>
               <p className="flex gap-5 text-xl px-8 py-3">
                 <strong>Jakarta</strong>
                 <svg
@@ -299,6 +299,6 @@ export default function Pembayaran() {
         </div>
       </div>
       <Footer />
-    </div>
+    </>
   );
 }
