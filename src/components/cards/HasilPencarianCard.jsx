@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 
-const HasilPencarianCard = ({ flight }) => {
+const HasilPencarianCard = ({
+  flight,
+  onSelect,
+  isSelected,
+  isRoundtrip,
+  type,
+}) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpand = () => {
@@ -36,23 +42,32 @@ const HasilPencarianCard = ({ flight }) => {
     }).format(price)}`;
   };
 
+  const handleClick = () => {
+    console.log("Card clicked, flight data:", flight);
+    onSelect(flight, type);
+  };
+
   return (
     <>
       {/* Desktop Card */}
-      <div className="hidden lg:block mx-auto bg-white rounded-xl shadow-md overflow-hidden my-4">
+      <div
+        className={`hidden lg:block mx-auto bg-white rounded-xl shadow-md overflow-hidden my-4 ${
+          isSelected ? "border border-primary shadow shadow-primary/20" : ""
+        }`}
+      >
         <div className="flex gap-12 p-8 items-center">
           <div className="flex w-1/4">
             <img
-              src={flight.airplaneSeatClass.airplane.airline.logoUrl}
-              alt={`${flight.airplaneSeatClass.airplane.airline.name} logo`}
+              src={flight.airplane.airline.logoUrl}
+              alt={`${flight.airplane.airline.name} logo`}
               className="h-12 w-12 mr-4 object-contain"
             />
             <div className="flex-1">
               <div className="text-lg font-bold text-main">
-                {flight.airplaneSeatClass.airplane.airline.name}
+                {flight.airplane.airline.name}
               </div>
               <div className="text-base font-medium text-darkgray">
-                {flight.airplaneSeatClass.type}
+                {flight.airplane.seatClass.type}
               </div>
             </div>
           </div>
@@ -60,29 +75,27 @@ const HasilPencarianCard = ({ flight }) => {
             <div className="flex items-center justify-between p-4">
               <div>
                 <div className="text-lg font-semibold text-main">
-                  {convertToTime(flight.flight.departureTime)}
+                  {convertToTime(flight.flight.departure.time)}
                 </div>
                 <div className="text-sm font-medium text-darkgray">
-                  {flight.flight.departureAirport.airportCode}
+                  {flight.flight.departure.airportCode}
                 </div>
               </div>
               <div className="text-center divide-y w-80 divide-neutral">
                 <div className="text-sm font-medium text-main">
                   {calculateDuration(
-                    flight.flight.departureTime,
-                    flight.flight.arrivalTime
+                    flight.flight.departure.time,
+                    flight.flight.arrival.time
                   )}
                 </div>
-                <div className="text-sm font-medium text-darkgray">
-                  {""}
-                </div>
+                <div className="text-sm font-medium text-darkgray">{""}</div>
               </div>
               <div>
                 <div className="text-lg font-semibold text-main">
-                  {convertToTime(flight.flight.arrivalTime)}
+                  {convertToTime(flight.flight.arrival.time)}
                 </div>
                 <div className="text-sm font-medium text-darkgray">
-                  {flight.flight.arrivalAirport.airportCode}
+                  {flight.flight.arrival.airportCode}
                 </div>
               </div>
             </div>
@@ -97,12 +110,12 @@ const HasilPencarianCard = ({ flight }) => {
                   /pax
                 </span>
               </div>
-              <a
-                href="/pemesanan"
+              <button
+                onClick={handleClick}
                 className="inline-block bg-primary hover:bg-darkprimary text-white px-12 py-2 rounded-full"
               >
                 Pilih
-              </a>
+              </button>
               <button
                 onClick={toggleExpand}
                 className="text-primary font-medium text-xs mt-2 focus:outline-none flex items-center"
@@ -154,28 +167,28 @@ const HasilPencarianCard = ({ flight }) => {
             <div className="text-main">
               <div className="flex items-center mb-4">
                 <img
-                  src={flight.airplaneSeatClass.airplane.airline.logoUrl}
-                  alt={`${flight.airplaneSeatClass.airplane.airline.name} logo`}
+                  src={flight.airplane.airline.logoUrl}
+                  alt={`${flight.airplane.airline.name} logo`}
                   className="h-5 w-5 mr-4 object-contain"
                 />
                 <div className="text-base font-semibold text-main">
-                  {flight.airplaneSeatClass.airplane.airline.name} -{" "}
-                  {flight.airplaneSeatClass.type}
+                  {flight.airplane.airline.name} -{" "}
+                  {flight.airplane.seatClass.type}
                 </div>
               </div>
               <div className="ms-9">
                 <div className="font-semibold text-sm">Informasi:</div>
                 <ul>
                   <li className="font-normal text-sm">
-                    Bagasi: {flight.airplaneSeatClass.airplane.baggageCapacity}{" "}
+                    Bagasi: {flight.airplane.baggageCapacity}{" "}
                     kg
                   </li>
                   <li className="font-normal text-sm">
-                    Kabin: {flight.airplaneSeatClass.airplane.cabinCapacity} kg
+                    Kabin: {flight.airplane.cabinCapacity} kg
                   </li>
                   <li className="font-normal text-sm">
                     Fasilitas:{" "}
-                    {flight.airplaneSeatClass.airplane.inFlightFacility}
+                    {flight.airplane.inFlightFacility}
                   </li>
                 </ul>
               </div>
@@ -186,7 +199,7 @@ const HasilPencarianCard = ({ flight }) => {
                   <div className="w-2.5 h-2.5 bg-neutral rounded-full"></div>
                   <p className="font-semibold text-sm">
                     <span className="text-main">
-                      {convertToTime(flight.flight.departureTime)}
+                      {convertToTime(flight.flight.departure.time)}
                     </span>{" "}
                     - <span className="text-primary">Keberangkatan</span>
                   </p>
@@ -199,7 +212,7 @@ const HasilPencarianCard = ({ flight }) => {
                   <div className="w-2.5 h-2.5 bg-neutral rounded-full"></div>
                   <p className="font-semibold text-sm">
                     <span className="text-main">
-                      {convertToTime(flight.flight.arrivalTime)}
+                      {convertToTime(flight.flight.arrival.time)}
                     </span>{" "}
                     - <span className="text-primary">Kedatangan</span>
                   </p>
@@ -216,20 +229,20 @@ const HasilPencarianCard = ({ flight }) => {
           <div className="flex justify-between items-center">
             <div className="flex">
               <img
-                src={flight.airplaneSeatClass.airplane.airline.logoUrl}
-                alt={`${flight.airplaneSeatClass.airplane.airline.name} logo`}
+                src={flight.airplane.airline.logoUrl}
+                alt={`${flight.airplane.airline.name} logo`}
                 className="h-8 w-8 mr-2 object-contain"
               />
               <div className="flex flex-col text-sm font-bold text-main">
-                {flight.airplaneSeatClass.airplane.airline.name}{" "}
+                {flight.airplane.airline.name}{" "}
                 <span className="text-xs font-medium text-darkgray">
-                  {flight.airplaneSeatClass.type}
+                  {flight.airplane.seatClass.type}
                 </span>
               </div>
             </div>
             <a
               href="/pemesanan"
-              className="inline-block bg-primary hovver:bg-darkprimary text-white text-xs px-6 py-2 rounded-full"
+              className="inline-block bg-primary hover:bg-darkprimary text-white text-xs px-6 py-2 rounded-full"
             >
               Pilih
             </a>
@@ -238,17 +251,17 @@ const HasilPencarianCard = ({ flight }) => {
           <div className="flex items-center justify-between p-4">
             <div>
               <div className="text-base font-semibold text-main">
-                {convertToTime(flight.flight.departureTime)}
+                {convertToTime(flight.flight.departure.time)}
               </div>
               <div className="text-xs font-medium text-darkgray">
-                {flight.flight.departureAirport.airportCode}
+                {flight.flight.departure.airportCode}
               </div>
             </div>
             <div className="text-center divide-y w-80 divide-neutral">
               <div className="text-xs font-medium text-main">
                 {calculateDuration(
-                  flight.flight.departureTime,
-                  flight.flight.arrivalTime
+                  flight.flight.departure.time,
+                  flight.flight.arrival.time
                 )}
               </div>
               <div className="text-xs font-medium text-darkgray">
@@ -257,10 +270,10 @@ const HasilPencarianCard = ({ flight }) => {
             </div>
             <div>
               <div className="text-base font-semibold text-main">
-                {convertToTime(flight.flight.arrivalTime)}
+                {convertToTime(flight.flight.arrival.time)}
               </div>
               <div className="text-xs font-medium text-darkgray">
-                {flight.flight.arrivalAirport.airportCode}
+                {flight.flight.arrival.airportCode}
               </div>
             </div>
           </div>
@@ -324,7 +337,7 @@ const HasilPencarianCard = ({ flight }) => {
                   <div className="w-2.5 h-2.5 bg-neutral rounded-full"></div>
                   <p className="font-semibold text-xs">
                     <span className="text-main">
-                      {convertToTime(flight.flight.departureTime)}
+                      {convertToTime(flight.flight.departure.time)}
                     </span>{" "}
                     - <span className="text-primary">Keberangkatan</span>
                   </p>
@@ -337,7 +350,7 @@ const HasilPencarianCard = ({ flight }) => {
                   <div className="w-2.5 h-2.5 bg-neutral rounded-full"></div>
                   <p className="font-semibold text-xs">
                     <span className="text-main">
-                      {convertToTime(flight.flight.arrivalTime)}
+                      {convertToTime(flight.flight.arrival.time)}
                     </span>{" "}
                     - <span className="text-primary">Kedatangan</span>
                   </p>
@@ -348,28 +361,28 @@ const HasilPencarianCard = ({ flight }) => {
             <div className="text-main mt-6">
               <div className="flex items-center mb-2">
                 <img
-                  src={flight.airplaneSeatClass.airplane.airline.logoUrl}
-                  alt={`${flight.airplaneSeatClass.airplane.airline.name} logo`}
+                  src={flight.airplane.airline.logoUrl}
+                  alt={`${flight.airplane.airline.name} logo`}
                   className="h-5 w-5 mr-4 object-contain"
                 />
                 <div className="text-xs font-semibold text-main">
-                  {flight.airplaneSeatClass.airplane.airline.name} -{" "}
-                  {flight.airplaneSeatClass.type}
+                  {flight.airplane.airline.name} -{" "}
+                  {flight.airplane.seatClass.type}
                 </div>
               </div>
               <div className="ms-9">
                 <div className="font-semibold text-xs">Informasi:</div>
                 <ul>
                   <li className="font-normal text-xs">
-                    Bagasi {flight.airplaneSeatClass.airplane.baggageCapacity}{" "}
+                    Bagasi {flight.airplane.baggageCapacity}{" "}
                     kg
                   </li>
                   <li className="font-normal text-xs">
-                    Kabin: {flight.airplaneSeatClass.airplane.cabinCapacity} kg
+                    Kabin: {flight.airplane.cabinCapacity} kg
                   </li>
                   <li className="font-normal text-xs">
                     Fasilitas:{" "}
-                    {flight.airplaneSeatClass.airplane.inFlightFacility}
+                    {flight.airplane.inFlightFacility}
                   </li>
                 </ul>
               </div>

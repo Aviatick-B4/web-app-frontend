@@ -11,15 +11,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { addDays, format } from "date-fns";
 import { toast } from "react-toastify";
-import { setFlightKeyword } from "../../../redux/reducers/searchFlightReducers";
+import {
+  setFlightKeyword,
+  setTripTypeSaved,
+} from "../../../redux/reducers/searchFlightReducers";
 
 const FlightSchedule = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
   const [tripType, setTripType] = useState("round-trip");
-  const [from, setFrom] = useState("JKT");
-  const [to, setTo] = useState("SYD");
+  const [from, setFrom] = useState("BCN");
+  const [to, setTo] = useState("RIO");
   const [departureDate, setDepartureDate] = useState(new Date());
   const [returnDate, setReturnDate] = useState(addDays(new Date(), 1));
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -68,7 +70,9 @@ const FlightSchedule = () => {
       modalData === "from" ? setFrom(data) : setTo(data);
     } else if (modalType === "date") {
       setDepartureDate(data);
-      if (returnDate) setReturnDate(endDate);
+      if (tripType === "round-trip") {
+        setReturnDate(endDate);
+      }
     } else if (modalType === "class") {
       setFlightClass(data);
     } else if (modalType === "passenger") {
@@ -82,10 +86,13 @@ const FlightSchedule = () => {
       from,
       to,
       departureDate: format(departureDate, "yyyy-MM-dd"),
-      returnDate: returnDate ? format(returnDate, "yyyy-MM-dd") : null,
+      returnDate:
+        tripType === "round-trip" ? format(returnDate, "yyyy-MM-dd") : null,
       passengers,
       flightClass,
     };
+
+    dispatch(setTripTypeSaved(tripType));
 
     dispatch(getFlightSearchResults(flightData));
     navigate("/hasil-pencarian");

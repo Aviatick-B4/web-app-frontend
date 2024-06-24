@@ -211,11 +211,11 @@ export default function RiwayatPemesanan() {
 
           {/* Filter berdasarkan tanggal mobile */}
           <div className="block md:hidden mt-2">
-            <FilterDate label="Date" iconSrc="/icons/filter.svg" />
+            <FilterDate label="Tanggal" iconSrc="/icons/filter.svg" />
           </div>
 
           {/* Tab & Filter Section */}
-          <div className="flex justify-between items-center mt-2">
+          <div className="flex justify-between mt-2">
             <div className="border-b border-neutral w-full">
               <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-main">
                 <li className="me-1 md:me-2">
@@ -271,7 +271,7 @@ export default function RiwayatPemesanan() {
 
             {/* Filter berdasarkan tanggal desktop */}
             <div className="hidden md:block">
-              <FilterDate label="Date" iconSrc="/icons/filter.svg" />
+              <FilterDate label="Tanggal" iconSrc="/icons/filter.svg" />
             </div>
           </div>
 

@@ -17,6 +17,7 @@ function Register() {
   const [fullName, setFullName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [message, setMessage] = useState("");
   const token = useSelector((state) => state?.auth.token);
   const dispatch = useDispatch();
   const [error, setError] = useState("");
@@ -32,52 +33,54 @@ function Register() {
     }
   }, []);
 
-  const handleSubmit = async () => {
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const capitalLetterRegex = /[A-Z]/;
-    const numberRegex = /[0-9]/;
-    const phonePattern = /^[0-9]{10,15}$/; // Contoh pola untuk nomor telepon, disesuaikan dengan kebutuhan Anda
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-    if (
-      email.trim() === "" ||
-      fullName.trim() === "" ||
-      password.trim() === "" ||
-      confirmPassword.trim() === "" ||
-      phoneNumber.trim() === ""
-    ) {
-      setMessage(
-        "Please enter your email, name, password, phone number, and confirm your password."
-      );
-      return;
-    }
-    if (!emailPattern.test(email)) {
-      setMessage("Please enter a valid email address.");
-      return;
-    }
-    if (!phonePattern.test(phoneNumber)) {
-      setMessage("Please enter a valid phone number.");
-      return;
-    }
-    if (password.trim().length < 8) {
-      setMessage("Password must be at least 8 characters.");
-      return;
-    }
-    if (!capitalLetterRegex.test(password) && !numberRegex.test(password)) {
-      setMessage(
-        "The first character must be an uppercase letter and combined with numbers."
-      );
-      return;
-    }
-    if (password !== confirmPassword) {
-      setMessage("Password and confirm password do not match.");
-      return;
-    }
+    // const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // const capitalLetterRegex = /[A-Z]/;
+    // const numberRegex = /[0-9]/;
+    // const phonePattern = /^[0-9]{10,15}$/; // Contoh pola untuk nomor telepon, disesuaikan dengan kebutuhan Anda
+
+    // if (
+    //   email.trim() === "" ||
+    //   fullName.trim() === "" ||
+    //   password.trim() === "" ||
+    //   confirmPassword.trim() === "" ||
+    //   phoneNumber.trim() === ""
+    // ) {
+    //   setMessage(
+    //     "Please enter your email, name, password, phone number, and confirm your password."
+    //   );
+    //   return;
+    // }
+    // if (!emailPattern.test(email)) {
+    //   setMessage("Please enter a valid email address.");
+    //   return;
+    // }
+    // if (!phonePattern.test(phoneNumber)) {
+    //   setMessage("Please enter a valid phone number.");
+    //   return;
+    // }
+    // if (password.trim().length < 8) {
+    //   setMessage("Password must be at least 8 characters.");
+    //   return;
+    // }
+    // if (!capitalLetterRegex.test(password) && !numberRegex.test(password)) {
+    //   setMessage(
+    //     "The first character must be an uppercase letter and combined with numbers."
+    //   );
+    //   return;
+    // }
+    // if (password !== confirmPassword) {
+    //   setMessage("Password and confirm password do not match.");
+    //   return;
+    // }
 
     let data = {
-      email,
       fullName,
-      password,
+      email,
       phoneNumber,
+      password,
     };
 
     dispatch(register(data, navigate, setMessage));
@@ -127,7 +130,7 @@ function Register() {
 
           <div className="mt-8">
             <div className="mt-6">
-              <form action="#" method="POST" className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label
                     htmlFor="email"
@@ -290,7 +293,7 @@ function Register() {
 
                 <div>
                   <button
-                    type="submit"
+                    type="button"
                     className="w-full flex justify-center py-2 px-4 border border-transparent rounded-full shadow-sm text-sm md:text-base font-medium text-white bg-primary hover:bg-darkprimary focus:outline-none"
                     onClick={handleSubmit}
                   >
