@@ -39,7 +39,7 @@ const FilterDate = ({ label, iconSrc }) => {
   };
 
   return (
-    <div className="inline-block relative text-left z-20" ref={wrapperRef}>
+    <div className="inline-block relative text-left z-30" ref={wrapperRef}>
       <div>
         <button
           type="button"

@@ -3,49 +3,125 @@ import { useDispatch, useSelector } from "react-redux";
 import Footer from "../../components/navigations/Footer";
 import Navbar from "../../components/navigations/Navbar";
 import MobileNavbar from "../../components/navigations/MobileNavbar";
-import { fetchUser, loadUserProfile } from "../../redux/actions/authActions";
+import {
+  changePassword,
+  deleteAccount,
+  fetchUser,
+  loadUserProfile,
+  logout,
+} from "../../redux/actions/authActions";
 import { updateUserProfile } from "../../redux/actions/authActions";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export default function Akun() {
   const dispatch = useDispatch();
-  const [fullName, setFullNama] = useState("");
+  const navigate = useNavigate();
+  const [fullName, setFullName] = useState("");
+  const [familyName, setFamilyName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
+  const [identityType, setIdentityType] = useState("");
+  const [identityNumber, setIdentityNumber] = useState("");
+  const [nationality, setNationality] = useState("");
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [confirmLogoutModalOpen, setConfirmLogoutModalOpen] = useState(false);
+  const [showPasswordFields, setShowPasswordFields] = useState(false);
+  const [showEditFields, setShowEditFields] = useState(true);
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
+  const [activeMenuItem, setActiveMenuItem] = useState("ubahProfil");
+
   const user = useSelector((state) => state.auth.user);
-  // const token = useSelector((state) => state.auth.token);
-  // console.log("Token from Redux state:", token);
+
+  useEffect(() => {
+    console.log("user", user);
+  }, [user]);
 
   useEffect(() => {
     if (!user) {
-      dispatch(loadUserProfile(setUser)); // Load user profile if user data is not available
+      dispatch(loadUserProfile());
     } else {
-      setFullNama(user.fullName);
+      setFullName(user.fullName);
+      setFamilyName(user.familyName);
       setPhoneNumber(user.phoneNumber);
       setEmail(user.email);
+      setIdentityType(user.identityType);
+      setIdentityNumber(user.identityNumber);
+      setNationality(user.nationality);
     }
-  }, [dispatch, user]);
-
-  const setUser = (user) => {
-    setFullNama(user.fullName);
-    setPhoneNumber(user.phoneNumber);
-    setEmail(user.email);
-  };
+  }, [user, dispatch]);
 
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
+    const updatedUser = {
+      fullName,
+      familyName,
+      phoneNumber,
+      email,
+      identityType,
+      identityNumber,
+      nationality,
+    };
+
     try {
-      const user = { fullName, phoneNumber, email }; // Assume these are controlled inputs in your form
-      const success = await dispatch(updateUserProfile(user));
+      const success = await dispatch(updateUserProfile(updatedUser));
       if (success) {
-        toast.success("Profile updated successfully");
-        // Optionally, you can update local state or take other actions upon successful update
-      } else {
-        toast.error("Failed to update profile");
+        dispatch(loadUserProfile());
       }
     } catch (error) {
       toast.error(error.message);
     }
+  };
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+
+    if (newPassword !== confirmNewPassword) {
+      toast.error("Password tidak sesuai");
+      return;
+    }
+
+    let data = {
+      oldPassword,
+      newPassword,
+      confirmNewPassword,
+    };
+
+    const success = await dispatch(changePassword(data));
+
+    if (success) {
+      setOldPassword("");
+      setNewPassword("");
+      setConfirmNewPassword("");
+      setShowPasswordFields(false);
+    }
+  };
+
+  const handleConfirmModalToggle = () => {
+    setConfirmModalOpen(!confirmModalOpen);
+  };
+
+  const handleConfirmLogoutModalToggle = () => {
+    setConfirmLogoutModalOpen(!confirmLogoutModalOpen);
+  };
+
+  const handleEditProfileToggle = () => {
+    setShowEditFields(true);
+    setShowPasswordFields(false);
+  };
+
+  const handlePasswordChangeToggle = () => {
+    setShowEditFields(false);
+    setShowPasswordFields(true);
+  };
+
+  const handleMenuItemClick = (menuItem) => {
+    setActiveMenuItem(menuItem);
   };
 
   return (
@@ -79,7 +155,15 @@ export default function Akun() {
           <div className="flex flex-col md:flex-row gap-4 mt-5">
             {/* Akun Menu */}
             <div className="hidden md:block md:w-1/5 lg:w-1/3 max-w-sm bg-white shadow-lg rounded-lg overflow-hidden self-start">
-              <div className="px-4 py-4 bg-primary/15 flex gap-3 items-center cursor-pointer">
+              <div
+                onClick={() => {
+                  handleMenuItemClick("ubahProfil");
+                  handleEditProfileToggle();
+                }}
+                className={`px-4 py-4 flex gap-3 items-center cursor-pointer ${
+                  activeMenuItem === "ubahProfil" ? "bg-primary/15" : ""
+                }`}
+              >
                 <svg
                   className="w-4 h-4 fill-secondary"
                   xmlns="http://www.w3.org/2000/svg"
@@ -91,7 +175,15 @@ export default function Akun() {
                   Ubah Profil
                 </span>
               </div>
-              <div className="px-4 py-4 flex gap-3 items-center hover:bg-primary/10 cursor-pointer">
+              <div
+                onClick={() => {
+                  handlePasswordChangeToggle();
+                  handleMenuItemClick("gantiPassword");
+                }}
+                className={`px-4 py-4 flex gap-3 items-center cursor-pointer ${
+                  activeMenuItem === "gantiPassword" ? "bg-primary/15" : ""
+                }`}
+              >
                 <svg
                   className="w-4 h-4 fill-secondary"
                   xmlns="http://www.w3.org/2000/svg"
@@ -103,7 +195,15 @@ export default function Akun() {
                   Ganti Password
                 </span>
               </div>
-              <div className="px-4 py-4 flex gap-3 items-center hover:bg-primary/10 cursor-pointer">
+              <div
+                onClick={() => {
+                  handleConfirmModalToggle();
+                  handleMenuItemClick("hapusAkun");
+                }}
+                className={`px-4 py-4 flex gap-3 items-center cursor-pointer ${
+                  activeMenuItem === "hapusAkun" ? "bg-primary/15" : ""
+                }`}
+              >
                 <svg
                   className="w-4 h-4 fill-danger"
                   xmlns="http://www.w3.org/2000/svg"
@@ -115,96 +215,246 @@ export default function Akun() {
                   Hapus Akun
                 </span>
               </div>
-              <div className="px-4 py-4 flex gap-3 items-center hover:bg-primary/10 cursor-pointer">
+              <div
+                onClick={() => {
+                  handleConfirmLogoutModalToggle();
+                  handleMenuItemClick("keluar");
+                }}
+                className={`px-4 py-4 flex gap-3 items-center cursor-pointer ${
+                  activeMenuItem === "keluar" ? "bg-primary/15" : ""
+                }`}
+              >
                 <svg
-                  className="w-4 h-4 fill-secondary"
+                  className="w-4 h-4 fill-danger"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 512 512"
                 >
                   <path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z" />
                 </svg>
-                <span className="text-main font-medium text-sm">Keluar</span>
+                <span className="text-danger font-medium text-sm">Keluar</span>
               </div>
             </div>
 
             {/* Akun Name */}
             <div className="block md:hidden w-full bg-white shadow-lg rounded-lg overflow-hidden px-6 py-4 -mt-36">
               <h1 className="text-xl font-bold text-main mb-2">Akun</h1>
-              <h1 className="text-lg font-semibold text-main">Jane Doe</h1>
+              <h1 className="text-lg font-semibold text-main">{fullName}</h1>
             </div>
 
-            {/* Akun Detail */}
+            {/* Right Detail */}
             <div className="w-full md:w-3/5 lg:w-3/4 bg-white shadow-lg rounded-lg overflow-hidden p-6 md:p-12">
-              <h1 className="text-xl md:text-2xl font-bold text-main mb-4">
-                Ubah Profil
-              </h1>
-              <form onSubmit={handleUpdateProfile} className="space-y-6">
-                <div className="mt-4">
-                  <label
-                    htmlFor="fullName"
-                    className="block text-xs md:text-sm font-medium text-main"
-                  >
-                    Nama Lengkap
-                  </label>
-                  <div className="mt-1">
-                    <input
-                      id="fullName"
-                      name="fullName"
-                      type="text"
-                      onChange={(e) => setFullNama(e.target.value)}
-                      placeholder="Jane Doe"
-                      required
-                      className="appearance-none block w-full px-3 py-2 border-b border-gray placeholder-neutral focus:outline-none focus:ring-primary focus:border-b-2 focus:border-primary text-sm md:text-base text-main font-normal"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label
-                    htmlFor="phoneNumber"
-                    className="block text-xs md:text-sm font-medium text-main"
-                  >
-                    No Telepon
-                  </label>
-                  <div className="mt-1">
-                    <input
-                      id="phoneNumber"
-                      name="phoneNumber"
-                      type="text"
-                      onChange={(e) => setPhoneNumber(e.target.value)}
-                      placeholder="+6281260152"
-                      required
-                      className="appearance-none block w-full px-3 py-2 border-b border-gray placeholder-neutral focus:outline-none focus:ring-primary focus:border-b-2 focus:border-primary text-sm md:text-base text-main font-normal"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-xs md:text-sm font-medium text-main"
-                  >
-                    Email
-                  </label>
-                  <div className="mt-1">
-                    <input
-                      id="email"
-                      name="email"
-                      type="email"
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="janedoe@gmail.com"
-                      required
-                      className="appearance-none block w-full px-3 py-2 border-b border-gray placeholder-neutral focus:outline-none focus:ring-primary focus:border-b-2 focus:border-primary text-sm md:text-base text-main font-normal"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <button
-                    type="submit"
-                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-full shadow-sm text-sm md:text-base font-medium text-white bg-primary hover:bg-darkprimary focus:outline-none"
-                  >
+              {showEditFields && (
+                <>
+                  <h1 className="text-xl md:text-2xl font-bold text-main mb-4">
                     Ubah Profil
-                  </button>
-                </div>
-              </form>
+                  </h1>
+                  <form
+                    onSubmit={handleUpdateProfile}
+                    className="flex flex-col gap-6"
+                  >
+                    <div className="flex flex-col md:flex-row gap-6">
+                      <TextInput
+                        label="Nama Lengkap"
+                        name="fullName"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                      />
+                      <TextInput
+                        label="Nama Keluarga"
+                        name="familyName"
+                        value={familyName}
+                        onChange={(e) => setFamilyName(e.target.value)}
+                      />
+                    </div>
+                    <div className="flex flex-col md:flex-row gap-6">
+                      <TextInput
+                        label="Nomor Telepon"
+                        name="phoneNumber"
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                      />
+                      <TextInput
+                        label="Email"
+                        name="email"
+                        value={email}
+                        disabled="true"
+                      />
+                    </div>
+                    <div className="flex flex-col md:flex-row gap-6">
+                      <SelectInput
+                        label="Tipe Identitas"
+                        name="identityType"
+                        options={["KTP", "SIM", "Passport"]}
+                        value={identityType}
+                        onChange={(e) => setIdentityType(e.target.value)}
+                      />
+                      <TextInput
+                        label="Nomor Identitas"
+                        name="identityNumber"
+                        value={identityNumber}
+                        onChange={(e) => setIdentityNumber(e.target.value)}
+                      />
+                    </div>
+                    <div className="flex flex-col md:flex-row gap-6">
+                      <TextInput
+                        label="Kewarganegaraan"
+                        name="nationality"
+                        value={nationality}
+                        onChange={(e) => setNationality(e.target.value)}
+                      />
+                    </div>
+                    {/* Submit Button */}
+                    <div className="flex justify-end">
+                      <button
+                        type="submit"
+                        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-full shadow-sm text-sm md:text-base font-medium text-white bg-primary hover:bg-darkprimary focus:outline-none"
+                      >
+                        Simpan
+                      </button>
+                    </div>
+                  </form>
+                </>
+              )}
+
+              {showPasswordFields && (
+                <>
+                  <h1 className="text-xl md:text-2xl font-bold text-main mb-4">
+                    Ganti Password
+                  </h1>
+                  <form
+                    onSubmit={handleChangePassword}
+                    className="flex flex-col gap-6"
+                  >
+                    <div className="flex flex-col gap-3 md:gap-4">
+                      {/* Current Password */}
+                      <div className="flex flex-col relative">
+                        <TextInput
+                          name="oldPassword"
+                          type={showOldPassword ? "text" : "password"}
+                          placeholder="Password saat ini"
+                          label="Password saat ini"
+                          value={oldPassword}
+                          onChange={(e) => setOldPassword(e.target.value)}
+                          className="pr-10"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowOldPassword(!showOldPassword)}
+                          className="absolute right-2 top-2/3 transform -translate-y-1/2" // Position the button inside the input
+                        >
+                          {showOldPassword ? (
+                            <svg
+                              fill="#00A8D0"
+                              className="w-4 hover:fill-secondary"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 640 512"
+                            >
+                              <path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zm151 118.3C226 97.7 269.5 80 320 80c65.2 0 118.8 29.6 159.9 67.7C518.4 183.5 545 226 558.6 256c-12.6 28-36.6 66.8-70.9 100.9l-53.8-42.2c9.1-17.6 14.2-37.5 14.2-58.7c0-70.7-57.3-128-128-128c-32.2 0-61.7 11.9-84.2 31.5l-46.1-36.1zM394.9 284.2l-81.5-63.9c4.2-8.5 6.6-18.2 6.6-28.3c0-5.5-.7-10.9-2-16c.7 0 1.3 0 2 0c44.2 0 80 35.8 80 80c0 9.9-1.8 19.4-5.1 28.2zm51.3 163.3l-41.9-33C378.8 425.4 350.7 432 320 432c-65.2 0-118.8-29.6-159.9-67.7C121.6 328.5 95 286 81.4 256c8.3-18.4 21.5-41.5 39.4-64.8L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5zm-88-69.3L302 334c-23.5-5.4-43.1-21.2-53.7-42.3l-56.1-44.2c-.2 2.8-.3 5.6-.3 8.5c0 70.7 57.3 128 128 128c13.3 0 26.1-2 38.2-5.8z" />
+                            </svg>
+                          ) : (
+                            <svg
+                              fill="#00A8D0"
+                              className="w-4 hover:fill-secondary"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 576 512"
+                            >
+                              <path d="M288 80c-65.2 0-118.8 29.6-159.9 67.7C89.6 183.5 63 226 49.4 256c13.6 30 40.2 72.5 78.6 108.3C169.2 402.4 222.8 432 288 432s118.8-29.6 159.9-67.7C486.4 328.5 513 286 526.6 256c-13.6-30-40.2-72.5-78.6-108.3C406.8 109.6 353.2 80 288 80zM95.4 112.6C142.5 68.8 207.2 32 288 32s145.5 36.8 192.6 80.6c46.8 43.5 78.1 95.4 93 131.1c3.3 7.9 3.3 16.7 0 24.6c-14.9 35.7-46.2 87.7-93 131.1C433.5 443.2 368.8 480 288 480s-145.5-36.8-192.6-80.6C48.6 356 17.3 304 2.5 268.3c-3.3-7.9-3.3-16.7 0-24.6C17.3 208 48.6 156 95.4 112.6zM288 336c44.2 0 80-35.8 80-80s-35.8-80-80-80c-.7 0-1.3 0-2 0c1.3 5.1 2 10.5 2 16c0 35.3-28.7 64-64 64c-5.5 0-10.9-.7-16-2c0 .7 0 1.3 0 2c0 44.2 35.8 80 80 80zm0-208a128 128 0 1 1 0 256 128 128 0 1 1 0-256z" />
+                            </svg>
+                          )}
+                        </button>
+                      </div>
+
+                      {/* New Password */}
+                      <div className="flex flex-col relative">
+                        <TextInput
+                          name="newPassword"
+                          type={showNewPassword ? "text" : "password"}
+                          placeholder="Password Baru"
+                          label="Password Baru"
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                          className="pr-10"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowNewPassword(!showNewPassword)}
+                          className="absolute right-2 top-2/3 transform -translate-y-1/2" // Position the button inside the input
+                        >
+                          {showNewPassword ? (
+                            <svg
+                              fill="#00A8D0"
+                              className="w-4 hover:fill-secondary"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 640 512"
+                            >
+                              <path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zm151 118.3C226 97.7 269.5 80 320 80c65.2 0 118.8 29.6 159.9 67.7C518.4 183.5 545 226 558.6 256c-12.6 28-36.6 66.8-70.9 100.9l-53.8-42.2c9.1-17.6 14.2-37.5 14.2-58.7c0-70.7-57.3-128-128-128c-32.2 0-61.7 11.9-84.2 31.5l-46.1-36.1zM394.9 284.2l-81.5-63.9c4.2-8.5 6.6-18.2 6.6-28.3c0-5.5-.7-10.9-2-16c.7 0 1.3 0 2 0c44.2 0 80 35.8 80 80c0 9.9-1.8 19.4-5.1 28.2zm51.3 163.3l-41.9-33C378.8 425.4 350.7 432 320 432c-65.2 0-118.8-29.6-159.9-67.7C121.6 328.5 95 286 81.4 256c8.3-18.4 21.5-41.5 39.4-64.8L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5zm-88-69.3L302 334c-23.5-5.4-43.1-21.2-53.7-42.3l-56.1-44.2c-.2 2.8-.3 5.6-.3 8.5c0 70.7 57.3 128 128 128c13.3 0 26.1-2 38.2-5.8z" />
+                            </svg>
+                          ) : (
+                            <svg
+                              fill="#00A8D0"
+                              className="w-4 hover:fill-secondary"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 576 512"
+                            >
+                              <path d="M288 80c-65.2 0-118.8 29.6-159.9 67.7C89.6 183.5 63 226 49.4 256c13.6 30 40.2 72.5 78.6 108.3C169.2 402.4 222.8 432 288 432s118.8-29.6 159.9-67.7C486.4 328.5 513 286 526.6 256c-13.6-30-40.2-72.5-78.6-108.3C406.8 109.6 353.2 80 288 80zM95.4 112.6C142.5 68.8 207.2 32 288 32s145.5 36.8 192.6 80.6c46.8 43.5 78.1 95.4 93 131.1c3.3 7.9 3.3 16.7 0 24.6c-14.9 35.7-46.2 87.7-93 131.1C433.5 443.2 368.8 480 288 480s-145.5-36.8-192.6-80.6C48.6 356 17.3 304 2.5 268.3c-3.3-7.9-3.3-16.7 0-24.6C17.3 208 48.6 156 95.4 112.6zM288 336c44.2 0 80-35.8 80-80s-35.8-80-80-80c-.7 0-1.3 0-2 0c1.3 5.1 2 10.5 2 16c0 35.3-28.7 64-64 64c-5.5 0-10.9-.7-16-2c0 .7 0 1.3 0 2c0 44.2 35.8 80 80 80zm0-208a128 128 0 1 1 0 256 128 128 0 1 1 0-256z" />
+                            </svg>
+                          )}
+                        </button>
+                      </div>
+                      {/* Confirm New Password */}
+                      <div className="flex flex-col relative">
+                        <TextInput
+                          name="confirmNewPassword"
+                          type={showConfirmNewPassword ? "text" : "password"}
+                          placeholder="Konfirmasi Password"
+                          label="Konfirmasi Password"
+                          value={confirmNewPassword}
+                          onChange={(e) =>
+                            setConfirmNewPassword(e.target.value)
+                          }
+                          className="pr-10"
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setShowConfirmNewPassword(!showConfirmNewPassword)
+                          }
+                          className="absolute right-2 top-2/3 transform -translate-y-1/2" // Position the button inside the input
+                        >
+                          {showConfirmNewPassword ? (
+                            <svg
+                              fill="#00A8D0"
+                              className="w-4 hover:fill-secondary"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 640 512"
+                            >
+                              <path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zm151 118.3C226 97.7 269.5 80 320 80c65.2 0 118.8 29.6 159.9 67.7C518.4 183.5 545 226 558.6 256c-12.6 28-36.6 66.8-70.9 100.9l-53.8-42.2c9.1-17.6 14.2-37.5 14.2-58.7c0-70.7-57.3-128-128-128c-32.2 0-61.7 11.9-84.2 31.5l-46.1-36.1zM394.9 284.2l-81.5-63.9c4.2-8.5 6.6-18.2 6.6-28.3c0-5.5-.7-10.9-2-16c.7 0 1.3 0 2 0c44.2 0 80 35.8 80 80c0 9.9-1.8 19.4-5.1 28.2zm51.3 163.3l-41.9-33C378.8 425.4 350.7 432 320 432c-65.2 0-118.8-29.6-159.9-67.7C121.6 328.5 95 286 81.4 256c8.3-18.4 21.5-41.5 39.4-64.8L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5zm-88-69.3L302 334c-23.5-5.4-43.1-21.2-53.7-42.3l-56.1-44.2c-.2 2.8-.3 5.6-.3 8.5c0 70.7 57.3 128 128 128c13.3 0 26.1-2 38.2-5.8z" />
+                            </svg>
+                          ) : (
+                            <svg
+                              fill="#00A8D0"
+                              className="w-4 hover:fill-secondary"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 576 512"
+                            >
+                              <path d="M288 80c-65.2 0-118.8 29.6-159.9 67.7C89.6 183.5 63 226 49.4 256c13.6 30 40.2 72.5 78.6 108.3C169.2 402.4 222.8 432 288 432s118.8-29.6 159.9-67.7C486.4 328.5 513 286 526.6 256c-13.6-30-40.2-72.5-78.6-108.3C406.8 109.6 353.2 80 288 80zM95.4 112.6C142.5 68.8 207.2 32 288 32s145.5 36.8 192.6 80.6c46.8 43.5 78.1 95.4 93 131.1c3.3 7.9 3.3 16.7 0 24.6c-14.9 35.7-46.2 87.7-93 131.1C433.5 443.2 368.8 480 288 480s-145.5-36.8-192.6-80.6C48.6 356 17.3 304 2.5 268.3c-3.3-7.9-3.3-16.7 0-24.6C17.3 208 48.6 156 95.4 112.6zM288 336c44.2 0 80-35.8 80-80s-35.8-80-80-80c-.7 0-1.3 0-2 0c1.3 5.1 2 10.5 2 16c0 35.3-28.7 64-64 64c-5.5 0-10.9-.7-16-2c0 .7 0 1.3 0 2c0 44.2 35.8 80 80 80zm0-208a128 128 0 1 1 0 256 128 128 0 1 1 0-256z" />
+                            </svg>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                    {/* Submit Button */}
+                    <div className="flex justify-end">
+                      <button
+                        type="submit"
+                        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-full shadow-sm text-sm md:text-base font-medium text-white bg-primary hover:bg-darkprimary focus:outline-none"
+                      >
+                        Simpan
+                      </button>
+                    </div>
+                  </form>
+                </>
+              )}
             </div>
 
             {/* Akun Menu Mobile */}
@@ -234,8 +484,183 @@ export default function Akun() {
             </div>
           </div>
         </div>
+
+        {/* Confirm Delete Account Modal */}
+        <div
+          id="confirm-modal"
+          className={`${
+            confirmModalOpen ? "" : "hidden"
+          } fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-50`}
+        >
+          <div className="relative p-4 w-full max-w-md max-h-full">
+            <div className="relative bg-white rounded-lg shadow">
+              <div className="flex flex-col">
+                <div className="flex items-center justify-between p-4 md:p-5 border-b border-neutral rounded-t">
+                  <h3 className="text-xl font-semibold text-textcolor">
+                    Hapus Akun
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={handleConfirmModalToggle}
+                    className="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-textcolor rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center"
+                  >
+                    <svg
+                      className="w-3 h-3"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 14 14"
+                    >
+                      <path
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                      />
+                    </svg>
+                    <span className="sr-only">Close modal</span>
+                  </button>
+                </div>
+              </div>
+              <div className="px-4 md:px-5 pb-4 md:pb-6 pt-2 md:pt-3">
+                <p className="mb-4 text-sm text-main font-medium">
+                  Apa kamu yakin mau{" "}
+                  <span className="text-danger font-semibold">
+                    menghapus akun
+                  </span>
+                  ?
+                </p>
+                <div className="flex justify-end">
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleConfirmModalToggle}
+                      type="button"
+                      className="w-24 text-main px-6 py-2 bg-neutral/30 hover:bg-neutral/70 mr-2 text-sm font-medium rounded-full text-center"
+                    >
+                      Batal
+                    </button>
+                    <button
+                      onClick={() => {
+                        dispatch(deleteAccount(navigate));
+                        handleConfirmModalToggle();
+                      }}
+                      type="submit"
+                      className="w-24 text-white bg-red-500 hover:bg-red-800 font-medium rounded-full text-sm px-5 py-2.5 text-center"
+                    >
+                      Ya
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Confirm Logout Modal */}
+        <div
+          id="confirm-modal"
+          className={`${
+            confirmLogoutModalOpen ? "" : "hidden"
+          } fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-50`}
+        >
+          <div className="relative p-4 w-full max-w-md max-h-full">
+            <div className="relative bg-white rounded-lg shadow">
+              <div className="flex flex-col">
+                <div className="flex items-center justify-between p-4 md:p-5 border-b border-neutral rounded-t">
+                  <h3 className="text-xl font-semibold text-textcolor">
+                    Keluar
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={handleConfirmLogoutModalToggle}
+                    className="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-textcolor rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center"
+                  >
+                    <svg
+                      className="w-3 h-3"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 14 14"
+                    >
+                      <path
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                      />
+                    </svg>
+                    <span className="sr-only">Close modal</span>
+                  </button>
+                </div>
+              </div>
+              <div className="px-4 md:px-5 pb-4 md:pb-6 pt-2 md:pt-3">
+                <p className="mb-4 text-sm text-main font-medium">
+                  Apa kamu yakin mau{" "}
+                  <span className="text-danger font-semibold">keluar</span>?
+                </p>
+                <div className="flex justify-end">
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleConfirmLogoutModalToggle}
+                      type="button"
+                      className="w-24 text-main px-6 py-2 bg-neutral/30 hover:bg-neutral/70 mr-2 text-sm font-medium rounded-full text-center"
+                    >
+                      Batal
+                    </button>
+                    <button
+                      onClick={() => {
+                        dispatch(logout(navigate));
+                        handleConfirmLogoutModalToggle();
+                      }}
+                      type="submit"
+                      className="w-24 text-white bg-red-500 hover:bg-red-800 font-medium rounded-full text-sm px-5 py-2.5 text-center"
+                    >
+                      Ya
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
       <Footer />
     </div>
   );
 }
+
+const TextInput = ({ label, name, value, onChange, disabled, type }) => (
+  <div className="w-full">
+    <label className="block text-sm font-medium text-gray-700">{label}</label>
+    <input
+      type={type}
+      name={name}
+      value={value}
+      onChange={onChange}
+      disabled={disabled}
+      className={`mt-1 block w-full px-3 py-2 border border-gray rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm ${
+        disabled ? "bg-neutral/40" : ""
+      }`}
+    />
+  </div>
+);
+
+const SelectInput = ({ label, name, options, value, onChange }) => (
+  <div className="w-full">
+    <label className="block text-sm font-medium text-gray-700">{label}</label>
+    <select
+      name={name}
+      value={value}
+      onChange={onChange}
+      className="mt-1 block w-full px-3 py-2 border border-gray rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+    >
+      {options.map((option, index) => (
+        <option key={index} value={option}>
+          {option}
+        </option>
+      ))}
+    </select>
+  </div>
+);

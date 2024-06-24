@@ -35,6 +35,7 @@ function Navbar({ transparent }) {
   }, [transparent]);
 
   function getInitials(fullName) {
+    if (!fullName) return "";
     const names = fullName.split(" ");
     const initials = names.map((name) => name[0]).join("");
     return initials.toUpperCase();
@@ -120,13 +121,13 @@ function Navbar({ transparent }) {
               </Link>
 
               <div className="rounded-full bg-gray/70 w-9 h-9 text-center text-white font-medium text-base flex items-center justify-center">
-                {getInitials(user.fullName)}
+                {getInitials(user?.fullName)}
               </div>
             </div>
             {showDropdown && (
               <div className="absolute top-full right-0 mt-1 bg-white shadow-md rounded-md w-48">
                 <p className="block w-full text-left px-4 py-2 text-sm font-medium text-primary rounded-t-md border-b border-neutral">
-                  {user && user.fullName}
+                  {user && user?.fullName}
                 </p>
                 <Link
                   to="/akun-saya"
