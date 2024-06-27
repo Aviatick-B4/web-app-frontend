@@ -36,7 +36,6 @@ const FilterButton = ({
 
   const handleOptionClick = (option) => {
     onOptionSelect(option);
-    closeModal();
   };
 
   return (
@@ -55,7 +54,7 @@ const FilterButton = ({
             onClick={() => setIsOpen(!isOpen)}
           >
             {iconSrc && <img src={iconSrc} alt="icon" className="mr-2" />}
-            {selectedOption || label}
+            {label}
             <svg
               className="ml-1 -mr-1 h-5 w-5"
               xmlns="http://www.w3.org/2000/svg"
@@ -80,15 +79,15 @@ const FilterButton = ({
           >
             <div className="py-1" role="none">
               {options.map((option, index) => (
-                <a
-                  href="#"
-                  key={index}
-                  onClick={() => handleOptionClick(option)}
-                  className="block px-4 py-2 font-medium text-sm text-main hover:bg-primary/20"
-                  role="menuitem"
-                >
-                  {option}
-                </a>
+                <label key={index} className="flex items-center px-4 py-2 text-sm text-main hover:bg-primary/20">
+                  <input
+                    type="checkbox"
+                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    checked={selectedOption.includes(option)}
+                    onChange={() => handleOptionClick(option)}
+                  />
+                  <span className="ml-2">{option}</span>
+                </label>
               ))}
             </div>
           </div>
@@ -100,15 +99,13 @@ const FilterButton = ({
         <div>
           <button
             className={`text-primary text-xs font-medium ${
-              notif
-                ? "border border-primary rounded-full px-4 py-1"
-                : ""
+              notif ? "border border-primary rounded-full px-4 py-1" : ""
             }`}
             onClick={() => setIsOpen(!isOpen)}
           >
             <div className="flex flex-col items-center gap-1">
               {iconSrc && <img src={iconSrc} alt="icon" />}
-              {selectedOption || label}
+              {label}
             </div>
           </button>
         </div>
@@ -124,15 +121,15 @@ const FilterButton = ({
             >
               <div className="py-1 mt-4" role="none">
                 {options.map((option, index) => (
-                  <a
-                    href="#"
-                    key={index}
-                    onClick={() => handleOptionClick(option)}
-                    className="block px-4 py-2 font-medium text-sm text-main hover:bg-primary/20"
-                    role="menuitem"
-                  >
-                    {option}
-                  </a>
+                  <label key={index} className="flex items-center px-4 py-2 text-sm text-main hover:bg-primary/20">
+                    <input
+                      type="checkbox"
+                      class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      checked={selectedOption.includes(option)}
+                      onChange={() => handleOptionClick(option)}
+                    />
+                    <span className="ml-2">{option}</span>
+                  </label>
                 ))}
               </div>
               <button

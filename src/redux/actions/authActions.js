@@ -9,17 +9,15 @@ import {
 import { jwtDecode } from "jwt-decode";
 import { useGoogleLogin } from "@react-oauth/google";
 
+const url = import.meta.env.VITE_BASE_URL;
+
 export const login = (data, navigate, setMessage) => async (dispatch) => {
   try {
-    const response = await axios.post(
-      "https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/login",
-      data,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await axios.post(`${url}/auth/login`, data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
     const token = response.data.data.token;
 
@@ -48,7 +46,7 @@ export const register = (data, navigate, setMessage) => async (dispatch) => {
   console.log("data", data);
   // try {
   //   const response = await axios.post(
-  //     "https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/register",
+  //     "${url}/auth/register",
   //     data
   //   );
 
@@ -79,7 +77,7 @@ export const fetchUser = () => async (dispatch, getState) => {
   const config = {
     method: "get",
     maxBodyLength: Infinity,
-    url: "https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/users/profile",
+    url: `${url}/auth/users/profile`,
     headers: {
       accept: "application/json",
       Authorization: `Bearer ${token}`,
@@ -118,15 +116,12 @@ export const deleteAccount = (navigate) => async (dispatch, getState) => {
   const token = getState().auth.token;
 
   try {
-    const response = await axios.delete(
-      `https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/users`,
-      {
-        headers: {
-          accept: "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await axios.delete(`${url}/auth/users`, {
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     if (response.status === 200) {
       toast.success("Akun berhasil dihapus");
@@ -148,7 +143,6 @@ export const deleteAccount = (navigate) => async (dispatch, getState) => {
 };
 
 export const updateUserProfile = (user) => async (dispatch, getState) => {
-
   const state = getState();
 
   const token = state.auth.token;
@@ -160,16 +154,12 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
   }
 
   try {
-    const response = await axios.put(
-      "https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/users/profile",
-      user,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await axios.put(`${url}/auth/users/profile`, user, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     if (response.status === 200) {
       dispatch(setUser(user));
@@ -226,14 +216,11 @@ export const getUser = () => async (dispatch, getState) => {
     dispatch(setUser(decodedToken));
   } else {
     try {
-      const response = await axios.get(
-        "https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/users/profile",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`${url}/auth/users/profile`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       dispatch(setUser(response.data.data));
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -247,16 +234,12 @@ export const changePassword = (data) => async (dispatch, getState) => {
   console.log(data);
 
   try {
-    const response = await axios.post(
-      "https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/change-password",
-      data,
-      {
-        headers: {
-          accept: "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await axios.post(`${url}/auth/change-password`, data, {
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     if (response.status === 200) {
       toast.success("Berhasil mengubah password");
@@ -269,6 +252,58 @@ export const changePassword = (data) => async (dispatch, getState) => {
     }
     toast.error(error.message);
     return false;
+  }
+};
+
+export const noAccessToken = (navigate) => async (dispatch, getState) => {
+  const loginType = getState().auth.login;
+  const token = getState().auth.token;
+  if (loginType) {
+    if (loginType === "google") {
+      const decoded = jwtDecode(token);
+      if (decoded?.exp < new Date() / 1000) {
+        dispatch(setToken(null));
+        dispatch(setIsLoggedIn(false));
+        dispatch(setUser(null));
+        dispatch(setLogin(null));
+        toast.error("Token kadaluarsa.");
+        setTimeout(() => {
+          navigate("/");
+          window.location.reload();
+        }, 1500);
+      }
+    } else {
+      try {
+        await axios.get(
+          `${url}/auth/users/profile`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } catch (error) {
+        dispatch(setToken(null));
+        dispatch(setIsLoggedIn(false));
+        dispatch(setUser(null));
+        dispatch(setLogin(null));
+        toast.error("Token kadaluarsa.");
+        setTimeout(() => {
+          navigate("/");
+          window.location.reload();
+        }, 1500);
+        toast.error(error);
+      }
+    }
+  }
+};
+
+export const checkToken = (navigate) => (dispatch, getState) => {
+  const token = getState().auth.token;
+
+  if (!token) {
+    toast.error("Ups.. tidak dapat mengakses halaman, silakan masuk terlebih dahulu.");
+    navigate("/masuk");
   }
 };
 

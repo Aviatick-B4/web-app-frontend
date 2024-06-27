@@ -4,8 +4,9 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
-import { getPromos } from "../../../redux/actions/promoActions";
+import { getPromoById, getPromos } from "../../../redux/actions/promoActions";
 import { useNavigate } from "react-router-dom";
+import { setDepartureResults, setFavDestinationResults } from "../../../redux/reducers/searchFlightReducers";
 
 const PromoSection = () => {
   const dispatch = useDispatch();
@@ -41,6 +42,13 @@ const PromoSection = () => {
       month: "long",
       year: "numeric",
     });
+  };
+
+  const handlePromoClick = (ticketId) => {
+    dispatch(getPromoById(ticketId));
+    dispatch(setDepartureResults([]));
+    dispatch(setFavDestinationResults([]));
+    navigate(`/hasil-pencarian/promo/${ticketId}`);
   };
 
   function NextArrow(props) {
@@ -138,12 +146,8 @@ const PromoSection = () => {
     ],
   };
 
-  const handlePromoClick = (promoId) => {
-    navigate(`/hasil-pencarian/promo/${promoId}`);
-  };
-
   return (
-    <section>
+    <section id="promo-section">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
         <div>
           <svg

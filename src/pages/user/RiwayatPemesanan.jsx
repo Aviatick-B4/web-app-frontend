@@ -14,7 +14,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useDebounce } from "../../utils/debounce";
 
 import { FaCalendarAlt } from "react-icons/fa";
-import { setHistoryKeyword } from "../../redux/reducers/historyReducers";
+import { setBookingHistoryDetail, setHistoryKeyword } from "../../redux/reducers/historyReducers";
+import BackToTopButton from "../../components/navigations/BackToTop";
 
 export default function RiwayatPemesanan() {
   const dispatch = useDispatch();
@@ -46,6 +47,7 @@ export default function RiwayatPemesanan() {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
+      await dispatch(setBookingHistoryDetail([]))
       await dispatch(getUserBookingHistory());
       await dispatch(getHistoryByDate(selectedDate));
       await dispatch(getHistorySearchResults());
@@ -125,12 +127,7 @@ export default function RiwayatPemesanan() {
       <section className="pt-6 md:pt-28 pb-8">
         <div className="container">
           {/* Breadcrumb */}
-          <div className="hidden md:flex gap-1.5 text-main text-xs font-medium -mt-4 md:-mt-0 mb-10 md:mb-5">
-            <span>Beranda</span>
-            <img src="/icons/right-chev.svg" alt="chevron" />
-            <span>Riwayat Pemesanan</span>
-          </div>
-          <h1 className="block md:hidden text-xl font-bold text-main mb-10">
+          <h1 className="text-2xl md:text-xl font-bold text-main mb-10 md:mb-4">
             Riwayat Pemesanan
           </h1>
 
@@ -574,6 +571,7 @@ export default function RiwayatPemesanan() {
           </div>
         </div>
       </section>
+      <BackToTopButton />
       <Footer />
     </div>
   );

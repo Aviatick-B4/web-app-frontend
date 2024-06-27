@@ -11,11 +11,14 @@ const promoSlicer = createSlice({
     setPromo: (state, action) => {
       state.promos = action.payload;
     },
+    setResetPromo: (state, action) => {
+      state.promos = [];
+    },
   },
 });
 
 export const {
-  setPromo,
+  setPromo, setResetPromo
 } = promoSlicer.actions;
 
 export default promoSlicer.reducer;

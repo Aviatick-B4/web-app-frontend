@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+  getFavDestinationById,
   getFavDestinations,
   getFavDestinationsByFilter,
 } from "../../../redux/actions/favoriteDestinationActions";
@@ -8,9 +9,12 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
+import { useNavigate } from "react-router-dom";
+import { setDepartureResults, setPromoResult } from "../../../redux/reducers/searchFlightReducers";
 
 const FavoriteDestinationSection = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [selectedButton, setSelectedButton] = useState("Semua");
   const favDestination = useSelector(
     (state) => state?.favDestination.favDestinations
@@ -59,6 +63,14 @@ const FavoriteDestinationSection = () => {
     "North America": "Amerika Utara",
     Europe: "Eropa",
     Oceania: "Oceania",
+  };
+
+  const handleDestinationClick = (ticketId) => {
+    console.log("tiket id", ticketId);
+    dispatch(getFavDestinationById(ticketId));
+    dispatch(setDepartureResults([]));
+    dispatch(setPromoResult([]));
+    navigate(`/hasil-pencarian/destinasi`);
   };
 
   function NextArrow(props) {
@@ -157,7 +169,7 @@ const FavoriteDestinationSection = () => {
   };
 
   return (
-    <section>
+    <section id="destinasi-favorit-section">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
         <div>
           <svg
@@ -202,7 +214,11 @@ const FavoriteDestinationSection = () => {
         {favDestination.length > 0 && (
           <Slider {...settings}>
             {favDestination.map((fav, id) => (
-              <div key={id} className="px-2 py-1">
+              <div
+                onClick={() => handleDestinationClick(fav.ticketId)}
+                key={id}
+                className="px-2 py-1"
+              >
                 <div className="relative w-full bg-white rounded-lg shadow-md h-full bg-transparent overflow-visible text-main hover:shadow-lg cursor-pointer">
                   {/* Image and span container */}
                   <div className="relative">
@@ -225,11 +241,11 @@ const FavoriteDestinationSection = () => {
                       </p>
                     </div>
                     <div className="flex items-center gap-1 mb-4">
-                      {/* <img
-                            src="/airasia-logo.png"
-                            alt="Airasia Logo"
-                            className="w-4 h-4"
-                          /> */}
+                      <img
+                        src={fav.airlineLogo}
+                        alt={`${fav.airline} image`}
+                        className="w-4 h-4"
+                      />
                       <p className="text-darkgray font-medium text-xs">
                         {fav.airline}
                       </p>

@@ -50,7 +50,7 @@ export default {
           paddingLeft: "16px",
           paddingRight: "16px",
           "@screen sm": {
-            maxWidth: "640px",
+            maxWidth: "425px",
             marginLeft: "auto",
             marginRight: "auto",
             paddingLeft: "0",
