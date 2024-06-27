@@ -26,7 +26,7 @@ function App() {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <GoogleOAuthProvider clientId="418401514974-jb23d77jtvj8bg2jl31povog173514rj.apps.googleusercontent.com">
+        <GoogleOAuthProvider clientId="1056659934932-di3nci2kbsr0ouiqjp5fnn0v1asocgg7.apps.googleusercontent.com">
           <BrowserRouter>
             <Routes>
               <Route path="/pemesanan" element={<Pemesanan />} />

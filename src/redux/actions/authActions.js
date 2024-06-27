@@ -89,7 +89,7 @@ export const register =
 
 export const fetchUser = () => async (dispatch, getState) => {
   const token = getState().auth.token;
-  console.log("fetchUser - token:", token); // Get token from state
+  console.log("fetchUser - token:", token);
   const config = {
     method: "get",
     maxBodyLength: Infinity,
@@ -296,7 +296,7 @@ export const googleLogin = async (accessToken, navigate, dispatch) => {
     };
 
     const response = await axios.request(config);
-    const { token } = response.data.data;
+    const token = response.data.data;
     console.log("response.data ", response.data);
     localStorage.setItem("token", token);
     dispatch(setToken(token));
