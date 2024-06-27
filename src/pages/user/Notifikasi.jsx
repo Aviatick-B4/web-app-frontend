@@ -4,6 +4,8 @@ import Navbar from "../../components/navigations/Navbar";
 import FilterButton from "../../components/buttons/FilterButton";
 import { useDispatch, useSelector } from "react-redux";
 import { getNotifByFilter, getNotifications } from "../../redux/actions/notifActions";
+import BackToTopButton from "../../components/navigations/BackToTop";
+import BackButtonMobile from "../../components/navigations/BackButtonMobile";
 
 export default function Notifikasi() {
   const dispatch = useDispatch();
@@ -32,6 +34,7 @@ export default function Notifikasi() {
 
   const handleFilterSelect = (option) => {
     const typeMap = {
+      All: "All",
       General: "General",
       Transaksi: "Transaction",
       Promo: "Promo",
@@ -99,8 +102,10 @@ export default function Notifikasi() {
         <Navbar transparent={false} />
       </div>
 
+      <BackButtonMobile />
+
       {/* Notification Section */}
-      <section className="pt-8 md:pt-28 pb-80 md:pb-96">
+      <section className="pt-0 md:pt-28 pb-80 md:pb-96">
         <div className="container">
           {/* Breadcrumb */}
           <div className="hidden md:flex gap-1.5 text-main text-sm font-medium -mt-4 md:-mt-0 mb-10 md:mb-5">
@@ -120,24 +125,26 @@ export default function Notifikasi() {
               className="hidden md:block w-full"
             >
               <div className="flex justify-between items-center pt-4 pb-10 px-6">
-                <h1 className="text-2xl font-semibold text-white ">
+                <h1 className="text-2xl font-bold text-white ">
                   Notifikasi
                 </h1>
                 <FilterButton
                   label="Filter"
-                  options={["General", "Transaksi", "Promo"]}
+                  options={["All", "General", "Transaksi", "Promo"]}
                   onOptionSelect={handleFilterSelect}
                   selectedOption={filterType}
                 />
               </div>
             </div>
-            <div className="md:hidden flex items-center justify-between pb-4 border-b border-neutral">
-              <h1 className=" text-2xl font-semibold text-main ">Notifikasi</h1>
+            <div className="md:hidden flex items-center justify-between pb-4 border-b border-neutral -mt-3">
+              <h1 className="text-2xl font-semibold text-main">Notifikasi</h1>
               <FilterButton
                 label="Filter"
-                options={["General", "Transaksi", "Promo"]}
+                options={["All", "General", "Transaksi", "Promo"]}
                 onOptionSelect={handleFilterSelect}
                 selectedOption={filterType}
+                className="bg-primary"
+                notif
               />
             </div>
 
@@ -194,6 +201,7 @@ export default function Notifikasi() {
         </div>
       </section>
 
+      <BackToTopButton />
       <Footer />
     </div>
   );

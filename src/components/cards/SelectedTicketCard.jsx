@@ -21,7 +21,7 @@ const SelectedTicketCard = ({
     });
   };
   return (
-    <div className="hidden lg:block mx-auto bg-white rounded-lg shadow-md overflow-hidden my-2">
+    <div className="mx-auto bg-white rounded-lg shadow-md overflow-hidden my-2">
       <div className="flex justify-between gap-12 p-3 items-center">
         <div className="flex">
           <div className="flex-1">

@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   favDestinations: [],
-  favDestinationsByFilter: [],
+  favDestinationsByFilter: []
 };
 
 const favDestinationSlicer = createSlice({

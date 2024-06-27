@@ -8,6 +8,8 @@ const initialState = {
   departureResults: [],
   returnResults: [],
   tripTypeSaved: null,
+  promoResult: null,
+  favDestinationResults: []
 };
 
 const searchFlightSlicer = createSlice({
@@ -35,10 +37,16 @@ const searchFlightSlicer = createSlice({
     setTripTypeSaved: (state, action) => {
       state.tripTypeSaved = action.payload;
     },
+    setPromoResult: (state, action) => {
+      state.promoResult = action.payload;
+    },
+    setFavDestinationResults: (state, action) => {
+      state.favDestinationResults = action.payload;
+    },
   },
 });
 
-export const { setCities, setCityKeyword, setCitySearchResult, setFlightKeyword, setDepartureResults, setReturnResults, setTripTypeSaved } =
+export const { setCities, setCityKeyword, setCitySearchResult, setFlightKeyword, setDepartureResults, setReturnResults, setTripTypeSaved, setPromoResult, setFavDestinationResults } =
   searchFlightSlicer.actions;
 
 export default searchFlightSlicer.reducer;

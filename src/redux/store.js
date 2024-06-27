@@ -17,7 +17,7 @@ const rootReducer = combineReducers({
   favDestination: favoriteDestination,
   history: historyReducers,
   notif: notifReducers,
-  booking: bookingReducers
+  booking: bookingReducers,
 });
 
 const persistConfig = {

@@ -2,12 +2,14 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { setNotifByFilter, setNotifications } from "../reducers/notifReducers";
 
+const url = import.meta.env.VITE_BASE_URL;
+
 export const getNotifications = () => async (dispatch, getState) => {
   const token = getState().auth.token;
 
   try {
     const response = await axios.get(
-      "https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/notifications?page=1&limit=10",
+      `${url}/notifications?page=1&limit=10`,
       {
         headers: {
           accept: "application/json",
@@ -32,7 +34,7 @@ export const getNotifByFilter = (filterType) => async (dispatch, getState) => {
 
   try {
     const response = await axios.get(
-      `https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/notifications?page=1&limit=10&type=${type}`,
+      `${url}/notifications?page=1&limit=10&type=${type}`,
       {
         headers: {
           accept: "application/json",

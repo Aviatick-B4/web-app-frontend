@@ -41,7 +41,7 @@ const people = [
 
 export default function AboutUs() {
   return (
-    <div className="bg-white">
+    <div className="bg-white" id="tentang-kami-section">
       <div className="w-full mx-auto py-12 text-center lg:py-24">
         <div className="flex-col md:flex-row flex space-y-8 sm:space-y-12">
           <div

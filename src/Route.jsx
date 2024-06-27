@@ -18,6 +18,8 @@ import { Provider } from "react-redux";
 import { persistor, store } from "./redux/store.js";
 import { PersistGate } from "redux-persist/integration/react";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import Protected from "./components/Protected.jsx";
+import NoAccessToken from "./components/NoAccessToken.jsx";
 
 function App() {
   return (
@@ -33,8 +35,26 @@ function App() {
               <Route path="/" element={<Beranda />} />
               <Route path="/daftar" element={<Register />} />
               <Route path="/masuk" element={<Login />} />
-              <Route path="/akun-saya" element={<Akun />} />
-              <Route path="/notifikasi" element={<Notifikasi />} />
+              <Route
+                path="/akun-saya"
+                element={
+                  <div>
+                    <Protected />
+                    <Akun />
+                    <NoAccessToken />
+                  </div>
+                }
+              />
+              <Route
+                path="/notifikasi"
+                element={
+                  <div>
+                    <Protected />
+                    <Notifikasi />
+                    <NoAccessToken />
+                  </div>
+                }
+              />
               <Route path="/lupa-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/verifikasi-email" element={<EmailVerification />} />
@@ -43,7 +63,20 @@ function App() {
                 path="/hasil-pencarian/promo/:promoId"
                 element={<HasilPencarian />}
               />
-              <Route path="/riwayat-pemesanan" element={<RiwayatPemesanan />} />
+              <Route
+                path="/hasil-pencarian/destinasi"
+                element={<HasilPencarian />}
+              />
+              <Route
+                path="/riwayat-pemesanan"
+                element={
+                  <div>
+                    <Protected />
+                    <RiwayatPemesanan />
+                    <NoAccessToken />
+                  </div>
+                }
+              />
             </Routes>
             <ToastContainer />
           </BrowserRouter>
