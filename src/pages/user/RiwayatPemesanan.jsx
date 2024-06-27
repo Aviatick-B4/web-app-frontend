@@ -12,9 +12,7 @@ import {
 } from "../../redux/actions/historyActions";
 import { useDispatch, useSelector } from "react-redux";
 import { useDebounce } from "../../utils/debounce";
-
 import { FaCalendarAlt } from "react-icons/fa";
-import { setHistoryKeyword } from "../../redux/reducers/historyReducers";
 import CetakTiket from "../../components/buttons/CetakTiket";
 import { setBookingHistoryDetail, setHistoryKeyword } from "../../redux/reducers/historyReducers";
 import BackToTopButton from "../../components/navigations/BackToTop";

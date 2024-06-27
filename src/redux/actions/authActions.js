@@ -24,9 +24,6 @@ import { useGoogleLogin } from "@react-oauth/google";
 import { data } from "autoprefixer";
 import { Navigate } from "react-router-dom";
 
-export const login = (data, navigate, setMessage) => async (dispatch) => {
-  try {
-
 const url = import.meta.env.VITE_BASE_URL;
 
 export const login = (data, navigate, setMessage) => async (dispatch) => {

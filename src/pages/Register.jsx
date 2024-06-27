@@ -38,7 +38,6 @@ function Register() {
       setMessage("Semua bidang wajib diisi.");
       return;
     }
-  }, []);
 
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailPattern.test(email)) {
