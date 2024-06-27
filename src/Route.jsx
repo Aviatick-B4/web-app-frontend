@@ -18,6 +18,7 @@ import { Provider } from "react-redux";
 import { persistor, store } from "./redux/store.js";
 import { PersistGate } from "redux-persist/integration/react";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import NotFound from "./pages/NotFound.jsx";
 
 function App() {
   return (
@@ -43,6 +44,7 @@ function App() {
               <Route path="/verifikasi-email" element={<EmailVerification />} />
               <Route path="/hasil-pencarian" element={<HasilPencarian />} />
               <Route path="/riwayat-pemesanan" element={<RiwayatPemesanan />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
             <ToastContainer />
           </BrowserRouter>

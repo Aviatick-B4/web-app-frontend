@@ -47,7 +47,7 @@ export const getFlightSearchResults =
     const totalPassenger = adults + children + infants;
 
     try {
-      let url = `https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/tickets?limit=10&page=1&from=${from}&to=${to}&departure=${departureDate}&passengers=${totalPassenger}&seat_class=${flightClass}`;
+      let url = `https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/tickets/search?limit=10&page=1&from=${from}&to=${to}&departure=${departureDate}&passengers=${totalPassenger}&seat_class=${flightClass}`;
 
       if (returnDate) {
         url += `&return=${returnDate}`;
@@ -64,4 +64,3 @@ export const getFlightSearchResults =
       console.error(error.message);
     }
   };
-

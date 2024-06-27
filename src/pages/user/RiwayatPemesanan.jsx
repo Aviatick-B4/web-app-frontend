@@ -15,6 +15,7 @@ import { useDebounce } from "../../utils/debounce";
 
 import { FaCalendarAlt } from "react-icons/fa";
 import { setHistoryKeyword } from "../../redux/reducers/historyReducers";
+import CetakTiket from "../../components/buttons/CetakTiket";
 
 export default function RiwayatPemesanan() {
   const dispatch = useDispatch();
@@ -556,6 +557,13 @@ export default function RiwayatPemesanan() {
                   </div>
 
                   {selectedFlight.status !== "CANCELED" && (
+                    <CetakTiket
+                      flightDetail={selectedFlight}
+                      bookingDetail={bookingDetail}
+                    />
+                  )}
+
+                  {/* {selectedFlight.status !== "CANCELED" && (
                     <button
                       className={`text-white font-medium text-base py-2.5 px-10 rounded-full w-full mt-4 ${
                         selectedFlight.status === "UNPAID"
@@ -567,7 +575,7 @@ export default function RiwayatPemesanan() {
                         ? "Lanjut Bayar"
                         : "Cetak Tiket"}
                     </button>
-                  )}
+                  )} */}
                 </div>
               </div>
             )}
