@@ -7,7 +7,7 @@ export const getNotifications = () => async (dispatch, getState) => {
 
   try {
     const response = await axios.get(
-      "https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/notifications?page=1&limit=10",
+      "https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/notifications?page=1&limit=10",
       {
         headers: {
           accept: "application/json",
@@ -32,7 +32,7 @@ export const getNotifByFilter = (filterType) => async (dispatch, getState) => {
 
   try {
     const response = await axios.get(
-      `https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/notifications?page=1&limit=10&type=${type}`,
+      `https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/notifications?page=1&limit=10&type=${type}`,
       {
         headers: {
           accept: "application/json",

@@ -10,7 +10,7 @@ import {
 export const login = (data, navigate, setMessage) => async (dispatch) => {
   try {
     const response = await axios.post(
-      "https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/login",
+      "https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/login",
       data,
       {
         headers: {
@@ -48,7 +48,7 @@ export const fetchUser = () => async (dispatch, getState) => {
   const config = {
     method: "get",
     maxBodyLength: Infinity,
-    url: "https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/users/profile",
+    url: "https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/users/profile",
     headers: {
       accept: "application/json",
       Authorization: `Bearer ${token}`, // Include the token in the headers
@@ -111,7 +111,7 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
 
   try {
     const response = await axios.put(
-      "https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/users/profile",
+      "https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/users/profile",
       user,
       {
         headers: {
@@ -152,7 +152,7 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
 //   const config = {
 //     method: 'get',
 //     maxBodyLength: Infinity,
-//     url: 'https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/google',
+//     url: 'https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/google',
 //     headers: {
 //       'accept': '*/*'
 //     }
@@ -190,7 +190,7 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
 //     const config = {
 //       method: 'get',
 //       maxBodyLength: Infinity,
-//       url: 'https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/users/profile',
+//       url: 'https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/users/profile',
 //       headers: {
 //         'accept': 'application/json'
 //       }

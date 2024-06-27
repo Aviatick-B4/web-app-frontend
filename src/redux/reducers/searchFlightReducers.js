@@ -5,7 +5,9 @@ const initialState = {
   cityKeyword: "",
   citySearchResults: [],
   flightKeyword: [],
-  flightSearchResults: []
+  departureResults: [],
+  returnResults: [],
+  tripTypeSaved: null,
 };
 
 const searchFlightSlicer = createSlice({
@@ -24,13 +26,26 @@ const searchFlightSlicer = createSlice({
     setFlightKeyword: (state, action) => {
       state.flightKeyword = action.payload;
     },
-    setFlightSearchResults: (state, action) => {
-      state.flightSearchResults = action.payload;
+    setDepartureResults: (state, action) => {
+      state.departureResults = action.payload;
+    },
+    setReturnResults: (state, action) => {
+      state.returnResults = action.payload;
+    },
+    setTripTypeSaved: (state, action) => {
+      state.tripTypeSaved = action.payload;
     },
   },
 });
 
-export const { setCities, setCityKeyword, setCitySearchResult, setFlightKeyword, setFlightSearchResults } =
-  searchFlightSlicer.actions;
+export const {
+  setCities,
+  setCityKeyword,
+  setCitySearchResult,
+  setFlightKeyword,
+  setDepartureResults,
+  setReturnResults,
+  setTripTypeSaved,
+} = searchFlightSlicer.actions;
 
 export default searchFlightSlicer.reducer;

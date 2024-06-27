@@ -5,7 +5,7 @@ import { setFavDestinations } from "../reducers/favoriteDestinationReducers";
 export const getFavDestinations = () => async (dispatch) => {
   try {
     const response = await axios.get(
-      `https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/flights/favorite?page=1&limit=10`
+      `https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/flights/favorite?page=1&limit=10`
     );
     // console.log(response.data.data);
     dispatch(setFavDestinations(response.data.data));

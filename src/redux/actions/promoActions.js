@@ -5,7 +5,7 @@ import { setPromo } from "../reducers/promoReducers";
 export const getPromos = () => async (dispatch) => {
   try {
     const response = await axios.get(
-      `https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/promos`
+      `https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/promos`
     );
     dispatch(setPromo(response.data.data));
   } catch (error) {

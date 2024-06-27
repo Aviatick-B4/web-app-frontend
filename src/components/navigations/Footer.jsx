@@ -3,7 +3,7 @@ import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
 
 export default function Footer() {
   return (
-    <footer className="bg-main text-white py-8 md:py-12 mt-12">
+    <footer className="bg-main  text-white py-8 md:py-12 mt-12">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="text-center md:text-left md:col-span-1">
@@ -43,7 +43,7 @@ export default function Footer() {
           </div>
           <div className="text-center md:text-left md:col-span-1">
             <h3 className="text-xl font-bold">Follow Kami di</h3>
-            <ul className="mt-4 space-y-2">
+            <ul className="max-lg:flex gap-3 justify-center mt-4 space-y-2">
               <li className="flex justify-center md:justify-start items-center">
                 <FaInstagram size={24} className="mr-2 text-primary" />
                 <a href="#" className="hover:underline">

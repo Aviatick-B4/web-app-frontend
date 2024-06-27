@@ -30,7 +30,7 @@ function Register() {
 
     try {
       const responseRegister = await axios.post(
-        `https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/register`,
+        `https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/register`,
         {
           email,
           fullName,
@@ -88,7 +88,7 @@ function Register() {
   //     const { email, fullName, phoneNumber, password, confirmPassword } =
   //       formData;
   //     const response = await axios.post(
-  //       `https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/register`,
+  //       `https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/register`,
   //       {
   //         email: email,
   //         fullName: fullName,
