@@ -30,6 +30,13 @@ function Register() {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  useEffect(() => {
+    if (token) {
+      toast.error("Kamu sudah login.");
+      navigate("/");
+    }
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -94,9 +101,9 @@ function Register() {
         <div className="fixed inset-0 flex items-center justify-center bg-opacity-75 z-50">
           <ThreeDots
             visible={true}
-            height="80"
-            width="80"
-            color="#F93939"
+            height="60"
+            width="60"
+            color="#FFB423"
             radius="9"
             ariaLabel="three-dots-loading"
             wrapperStyle={{}}

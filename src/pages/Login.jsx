@@ -6,9 +6,10 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../redux/actions/authActions";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import GoogleLogin from "./googleLogin";
 import { ThreeDots } from "react-loader-spinner";
+import { toast } from "react-toastify";
 
 function Login() {
   const navigate = useNavigate();
@@ -18,6 +19,14 @@ function Login() {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const token = useSelector((state) => state?.auth.token);
+
+  useEffect(() => {
+    if (token) {
+      toast.error("Kamu sudah login.");
+      navigate("/");
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -82,9 +91,9 @@ function Login() {
         <div className="fixed inset-0 flex items-center justify-center bg-opacity-75 z-50">
           <ThreeDots
             visible={true}
-            height="80"
-            width="80"
-            color="#F93939"
+            height="60"
+            width="60"
+            color="#FFB423"
             radius="9"
             ariaLabel="three-dots-loading"
             wrapperStyle={{}}
