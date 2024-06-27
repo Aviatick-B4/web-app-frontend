@@ -5,9 +5,27 @@ import {
   setLogin,
   setToken,
   setUser,
+  forgotPasswordSuccess,
+  forgotPasswordFailure,
+  setEmail,
+  setPassword,
+  setConfirmPassword,
+  setMessage,
+  resetPasswordRequest,
+  resetPasswordSuccess,
+  resetPasswordFailure,
+  verifyEmailSuccess,
+  verifyEmailFailure,
+  resendOtpSuccess,
+  resendOtpFailure,
 } from "../reducers/authReducers";
 import { jwtDecode } from "jwt-decode";
 import { useGoogleLogin } from "@react-oauth/google";
+import { data } from "autoprefixer";
+import { Navigate } from "react-router-dom";
+
+export const login = (data, navigate, setMessage) => async (dispatch) => {
+  try {
 
 const url = import.meta.env.VITE_BASE_URL;
 
@@ -42,34 +60,35 @@ export const login = (data, navigate, setMessage) => async (dispatch) => {
   }
 };
 
-export const register = (data, navigate, setMessage) => async (dispatch) => {
-  console.log("data", data);
-  // try {
-  //   const response = await axios.post(
-  //     "${url}/auth/register",
-  //     data
-  //   );
+export const register =
+  (data, navigate, setMessage) => async (dispatch, getState) => {
+    console.log("data", data);
+    const { fullName, email, phoneNumber, password } = data;
+    console.log("email", email);
+    try {
+      const response = await axios.post(
+        "https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/register",
+        data
+      );
 
-  //   const { token } = response.data.data;
+      const token = response.data.data;
 
-  //   if (response.status === 200) {
-  //     toast.success("Account registration successful.");
-  //     dispatch(setToken(token));
-  //     dispatch(setIsLoggedIn(true));
-  //     dispatch(setLogin("login"));
-  //     setTimeout(() => {
-  //       navigate("/");
-
-  //     }, 1500);
-  //   }
-  // } catch (error) {
-  //   if (axios.isAxiosError(error)) {
-  //     setMessage(error.response.data.message);
-  //     return;
-  //   }
-  //   toast.error(error.message);
-  // }
-};
+      if (response.status === 200) {
+        toast.success("Account registration successful.");
+        localStorage.setItem("userEmail", email); // Simpan email ke localStorage
+        dispatch(setToken(token));
+        dispatch(setUser(response.data.data.user));
+        // const email = getState().auth.user.email;
+        navigate("/verifikasi-email");
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        setMessage(error.response.data.message);
+        return;
+      }
+      console.error(error.message);
+    }
+  };
 
 export const fetchUser = () => async (dispatch, getState) => {
   const token = getState().auth.token;
@@ -170,63 +189,27 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
   }
 };
 
-export const googleLogin = async (accessToken, navigate, dispatch) => {
-  console.log("token ", accessToken);
-  try {
-    let data = JSON.stringify({
-      access_token: accessToken,
-    });
+// export const getUser = () => async (dispatch, getState) => {
+//   const loginType = getState().auth.login;
+//   const token = getState().auth.token;
 
-    let config = {
-      method: "post",
-      maxBodyLength: Infinity,
-      url: `https://shy-cloud-3319.fly.dev/api/v1/auth/google`,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      data: data,
-    };
-
-    const response = await axios.request(config);
-    const { token } = response.data.data;
-    console.log("response.data ", response.data);
-    localStorage.setItem("token", token);
-    dispatch(setToken(token));
-    dispatch(setIsLoggedIn(true));
-    dispatch(setLogin("google"));
-    toast.success("Login successful.");
-    setTimeout(() => {
-      navigate("/", { state: { token: token } });
-    }, 1500);
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error(error.response.data.message);
-      return;
-    }
-  }
-};
-
-export const getUser = () => async (dispatch, getState) => {
-  const loginType = getState().auth.login;
-  const token = getState().auth.token;
-
-  if (loginType === "google") {
-    const decodedToken = jwtDecode(token);
-    console.log(decodedToken);
-    dispatch(setUser(decodedToken));
-  } else {
-    try {
-      const response = await axios.get(`${url}/auth/users/profile`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      dispatch(setUser(response.data.data));
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  }
-};
+//   if (loginType === "google") {
+//     const decodedToken = jwtDecode(token);
+//     console.log(decodedToken);
+//     dispatch(setUser(decodedToken));
+//   } else {
+//     try {
+//       const response = await axios.get(`${url}/auth/users/profile`, {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//         },
+//       });
+//       dispatch(setUser(response.data.data));
+//     } catch (error) {
+//       console.error("Error fetching data:", error);
+//     }
+//   }
+// };
 
 export const changePassword = (data) => async (dispatch, getState) => {
   const token = getState().auth.token;
@@ -298,6 +281,204 @@ export const noAccessToken = (navigate) => async (dispatch, getState) => {
   }
 };
 
+export const googleLogin = async (accessToken, navigate, dispatch) => {
+  console.log("token ", accessToken);
+  try {
+    let data = JSON.stringify({
+      access_token: accessToken,
+    });
+
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: `https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/google`,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: data,
+    };
+
+    const response = await axios.request(config);
+    const { token } = response.data.data;
+    console.log("response.data ", response.data);
+    localStorage.setItem("token", token);
+    dispatch(setToken(token));
+    dispatch(setIsLoggedIn(true));
+    dispatch(setLogin("google"));
+    toast.success("Login successful.");
+    setTimeout(() => {
+      navigate("/", { state: { token: token } });
+    }, 1500);
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error(error.response.data.message);
+      return;
+    }
+  }
+};
+
+// export const googleLogin =
+//   (credentialResponse, navigate) => async (dispatch) => {
+//     const token = credentialResponse.credential;
+//     dispatch(setToken(token));
+//     dispatch(setIsLoggedIn(true));
+//     dispatch(setLogin("google"));
+//     toast.success("Login successful.");
+//     setTimeout(() => {
+//       navigate("/", {
+//         state: { token: credentialResponse.credential },
+//       });
+//     }, 1500);
+//   };
+
+export const getUser = () => async (dispatch, getState) => {
+  const loginType = getState().auth.login;
+  const token = getState().auth.token;
+
+  if (loginType === "google") {
+    const decodedToken = jwtDecode(token);
+    console.log(decodedToken);
+    dispatch(setUser(decodedToken));
+  } else {
+    try {
+      const response = await axios.get(
+        "https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/users/profile",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      dispatch(setUser(response.data.data));
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }
+};
+
+export const forgotPassword = (email, navigate) => async (dispatch) => {
+  // const { email } = getState().auth.user.email;
+  // const data = { email };
+  console.log("forgotPassword - email:", email);
+
+  try {
+    console.log("forgotPassword - about to send request");
+
+    const response = await axios.post(
+      "https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/forgot-password",
+      { email },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log("data", email);
+    console.log("response.status", response.status);
+
+    console.log("forgotPassword - response status:", response.status);
+
+    if (response.status === 200) {
+      console.log("forgotPassword - response data:", response.data);
+      toast.success("Reset link sent to your email");
+      // dispatch(setUser(response.data.data.user));
+      navigate("/reset-password");
+      // dispatch(forgotPasswordSuccess("Reset link sent to your email"));
+    } else if (response.status === 400) {
+      console.error("forgotPassword - bad request");
+      toast.error("Bad request");
+      // dispatch(forgotPasswordFailure("Bad request"));
+    } else {
+      throw new Error("Failed to send reset link");
+    }
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log("error", error);
+    } else {
+      console.error("Error:", error.message);
+    }
+    toast.error("Error sending reset link");
+    // dispatch(forgotPasswordFailure("Error sending reset link"));
+  }
+};
+
+// Action creators for reset password
+export const resetPassword = (password, token) => async (dispatch) => {
+  console.log("Dispatching RESET_PASSWORD_REQUEST action");
+  // dispatch({ type: "RESET_PASSWORD_REQUEST" });
+
+  try {
+    console.log("Sending request to reset password...");
+
+    const response = await axios.post(
+      `https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/reset-password?token=${token}`,
+      { password },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    console.log("Response received:", response);
+
+    if (response.status !== 200) {
+      console.error("Failed to reset password, status:", response.status);
+      throw new Error("Failed to reset password");
+    }
+
+    console.log("Password reset successful, response data:", response.data);
+    toast.success("Password reset successful");
+    // dispatch(resetPasswordSuccess(response.data)); // Dispatch success action with data
+  } catch (error) {
+    console.error("Error occurred during password reset:", error.message);
+    toast.error("Error resetting password");
+    // dispatch(resetPasswordFailure(error.message)); // Dispatch failure action with error message
+  }
+};
+
+export const verifyEmail = (data, navigate) => async (dispatch) => {
+  try {
+    const response = await axios.post(
+      "https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/verify-otp",
+      data
+    );
+
+    if (response.status === 200) {
+      toast.success("Email verification successful.");
+      localStorage.removeItem("userEmail"); // Remove userEmail from localStorage
+      navigate("/");
+    }
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log("error", error);
+    } else {
+      console.error("Error:", error.message);
+    }
+  }
+};
+
+export const resendOtp = (email) => async (dispatch) => {
+  console.log("email", email);
+  try {
+    const response = await axios.post(
+      "https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/resend-otp",
+      { email: email }
+    );
+    console.log("response.status", response.status);
+
+    if (response.status === 200) {
+      toast.success("OTP has been resent.");
+    }
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log("error", error);
+    } else {
+      console.error("Error:", error.message);
+    }
+  }
+};
+    
 export const checkToken = (navigate) => (dispatch, getState) => {
   const token = getState().auth.token;
 
@@ -306,7 +487,7 @@ export const checkToken = (navigate) => (dispatch, getState) => {
     navigate("/masuk");
   }
 };
-
+    
 export const logout = (navigate) => (dispatch) => {
   try {
     dispatch(setToken(null));

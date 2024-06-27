@@ -49,7 +49,7 @@ export const getBookingHistoryDetail =
           },
         }
       );
-    console.log("detail", response.data.data);
+      console.log("detail", response.data.data);
 
       dispatch(setBookingHistoryDetail(response.data.data));
     } catch (error) {

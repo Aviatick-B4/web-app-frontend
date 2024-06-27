@@ -4,8 +4,24 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { forgotPassword } from "../redux/actions/authActions";
+import { useNavigate } from "react-router-dom";
 
 function ForgotPassword() {
+  const [email, setEmail] = useState("");
+  console.log("email", email);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { message, error } = useSelector((state) => state.auth);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("ForgotPassword - form submitted"); // Log when form is submitted
+    dispatch(forgotPassword(email, navigate));
+  };
+  console.log("email", email);
+
   const settings = {
     dots: false,
     infinite: true,
@@ -42,7 +58,7 @@ function ForgotPassword() {
 
           <div className="mt-8">
             <div className="mt-6">
-              <form action="#" method="POST" className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label
                     htmlFor="email"
@@ -58,20 +74,25 @@ function ForgotPassword() {
                       autoComplete="email"
                       placeholder="Masukkan email"
                       required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       className="appearance-none block w-full px-3 py-2 border-b border-gray placeholder-neutral focus:outline-none focus:ring-primary focus:border-primary text-sm"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <a
-                    href="/verifikasi-email"
+                  <button
+                    type="button"
                     className="w-full flex justify-center py-2 px-4 border border-transparent rounded-full shadow-sm text-sm md:text-base font-medium text-white bg-primary hover:bg-darkprimary focus:outline-none"
+                    onClick={handleSubmit}
                   >
                     Kirim Tautan
-                  </a>
+                  </button>
                 </div>
               </form>
+              {/* {message && <p className="mt-4 text-green-500">{message}</p>}
+              {error && <p className="mt-4 text-red-500">{error}</p>} */}
             </div>
           </div>
         </div>

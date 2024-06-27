@@ -18,6 +18,7 @@ import { Provider } from "react-redux";
 import { persistor, store } from "./redux/store.js";
 import { PersistGate } from "redux-persist/integration/react";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import NotFound from "./pages/NotFound.jsx";
 import Protected from "./components/Protected.jsx";
 import NoAccessToken from "./components/NoAccessToken.jsx";
 
@@ -59,6 +60,7 @@ function App() {
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/verifikasi-email" element={<EmailVerification />} />
               <Route path="/hasil-pencarian" element={<HasilPencarian />} />
+              <Route path="*" element={<NotFound />} />
               <Route
                 path="/hasil-pencarian/promo/:promoId"
                 element={<HasilPencarian />}
