@@ -7,12 +7,14 @@ import {
   setHistorySearchResults,
 } from "../reducers/historyReducers";
 
+const url = import.meta.env.VITE_BASE_URL;
+
 export const getUserBookingHistory = () => async (dispatch, getState) => {
   const token = getState().auth.token;
 
   try {
     const response = await axios.get(
-      "https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/bookings/booking-history",
+      `${url}/bookings/booking-history`,
       {
         headers: {
           accept: "application/json",
@@ -39,7 +41,7 @@ export const getBookingHistoryDetail =
 
     try {
       const response = await axios.get(
-        `https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/bookings/booking-history/${bookingId}`,
+        `${url}/bookings/booking-history/${bookingId}`,
         {
           headers: {
             accept: "application/json",
@@ -65,7 +67,7 @@ export const getHistorySearchResults = () => async (dispatch, getState) => {
 
   try {
     const response = await axios.get(
-      `https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/bookings/booking-history?search=${searchTerm}`,
+      `${url}/bookings/booking-history?search=${searchTerm}`,
       {
         headers: {
           accept: "application/json",
@@ -89,7 +91,7 @@ export const getHistoryByDate = () => async (dispatch, getState) => {
 
   try {
     const response = await axios.get(
-      `https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/bookings/booking-history?date=${date}`,
+      `${url}/bookings/booking-history?date=${date}`,
       {
         headers: {
           accept: "application/json",

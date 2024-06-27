@@ -10,7 +10,7 @@ import ResetPassword from "./pages/ResetPassword.jsx";
 import Register from "./pages/Register.jsx";
 import Login from "./pages/Login.jsx";
 import EmailVerification from "./pages/EmailVerification.jsx";
-import KonfirmasiPemesanan from "./pages/KonfirmasiPemesanan.jsx";
+import KonfirmasiTiket from "./pages/KonfirmasiTiket.jsx";
 import Akun from "./pages/user/Akun.jsx";
 import Notifikasi from "./pages/user/Notifikasi.jsx";
 import { ToastContainer } from "react-toastify";
@@ -19,6 +19,8 @@ import { persistor, store } from "./redux/store.js";
 import { PersistGate } from "redux-persist/integration/react";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import NotFound from "./pages/NotFound.jsx";
+import Protected from "./components/Protected.jsx";
+import NoAccessToken from "./components/NoAccessToken.jsx";
 
 function App() {
   return (
@@ -28,23 +30,55 @@ function App() {
           <BrowserRouter>
             <Routes>
               <Route path="/pemesanan" element={<Pemesanan />} />
-              <Route
-                path="/konfirmasi-pemesanan"
-                element={<KonfirmasiPemesanan />}
-              />
+              <Route path="/konfirmasi-tiket" element={<KonfirmasiTiket />} />
               <Route path="/pembayaran" element={<Pembayaran />} />
               <Route path="/success" element={<PaymentSuccess />} />
               <Route path="/" element={<Beranda />} />
               <Route path="/daftar" element={<Register />} />
               <Route path="/masuk" element={<Login />} />
-              <Route path="/akun-saya" element={<Akun />} />
-              <Route path="/notifikasi" element={<Notifikasi />} />
+              <Route
+                path="/akun-saya"
+                element={
+                  <div>
+                    <Protected />
+                    <Akun />
+                    <NoAccessToken />
+                  </div>
+                }
+              />
+              <Route
+                path="/notifikasi"
+                element={
+                  <div>
+                    <Protected />
+                    <Notifikasi />
+                    <NoAccessToken />
+                  </div>
+                }
+              />
               <Route path="/lupa-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/verifikasi-email" element={<EmailVerification />} />
               <Route path="/hasil-pencarian" element={<HasilPencarian />} />
-              <Route path="/riwayat-pemesanan" element={<RiwayatPemesanan />} />
               <Route path="*" element={<NotFound />} />
+              <Route
+                path="/hasil-pencarian/promo/:promoId"
+                element={<HasilPencarian />}
+              />
+              <Route
+                path="/hasil-pencarian/destinasi"
+                element={<HasilPencarian />}
+              />
+              <Route
+                path="/riwayat-pemesanan"
+                element={
+                  <div>
+                    <Protected />
+                    <RiwayatPemesanan />
+                    <NoAccessToken />
+                  </div>
+                }
+              />
             </Routes>
             <ToastContainer />
           </BrowserRouter>

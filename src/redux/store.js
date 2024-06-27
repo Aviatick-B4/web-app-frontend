@@ -8,6 +8,7 @@ import favoriteDestination from "./reducers/favoriteDestinationReducers";
 import authReducers from "./reducers/authReducers";
 import historyReducers from "./reducers/historyReducers";
 import notifReducers from "./reducers/notifReducers";
+import bookingReducers from "./reducers/bookingReducers";
 
 const rootReducer = combineReducers({
   auth: authReducers,
@@ -15,13 +16,14 @@ const rootReducer = combineReducers({
   promo: promoReducers,
   favDestination: favoriteDestination,
   history: historyReducers,
-  notif: notifReducers
+  notif: notifReducers,
+  booking: bookingReducers,
 });
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["auth"],
+  whitelist: ["auth", "search", "booking"],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

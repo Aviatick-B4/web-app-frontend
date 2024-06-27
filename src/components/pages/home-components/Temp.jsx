@@ -4,20 +4,18 @@ import "react-datepicker/dist/react-datepicker.css";
 import "../../DatePickerStyles.css";
 import "../../modal.css";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import {
   getCities,
   getCitySearchResults,
 } from "../../redux/actions/searchFlightActions";
-import {
-  setCityKeyword,
-  setCitySearchResult,
-} from "../../redux/reducers/searchFlightReducers";
+import { setCityKeyword } from "../../redux/reducers/searchFlightReducers";
 import { useDebounce } from "../../utils/debounce";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import { DateRangePicker } from "react-date-range";
+import { addDays } from "date-fns";
 import { id } from "date-fns/locale";
-import { ThreeDots } from 'react-loader-spinner'
 
 Modal.setAppElement("#root");
 
@@ -29,8 +27,6 @@ const UnifiedModal = ({
   initialData,
 }) => {
   const dispatch = useDispatch();
-  const [loading, setLoading] = useState(false);
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const searchTerm = useSelector((state) => state?.search.cityKeyword);
   const citySearchResult = useSelector(
     (state) => state?.search.citySearchResults
@@ -40,11 +36,7 @@ const UnifiedModal = ({
     initialData?.selectedClass || "Economy"
   );
   const [selectedCity, setSelectedCity] = useState(
-    initialData?.selectedCity || {
-      cityIata: initialData?.selectedCity?.cityIata || "",
-      name: initialData?.selectedCity?.name || "",
-      country: initialData?.selectedCity?.country || "",
-    }
+    initialData?.selectedCity || "Jakarta"
   );
   const [passengers, setPassengers] = useState(
     initialData?.passengers || { adults: 1, children: 0, infants: 0 }
@@ -56,11 +48,10 @@ const UnifiedModal = ({
       key: "selection",
     },
   ]);
+  const [subModalType, setSubModalType] = useState(null);
 
   useEffect(() => {
-    dispatch(getCities())
-      .then(() => setLoading(false))
-      .catch(() => setLoading(true));
+    dispatch(getCities());
   }, [dispatch]);
 
   useEffect(() => {
@@ -72,10 +63,10 @@ const UnifiedModal = ({
   }, [initialData, type]);
 
   const searchCity = (term) => {
-    dispatch(getCitySearchResults(term));
+    dispatch(getCitySearchResults());
   };
 
-  const delayedSearch = useDebounce(searchCity, 100);
+  const delayedSearch = useDebounce(searchCity, 200);
 
   const handleSearchInputChange = (e) => {
     dispatch(setCityKeyword(e.target.value));
@@ -89,7 +80,7 @@ const UnifiedModal = ({
   const classes = ["First", "Economy", "Business"];
 
   const handleSave = () => {
-    if (type === "date") {
+    if (type === "date" || type === "mobile") {
       const stripTime = (date) => {
         const newDate = new Date(date);
         newDate.setHours(12, 0, 0, 0);
@@ -101,19 +92,29 @@ const UnifiedModal = ({
 
       onSave(startDate, endDate);
     }
-    if (type === "class") {
+    if (type === "class" || type === "mobile") {
       onSave(selectedClass);
     }
-    if (type === "passenger") {
+    if (type === "passenger" || type === "mobile") {
       onSave(passengers);
     }
-    if (type === "city") {
+    if (type === "city" || type === "mobile") {
       onSave(selectedCity);
-      dispatch(setCityKeyword(""));
-      dispatch(setCitySearchResult([]));
-      dispatch(getCities());
     }
     onRequestClose();
+  };
+
+  const handleSubModalSave = (data) => {
+    if (subModalType === "city") {
+      setSelectedCity(data);
+    } else if (subModalType === "date") {
+      setState(data);
+    } else if (subModalType === "passenger") {
+      setPassengers(data);
+    } else if (subModalType === "class") {
+      setSelectedClass(data);
+    }
+    setSubModalType(null);
   };
 
   return (
@@ -126,10 +127,83 @@ const UnifiedModal = ({
       appElement={document.getElementById("root")}
     >
       <div className="p-4">
+        {type === "mobile" && (
+          <>
+            <h2 className="text-xl text-left font-semibold text-main mb-6">
+              Ubah Pencarian
+            </h2>
+            <form action="">
+              <div className="space-y-4 text-left">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Dari
+                  </label>
+                  <input
+                    type="text"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
+                    placeholder="Departure"
+                    value={selectedCity}
+                    onClick={() => setSubModalType("city")}
+                    readOnly
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Ke
+                  </label>
+                  <input
+                    type="text"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
+                    placeholder="Departure"
+                    value={selectedCity}
+                    onClick={() => setSubModalType("city")}
+                    readOnly
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Tanggal
+                  </label>
+                  <input
+                    type="text"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
+                    placeholder="Select Date"
+                    onClick={() => setSubModalType("date")}
+                    readOnly
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Penumpang
+                  </label>
+                  <input
+                    type="text"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
+                    placeholder="Select Passengers"
+                    onClick={() => setSubModalType("passenger")}
+                    readOnly
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Kelas
+                  </label>
+                  <input
+                    type="text"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
+                    placeholder="Select Class"
+                    onClick={() => setSubModalType("class")}
+                    readOnly
+                  />
+                </div>
+              </div>
+            </form>
+          </>
+        )}
         {type === "date" && (
           <>
-            <h2 className="md:absolute md:top-[40%] text-xl text-left font-semibold text-main mb-6">
-              Pilih <br /> Tanggal
+            <h2 className="text-xl text-left font-semibold text-main mb-6">
+              Pilih Tanggal
             </h2>
             <DateRangePicker
               onChange={handleSelect}
@@ -137,14 +211,14 @@ const UnifiedModal = ({
               moveRangeOnFirstSelection={false}
               months={2}
               ranges={state}
-              direction={windowWidth < 640 ? "vertical" : "horizontal"}
+              direction="horizontal"
               color="#00A8D0"
               rangeColors={["#00A8D0"]}
               locale={id}
               minDate={new Date()}
               staticRanges={[]}
               inputRanges={[]}
-              className="-ms-56 md:-ms-9 bg-transparent"
+              className="-ms-9 bg-transparent"
             />
           </>
         )}
@@ -192,7 +266,6 @@ const UnifiedModal = ({
               citySearchResult={citySearchResult}
               selectedCity={selectedCity}
               onCitySelect={setSelectedCity}
-              loading={loading}
             />
           </>
         )}
@@ -211,9 +284,86 @@ const UnifiedModal = ({
           </button>
         </div>
       </div>
+      {subModalType && (
+        <SubModal
+          isOpen={!!subModalType}
+          onRequestClose={() => setSubModalType(null)}
+          contentLabel={`Pilih ${subModalType}`}
+        >
+          {subModalType === "city" && (
+            <CityInput
+              searchTerm={searchTerm}
+              onSearchInputChange={handleSearchInputChange}
+              citySearchResult={citySearchResult}
+              selectedCity={selectedCity}
+              onCitySelect={setSelectedCity}
+            />
+          )}
+          {subModalType === "date" && (
+            <DateRangePicker
+              onChange={handleSelect}
+              showSelectionPreview={true}
+              moveRangeOnFirstSelection={false}
+              ranges={state}
+              direction="vertical"
+              color="#00A8D0"
+              rangeColors={["#00A8D0"]}
+              locale={id}
+              minDate={new Date()}
+              staticRanges={[]}
+              inputRanges={[]}
+              className="-ms-60 bg-transparent"
+            />
+          )}
+          {subModalType === "passenger" && (
+            <PassengerInput
+              passengers={passengers}
+              setPassengers={setPassengers}
+            />
+          )}
+          {subModalType === "class" && (
+            <ul>
+              {classes.map((classItem) => (
+                <li
+                  key={classItem}
+                  onClick={() => {
+                    setSelectedClass(classItem);
+                    setSubModalType(null);
+                  }}
+                  className={`p-2 cursor-pointer hover:bg-primary/10 ${
+                    selectedClass === classItem ? "bg-primary/10" : ""
+                  }`}
+                >
+                  <div className="flex justify-between">
+                    <span>{classItem}</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </SubModal>
+      )}
     </Modal>
   );
 };
+
+const SubModal = ({ isOpen, onRequestClose, contentLabel, children }) => (
+  <Modal
+    isOpen={isOpen}
+    onRequestClose={onRequestClose}
+    contentLabel={contentLabel}
+    className="modal rounded-lg min-w-[340px] md:min-w-[440px]"
+    overlayClassName="overlay"
+    appElement={document.getElementById("root")}
+  >
+    <div className="p-4">
+      <h2 className="text-xl text-left font-semibold text-main mb-6">
+        {contentLabel}
+      </h2>
+      {children}
+    </div>
+  </Modal>
+);
 
 const PassengerInput = ({ passengers, setPassengers }) => (
   <>
@@ -307,7 +457,6 @@ const CityInput = ({
   citySearchResult,
   selectedCity,
   onCitySelect,
-  loading
 }) => (
   <>
     <div className="relative">
@@ -334,27 +483,15 @@ const CityInput = ({
         />
       </svg>
     </div>
-    {/* Loading Indicator */}
-    {loading ? (<div className="flex justify-center items-center mt-2">
-      <ThreeDots
-        visible={true}
-        height="40"
-        width="40"
-        color="#00A8D0"
-        radius="9"
-        ariaLabel="three-dots-loading"
-        wrapperStyle={{}}
-        wrapperClass=""
-        />
-    </div>) : (<div className="scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar scrollbar-thumb-primary scrollbar-track-white overflow-y-scroll max-h-48 mt-4">
+    <div className="scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar scrollbar-thumb-primary scrollbar-track-white overflow-y-scroll max-h-48 mt-4">
       {[...citySearchResult]
         .sort((a, b) => a.name.localeCompare(b.name))
         .map((city) => (
           <div
             key={city.cityIata}
-            onClick={() => onCitySelect(city)}
+            onClick={() => onCitySelect(city.cityIata)}
             className={`p-2 cursor-pointer hover:bg-primary/10 ${
-              selectedCity === city ? "bg-primary/10" : ""
+              selectedCity === city.name ? "bg-primary/10" : ""
             }`}
           >
             <div className="flex items-center justify-between">
@@ -373,7 +510,7 @@ const CityInput = ({
             </div>
           </div>
         ))}
-    </div>)}
+    </div>
   </>
 );
 

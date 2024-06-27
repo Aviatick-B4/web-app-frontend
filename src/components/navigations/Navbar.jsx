@@ -10,31 +10,79 @@ function Navbar({ transparent }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [activeSection, setActiveSection] = useState("");
   const user = useSelector((state) => state?.auth.user);
   const isLoggedIn = useSelector((state) => state?.auth.isLoggedIn);
 
   useEffect(() => {
-    if (!transparent) {
-      setIsScrolled(true);
-    } else {
-      const handleScroll = () => {
-        const scrollTop = window.pageYOffset;
-        if (scrollTop > 50) {
-          setIsScrolled(true);
-        } else {
-          setIsScrolled(false);
-        }
-      };
+    const handleScroll = () => {
+      const scrollTop = window.pageYOffset;
+      if (
+        document.getElementById("home-section") &&
+        scrollTop < document.getElementById("promo-section").offsetTop
+      ) {
+        setActiveSection("home-section");
+      } else if (
+        document.getElementById("promo-section") &&
+        scrollTop <
+          document.getElementById("destinasi-favorit-section").offsetTop
+      ) {
+        setActiveSection("promo-section");
+      } else if (
+        document.getElementById("destinasi-favorit-section") &&
+        scrollTop < document.getElementById("tentang-kami-section").offsetTop
+      ) {
+        setActiveSection("destinasi-favorit-section");
+      } else if (
+        document.getElementById("tentang-kami-section") &&
+        scrollTop >= document.getElementById("tentang-kami-section").offsetTop
+      ) {
+        setActiveSection("tentang-kami-section");
+      }
 
-      window.addEventListener("scroll", handleScroll);
+      if (!transparent) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(scrollTop > 50);
+      }
+    };
 
-      return () => {
-        window.removeEventListener("scroll", handleScroll);
-      };
-    }
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, [transparent]);
 
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      if (hash) {
+        const element = document.querySelector(hash);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+    };
+
+    handleHashChange();
+    window.addEventListener("hashchange", handleHashChange);
+
+    return () => {
+      window.removeEventListener("hashchange", handleHashChange);
+    };
+  }, [location]);
+
+  const handleLinkClick = (event, sectionId) => {
+    event.preventDefault();
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   function getInitials(fullName) {
+    if (!fullName) return "";
     const names = fullName.split(" ");
     const initials = names.map((name) => name[0]).join("");
     return initials.toUpperCase();
@@ -47,6 +95,41 @@ function Navbar({ transparent }) {
   const handleConfirmModalToggle = () => {
     setConfirmModalOpen(!confirmModalOpen);
   };
+
+  const renderLink = (to, sectionId, label) => {
+    if (location.pathname === "/") {
+      return (
+        <a
+          href={to}
+          onClick={(e) => handleLinkClick(e, sectionId)}
+          className={`${
+            isScrolled || !transparent
+              ? "text-sm font-medium text-primary hover:border-b-2 hover:border-primary pb-1"
+              : "text-sm font-medium text-white hover:border-b-2 hover:border-primary pb-1"
+          } ${
+            activeSection === sectionId ? "border-b-2 border-primary pb-1" : ""
+          }`}
+        >
+          {label}
+        </a>
+      );
+    } else {
+      return (
+        <Link
+          to={to}
+          className={`${
+            isScrolled || !transparent
+              ? "text-sm font-medium text-primary hover:border-b-2 hover:border-primary pb-1"
+              : "text-sm font-medium text-white hover:border-b-2 hover:border-primary pb-1"
+          } ${
+            activeSection === sectionId ? "border-b-2 border-primary pb-1" : ""
+          }`}
+        >
+          {label}
+        </Link>
+      );
+    }
+  }
 
   return (
     <nav
@@ -64,39 +147,13 @@ function Navbar({ transparent }) {
           />
         </Link>
 
-        {/* Desktop Menu */}
+       {/* Desktop Menu */}
         <div className="flex items-center justify-center flex-grow">
           <div className="hidden md:flex items-center space-x-8">
-            <a
-              href="/"
-              className={`${
-                isScrolled || !transparent
-                  ? "text-sm font-medium text-primary hover:border-b-2 hover:border-primary pb-1"
-                  : "text-sm font-medium text-white hover:border-b-2 hover:border-primary pb-1"
-              }`}
-            >
-              Beranda
-            </a>
-            <a
-              href="#"
-              className={`${
-                isScrolled || !transparent
-                  ? "text-sm font-medium text-primary hover:border-b-2 hover:border-primary pb-1"
-                  : "text-sm font-medium text-white hover:border-b-2 hover:border-primary pb-1"
-              }`}
-            >
-              Tentang Kami
-            </a>
-            <a
-              href="#"
-              className={`${
-                isScrolled || !transparent
-                  ? "text-sm font-medium text-primary hover:border-b-2 hover:border-primary pb-1"
-                  : "text-sm font-medium text-white hover:border-b-2 hover:border-primary pb-1"
-              }`}
-            >
-              Promo
-            </a>
+            {renderLink("/#home-section", "home-section", "Beranda")}
+            {renderLink("/#promo-section", "promo-section", "Promo")}
+            {renderLink("/#destinasi-favorit-section", "destinasi-favorit-section", "Destinasi Favorit")}
+            {renderLink("/#tentang-kami-section", "tentang-kami-section", "Tentang Kami")}
           </div>
         </div>
 
@@ -120,13 +177,13 @@ function Navbar({ transparent }) {
               </Link>
 
               <div className="rounded-full bg-gray/70 w-9 h-9 text-center text-white font-medium text-base flex items-center justify-center">
-                {getInitials(user.fullName)}
+                {getInitials(user?.fullName)}
               </div>
             </div>
             {showDropdown && (
               <div className="absolute top-full right-0 mt-1 bg-white shadow-md rounded-md w-48">
                 <p className="block w-full text-left px-4 py-2 text-sm font-medium text-primary rounded-t-md border-b border-neutral">
-                  {user && user.fullName}
+                  {user && user?.fullName}
                 </p>
                 <Link
                   to="/akun-saya"
@@ -162,8 +219,19 @@ function Navbar({ transparent }) {
           </Link>
         )}
 
-        {/* Mobile Hamburger Button */}
-        <div className="md:hidden">
+        {/* Mobile Hamburger Button and Notif */}
+        <div className="flex md:hidden items-center">
+          <Link to="/notifikasi">
+            <svg
+              className={`w-5 h-5 hover:fill-primary mr-3 ${
+                isScrolled || !transparent ? "fill-darkgray" : "fill-white"
+              }`}
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 448 512"
+            >
+              <path d="M224 0c-17.7 0-32 14.3-32 32V51.2C119 66 64 130.6 64 208v18.8c0 47-17.3 92.4-48.5 127.6l-7.4 8.3c-8.4 9.4-10.4 22.9-5.3 34.4S19.4 416 32 416H416c12.6 0 24-7.4 29.2-18.9s3.1-25-5.3-34.4l-7.4-8.3C401.3 319.2 384 273.9 384 226.8V208c0-77.4-55-142-128-156.8V32c0-17.7-14.3-32-32-32zm45.3 493.3c12-12 18.7-28.3 18.7-45.3H224 160c0 17 6.7 33.3 18.7 45.3s28.3 18.7 45.3 18.7s33.3-6.7 45.3-18.7z" />
+            </svg>
+          </Link>
           <button
             onClick={handleMobileMenuToggle}
             className={`focus:outline-none focus:text-primary ${
@@ -227,17 +295,24 @@ function Navbar({ transparent }) {
               Beranda
             </Link>
             <a
-              href="#"
-              className="px-4 py-2 text-sm font-medium text-main hover:bg-primary/15 w-full text-left"
-            >
-              Tentang Kami
-            </a>
-            <a
-              href="#"
+              href="#promo-section"
               className="px-4 py-2 text-sm font-medium text-main hover:bg-primary/15 w-full text-left"
             >
               Promo
             </a>
+            <a
+              href="#destinasi-favorit-section"
+              className="px-4 py-2 text-sm font-medium text-main hover:bg-primary/15 w-full text-left"
+            >
+              Destinasi Favorit
+            </a>
+            <a
+              href="#tentang-kami-section"
+              className="px-4 py-2 text-sm font-medium text-main hover:bg-primary/15 w-full text-left"
+            >
+              Tentang Kami
+            </a>
+
             <Link
               to="/login"
               className="px-4 py-2 text-sm font-medium text-main hover:bg-primary/15 w-full text-left"
