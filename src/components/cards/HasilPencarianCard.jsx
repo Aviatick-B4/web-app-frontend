@@ -46,9 +46,13 @@ const HasilPencarianCard = ({
   };
 
   const handleClick = () => {
+    console.log("Card clicked, flight data:", flight);
     onSelect(flight, type);
   };
 
+  const discountPercentage = (price, afterDiscount) => {
+    return ((price - afterDiscount) / price) * 100;
+  };
   return (
     <>
       {/* Desktop Card */}
@@ -57,6 +61,22 @@ const HasilPencarianCard = ({
           isSelected ? "border border-primary shadow shadow-primary/20" : ""
         }`}
       >
+        {flight.afterDiscountPrice && (
+          <div className="relative">
+            <div className="absolute z-10 top-1 -left-1 w-[70px] md:w-[80px]">
+              {/* Discount tag */}
+              <img
+                className="relative z-10 w-full transform scale-x-[-1]"
+                src="/discount-tag.png"
+                alt="Diskon"
+              />
+              <p className="absolute z-20 top-2 left-2 text-xs text-white font-medium">
+                Diskon{" "}
+                {discountPercentage(flight.price, flight.afterDiscountPrice)}%
+              </p>
+            </div>
+          </div>
+        )}
         <div className="flex gap-12 p-8 items-center">
           <div className="flex w-1/4">
             <img
@@ -106,7 +126,11 @@ const HasilPencarianCard = ({
             <div className="w-full flex flex-col items-end text-right space-y-2">
               <div className="flex items-center">
                 <span className="text-xl font-bold text-danger">
-                  {formatPrice(flight.price)}
+                  {formatPrice(
+                    flight.afterDiscountPrice
+                      ? flight.afterDiscountPrice
+                      : flight.price
+                  )}
                 </span>
                 <span className="text-base font-medium text-gray ml-1">
                   /pax
@@ -224,7 +248,11 @@ const HasilPencarianCard = ({
       </div>
 
       {/* Mobile Card */}
-      <div className="block lg:hidden mx-auto bg-white rounded-lg shadow-md overflow-hidden my-3 p-4">
+      <div
+        className={`block lg:hidden mx-auto bg-white rounded-lg shadow-md overflow-hidden my-3 p-4${
+          isSelected ? "border border-primary shadow-sm shadow-primary/20" : ""
+        }`}
+      >
         <div className="flex flex-col">
           <div className="flex justify-between items-center">
             <div className="flex">
@@ -241,9 +269,10 @@ const HasilPencarianCard = ({
               </div>
             </div>
             <button
-              onClick={() => {
-                navigate("/pemesanan");
-              }}
+//               onClick={() => {
+//                 navigate("/pemesanan");
+//               }}
+              onClick={handleClick}
               className="inline-block bg-primary hover:bg-darkprimary text-white text-xs px-6 py-2 rounded-full"
             >
               Pilih
@@ -282,7 +311,11 @@ const HasilPencarianCard = ({
           <div className="flex justify-between w-full items-center border-t border-dashed border-neutral pt-4 mt-2">
             <div className="flex items-center">
               <span className="text-lg font-bold text-danger">
-                {formatPrice(flight.price)}
+                {formatPrice(
+                  flight.afterDiscountPrice
+                    ? flight.afterDiscountPrice
+                    : flight.price
+                )}
               </span>
               <span className="text-xs font-medium text-gray ml-1">/pax</span>
             </div>

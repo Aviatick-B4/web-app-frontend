@@ -12,16 +12,22 @@ import { useNavigate } from "react-router-dom";
 import { addDays, format } from "date-fns";
 import { toast } from "react-toastify";
 import {
+  setDepartureResults,
+  setFavDestinationResults,
   setFlightKeyword,
+  setPromoResult,
   setTripTypeSaved,
 } from "../../../redux/reducers/searchFlightReducers";
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
 
 const FlightSchedule = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [tripType, setTripType] = useState("singletrip");
-  const [from, setFrom] = useState("SUB");
-  const [to, setTo] = useState("MES");
+  const [swalProps, setSwalProps] = useState({});
+  const [from, setFrom] = useState("BCN");
+  const [to, setTo] = useState("RIO");
   const [departureDate, setDepartureDate] = useState(new Date());
   const [returnDate, setReturnDate] = useState(addDays(new Date(), 1));
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -59,11 +65,11 @@ const FlightSchedule = () => {
 
   const handleSave = (data, endDate) => {
     if (modalType === "city") {
-      if (modalData === "from" && data === to) {
+      if (modalData === "from" && data.cityIata === to.cityIata) {
         toast.error("Kota keberangkatan tidak boleh sama dengan kota tujuan.");
         return;
       }
-      if (modalData === "to" && data === from) {
+      if (modalData === "to" && data.cityIata === from.cityIata) {
         toast.error("Kota tujuan tidak boleh sama dengan kota keberangkatan.");
         return;
       }
@@ -82,6 +88,11 @@ const FlightSchedule = () => {
   };
 
   const handleSaveToState = () => {
+    if (!from.cityIata || !to.cityIata) {
+    showSwal();
+    return;
+  }
+
     const flightData = {
       from,
       to,
@@ -94,9 +105,35 @@ const FlightSchedule = () => {
     };
 
     dispatch(setTripTypeSaved(tripType));
+    dispatch(setFavDestinationResults([]));
+    dispatch(setPromoResult([]));
+    dispatch(setDepartureResults([]));
     dispatch(getFlightSearchResults(flightData));
     navigate("/hasil-pencarian");
     dispatch(setFlightKeyword(flightData));
+  };
+
+  const showSwal = () => {
+    withReactContent(Swal).fire({
+      title: "<b>Pilih kota dulu yuk!</b>",
+      html: `
+        Pilih kota keberangkatan dan tujuan sebelum mencari penerbangan.
+      `,
+      showCloseButton: true,
+      focusConfirm: false,
+      confirmButtonText: 'Pilih',
+      customClass: {
+          confirmButton: 'inline-block bg-[#00A8D0] hover:bg-darkprimary text-white px-12 py-2 rounded-full'
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        if (!from.cityIata) {
+          openModal("city", "from");
+        } else if (!to.cityIata) {
+          openModal("city", "to");
+        }
+      }
+    });
   };
 
   return (
@@ -151,7 +188,7 @@ const TripTypeSelector = ({ tripType, setTripType }) => (
     <div className="bg-white rounded-t-xl flex">
       <button
         className={`px-3 py-2.5 md:px-4 md:py-2 rounded-tl-xl text-sm md:text-base font-medium ${
-          tripType === "singletrip" ? "bg-primary text-white" : "bg-gray-200"
+          tripType === "singletrip" ? "bg-white" : "bg-primary text-white"
         }`}
         onClick={() => setTripType("singletrip")}
       >
@@ -159,7 +196,7 @@ const TripTypeSelector = ({ tripType, setTripType }) => (
       </button>
       <button
         className={`px-3 py-2.5 md:px-4 md:py-2 rounded-tr-xl text-sm md:text-base font-medium ${
-          tripType === "roundtrip" ? "bg-primary text-white" : "bg-gray-200"
+          tripType === "roundtrip" ? "bg-white" : "bg-primary text-white"
         }`}
         onClick={() => setTripType("roundtrip")}
       >
@@ -176,8 +213,8 @@ const LocationSelector = ({ label, icon, location, openModal }) => (
       {label}
     </label>
     <button className="p-2 text-left rounded outline-none" onClick={openModal}>
-      {location || (
-        <p className="text-gray">{`Mau ${label.toLowerCase()} mana?`}</p>
+      {location.name || (
+        <p className="text-gray">{`${label.toLowerCase()} mana?`}</p>
       )}
     </button>
   </div>

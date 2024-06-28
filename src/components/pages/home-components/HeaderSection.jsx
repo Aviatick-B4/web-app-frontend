@@ -2,7 +2,7 @@ import React from "react";
 
 const Header = () => {
   return (
-    <div className="relative w-full">
+    <div id="home-section" className="relative w-full">
       <img
         src="/Group 1349.png"
         alt="Background"
