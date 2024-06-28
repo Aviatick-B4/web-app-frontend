@@ -43,7 +43,7 @@ export const getFavDestinationsByFilter = (continent) => async (dispatch) => {
   }
 };
 
-export const getFavDestinationById = (ticketId) => async (dispatch) => {
+export const getFavDestinationById = (ticketId, navigate) => async (dispatch) => {
   console.log("ticketId", ticketId);
   try {
     const results = await Promise.all(
@@ -54,6 +54,7 @@ export const getFavDestinationById = (ticketId) => async (dispatch) => {
     );
     console.log("fav by id", results);
     dispatch(setFavDestinationResults(results));
+    navigate("/hasil-pencarian/destinasi");
     // dispatch(setDepartureResults([]));
   } catch (error) {
     if (axios.isAxiosError(error)) {

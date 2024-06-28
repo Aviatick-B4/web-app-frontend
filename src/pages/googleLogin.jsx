@@ -1,31 +1,23 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { GoogleLogin as Google } from "@react-oauth/google";
-import { googleLogin } from "../redux/actions/authActions";
+import { useGoogleLogin } from "@react-oauth/google";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
+import axios from "axios";
+import { setLogin } from "../redux/reducers/authReducers";
+
 
 function GoogleLogin({ buttonText }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const handleOAuth = () => {
+    window.open(`https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/google`, "_self");
+  };
+
   return (
     <>
-      <Google
-        width="160px"
-        longtitle="true"
-        shape="pill"
-        type="standard"
-        text="signin"
-        locale="english"
-        logo_alignment="center"
-        onSuccess={(credentialResponse) =>
-          dispatch(googleLogin(credentialResponse, navigate))
-        }
-        onError={(error) => {
-          toast.error(error);
-        }}
-      />
+      <button onClick={() => handleOAuth()}>Masuk dengan Google</button>
     </>
   );
 }

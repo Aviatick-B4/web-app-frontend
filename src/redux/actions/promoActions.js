@@ -20,7 +20,7 @@ export const getPromos = () => async (dispatch) => {
   }
 };
 
-export const getPromoById = (ticketId) => async (dispatch) => {
+export const getPromoById = (ticketId, navigate) => async (dispatch) => {
   console.log("ticketId", ticketId);
   try {
     const response = await axios.get(
@@ -28,6 +28,7 @@ export const getPromoById = (ticketId) => async (dispatch) => {
     );
     console.log("by id", response.data.data);
     dispatch(setPromoResult(response.data.data));
+    navigate(`/hasil-pencarian/promo/${ticketId}`);
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error(error.message);

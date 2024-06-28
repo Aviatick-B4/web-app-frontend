@@ -46,8 +46,8 @@ export default function Akun() {
     if (!user) {
       dispatch(loadUserProfile());
     } else {
-      setFullName(user.fullName);
-      setFamilyName(user.familyName);
+      setFullName(user.fullName || user.name);
+      setFamilyName(user.familyName) || user.family_name;
       setPhoneNumber(user.phoneNumber);
       setEmail(user.email);
       setIdentityType(user.identityType);

@@ -65,12 +65,12 @@ const FavoriteDestinationSection = () => {
     Oceania: "Oceania",
   };
 
-  const handleDestinationClick = (ticketId) => {
+  const handleDestinationClick = (ticketId, navigate) => {
     console.log("tiket id", ticketId);
-    dispatch(getFavDestinationById(ticketId));
+    dispatch(getFavDestinationById(ticketId, navigate));
     dispatch(setDepartureResults([]));
     dispatch(setPromoResult([]));
-    navigate(`/hasil-pencarian/destinasi`);
+    // navigate(`/hasil-pencarian/destinasi`);
   };
 
   function NextArrow(props) {

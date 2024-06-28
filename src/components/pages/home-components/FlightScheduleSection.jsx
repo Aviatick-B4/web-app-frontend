@@ -24,6 +24,7 @@ import withReactContent from 'sweetalert2-react-content'
 const FlightSchedule = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
   const [tripType, setTripType] = useState("singletrip");
   const [swalProps, setSwalProps] = useState({});
   const [from, setFrom] = useState("BCN");
@@ -89,9 +90,9 @@ const FlightSchedule = () => {
 
   const handleSaveToState = () => {
     if (!from.cityIata || !to.cityIata) {
-    showSwal();
-    return;
-  }
+      showSwal();
+      return;
+    }
 
     const flightData = {
       from,
@@ -108,8 +109,7 @@ const FlightSchedule = () => {
     dispatch(setFavDestinationResults([]));
     dispatch(setPromoResult([]));
     dispatch(setDepartureResults([]));
-    dispatch(getFlightSearchResults(flightData));
-    navigate("/hasil-pencarian");
+    dispatch(getFlightSearchResults(flightData, navigate, setLoading));
     dispatch(setFlightKeyword(flightData));
   };
 
@@ -298,13 +298,13 @@ const PassengerAndClassSelectors = ({ passengers, flightClass, openModal }) => (
   </>
 );
 
-const SearchButton = ({ onClick }) => (
+const SearchButton = ({ onClick, loading }) => (
   <div className="flex justify-center md:justify-end mt-4">
     <button
       className="px-4 py-2 w-full md:w-auto text-center bg-primary text-white rounded-full border-2 border-primary hover:bg-white hover:text-primary"
       onClick={onClick}
     >
-      Cari Jadwal
+      {loading ? ("Loading...") : ("Cari Jadwal")}
       <BsArrowRight className="inline-block ml-2" />
     </button>
   </div>

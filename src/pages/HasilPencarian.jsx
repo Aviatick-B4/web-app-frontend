@@ -31,7 +31,7 @@ export default function HasilPencarian() {
   const [priceRange, setPriceRange] = useState([0, Infinity]);
   const [isAllSelected, setIsAllSelected] = useState(true);
   const [changedFlightKeyword, setChangedFlightKeyword] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(location.state?.loading || false);
   const [selectedDeparture, setSelectedDeparture] = useState(null);
   const [selectedReturn, setSelectedReturn] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -67,12 +67,6 @@ export default function HasilPencarian() {
   const initialData = {
     passengers: { adults, children, infants },
   };
-
-  useEffect(() => {
-    console.log("tripType", tripTypeSaved);
-    console.log("keyword", flightKeyword);
-    console.log("booking", booking);
-  }, [tripTypeSaved]);
 
   const openModal = (type, data) => {
     setModalType(type);
