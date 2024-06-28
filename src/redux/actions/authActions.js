@@ -244,82 +244,61 @@ export const noAccessToken = (navigate) => async (dispatch, getState) => {
   }
 };
 
-// export const googleLogin = async (accessToken, navigate, dispatch) => {
-//   console.log("token ", accessToken);
-//   try {
-//     let data = JSON.stringify({
-//       access_token: accessToken,
-//     });
 
-//     let config = {
-//       method: "get",
-//       maxBodyLength: Infinity,
-//       url: `https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/google`,
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       data: data,
-//     };
 
-//     const response = await axios.request(config);
-//     const token = response.data.data;
-//     console.log("response.data ", token);
-//     // localStorage.setItem("token", token);
-//     // dispatch(setToken(token));
-//     // dispatch(setIsLoggedIn(true));
-//     // dispatch(setLogin("google"));
-//     // toast.success("Login successful.");
-//     // setTimeout(() => {
-//     //   navigate("/", { state: { token: token } });
-//     // }, 1500);
-//   } catch (error) {
-//     if (axios.isAxiosError(error)) {
-//       console.error(error.response.data.message);
-//       return;
-//     }
-//   }
-// };
+export const googleLogin = async (accessToken, navigate, dispatch) => {
+  // console.log("token ", accessToken);
+  try {
+    let data = JSON.stringify({
+      access_token: accessToken,
+    });
 
-export const googleLogin =
-  (credentialResponse, navigate) => async (dispatch) => {
-    const token = credentialResponse.credential;
+    let config = {
+      method: "get",
+      maxBodyLength: Infinity,
+      url: `https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/google`,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: data,
+    };
 
-    try {
-      const response = await axios.get(
-        "https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/google",
-        { access_token: token },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (response && response.data && response.data.data) {
-        const apiToken = response.data.data.token;
-        const user = response.data.data.user;
-
-        dispatch(setToken(apiToken));
-        dispatch(setIsLoggedIn(true));
-        dispatch(setLogin("google"));
-        dispatch(setUser(user));
-        toast.success("Login successful.");
-        setTimeout(() => {
-          navigate("/", {
-            state: { token: apiToken },
-          });
-        }, 1500);
-      } else {
-        throw new Error("Invalid response structure");
-      }
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        toast.error(error.response?.data?.message || "An error occurred during Google login.");
-      } else {
-        toast.error("An error occurred during Google login.");
-      }
+    const response = await axios.request(config);
+    const token = response.data.data;
+    console.log("response.token ", token);
+    console.log("response.status ", response.status);
+    localStorage.setItem("token", token);
+    dispatch(setToken(token));
+    dispatch(setIsLoggedIn(true));
+    dispatch(setLogin("google"));
+    toast.success("Login successful.");
+    setTimeout(() => {
+      navigate("/", { state: { token: token } });
+    }, 1500);
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error(error.response.data.message);
+      return;
     }
-  };
+  }
+};
+
+// export const googleLogin =
+//   (credentialResponse, navigate) => async (dispatch) => {
+//     const token = credentialResponse.credential;
+//     dispatch(setToken(token));
+//     dispatch(setIsLoggedIn(true));
+//     dispatch(setLogin("google"));
+//     const decodedToken = jwtDecode(token);
+//     console.log("user", decodedToken);
+//     dispatch(setUser(decodedToken));
+//     toast.success("Berhasil login.");
+//     setTimeout(() => {
+//       navigate("/", {
+//         state: { token: credentialResponse.credential },
+//       });
+//     }, 1500);
+//   };
 
 // export const getUser = () => async (dispatch, getState) => {
 //   const loginType = getState().auth.login;

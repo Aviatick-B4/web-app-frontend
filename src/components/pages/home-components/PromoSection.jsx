@@ -45,10 +45,10 @@ const PromoSection = () => {
   };
 
   const handlePromoClick = (ticketId) => {
-    dispatch(getPromoById(ticketId));
+    dispatch(getPromoById(ticketId, navigate));
     dispatch(setDepartureResults([]));
     dispatch(setFavDestinationResults([]));
-    navigate(`/hasil-pencarian/promo/${ticketId}`);
+    // navigate(`/hasil-pencarian/promo/${ticketId}`);
   };
 
   function NextArrow(props) {
