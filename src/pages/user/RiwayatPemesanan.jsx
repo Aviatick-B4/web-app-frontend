@@ -281,17 +281,17 @@ export default function RiwayatPemesanan() {
                   <p className="text-xs font-medium text-gray">
                     Booking Code:{" "}
                     <span className="font-normal">
-                      {selectedFlight.booking_code}
+                      {selectedFlight.flight_detail?.departure_flight?.booking_code}
                     </span>
                   </p>
                   <h1 className="font-bold text-lg my-2">
-                    {selectedFlight.flight_detail?.departure_city} →{" "}
-                    {selectedFlight.flight_detail?.arrival_city}
+                    {selectedFlight.flight_detail?.departure_flight?.departure_city} →{" "} 
+                    {selectedFlight.flight_detail?.departure_flight?.arrival_city}
                   </h1>
                   <div className="flex gap-3 border border-neutral rounded-lg items-center mb-4 py-2 px-3">
                     <FaCalendarAlt className="text-gray" />
                     <p className="text-main font-normal text-sm lg:text-base">
-                      {formatDateToDayMonthYear(selectedFlight.date)}
+                      {formatDateToDayMonthYear(selectedFlight.flight_detail?.departure_flight?.departure_time)}
                     </p>
                   </div>
 
@@ -351,7 +351,7 @@ export default function RiwayatPemesanan() {
                               <p className="font-semibold text-xs">
                                 <span className="text-main">
                                   {convertToTime(
-                                    selectedFlight.flight_detail?.departure_time
+                                    selectedFlight.flight_detail?.departure_flight?.departure_time
                                   )}
                                 </span>{" "}
                                 -{" "}
@@ -368,7 +368,7 @@ export default function RiwayatPemesanan() {
                             <p className="font-semibold text-xs">
                               <span className="text-main">
                                 {convertToTime(
-                                  selectedFlight.flight_detail?.arrival_time
+                                  selectedFlight.flight_detail?.departure_flight?.arrival_time
                                 )}
                               </span>{" "}
                               - <span className="text-primary">Kedatangan</span>
@@ -382,17 +382,10 @@ export default function RiwayatPemesanan() {
                             Rincian Harga
                           </p>
                           <div className="flex items-center justify-between text-xs text-main">
-                            <span className="font-normal">Pajak</span>
-                            <span className="font-medium">
-                              {formatPrice(bookingDetail?.price_detail?.tax)}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between text-xs text-main">
                             <span className="font-normal">Harga</span>
                             <span className="font-medium">
                               {formatPrice(
-                                bookingDetail?.price_detail?.total_price -
-                                  bookingDetail?.price_detail?.tax
+                                bookingDetail?.price_detail?.total_price
                               )}
                             </span>
                           </div>
@@ -475,14 +468,14 @@ export default function RiwayatPemesanan() {
                     </span>
                   </p>
                   <h1 className="font-bold text-xl my-2">
-                    {selectedFlight.flight_detail?.departure_city} →{" "}
-                    {selectedFlight.flight_detail?.arrival_city}
+                    {selectedFlight?.flight_detail?.departure_flight?.departure_city?.name} →{" "}
+                    {selectedFlight?.flight_detail?.departure_flight?.arrival_city?.name}
                   </h1>
 
                   <div className="flex gap-3 border border-neutral rounded-lg items-center mb-4 py-2 px-3">
                     <FaCalendarAlt className="text-gray" />
                     <p className="text-main font-normal text-sm lg:text-base">
-                      {formatDateToDayMonthYear(selectedFlight.date)}
+                      {formatDateToDayMonthYear(selectedFlight?.flight_detail.departure_flight?.departure_time)}
                     </p>
                   </div>
 
@@ -494,7 +487,7 @@ export default function RiwayatPemesanan() {
                           <p className="font-semibold text-sm">
                             <span className="text-main">
                               {convertToTime(
-                                selectedFlight.flight_detail?.departure_time
+                                selectedFlight.flight_detail?.departure_flight?.departure_time
                               )}
                             </span>{" "}
                             -{" "}
@@ -509,7 +502,7 @@ export default function RiwayatPemesanan() {
                         <p className="font-semibold text-sm">
                           <span className="text-main">
                             {convertToTime(
-                              selectedFlight.flight_detail?.arrival_time
+                              selectedFlight.flight_detail?.departure_flight?.arrival_time
                             )}
                           </span>{" "}
                           - <span className="text-primary">Kedatangan</span>
@@ -524,17 +517,10 @@ export default function RiwayatPemesanan() {
                         Rincian Harga
                       </p>
                       <div className="flex items-center justify-between text-sm text-main">
-                        <span className="font-normal">Pajak</span>
-                        <span className="font-medium">
-                          {formatPrice(bookingDetail?.price_detail?.tax)}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm text-main">
                         <span className="font-normal">Harga</span>
                         <span className="font-medium">
                           {formatPrice(
-                            bookingDetail?.price_detail?.total_price -
-                              bookingDetail?.price_detail?.tax
+                            bookingDetail?.price_detail?.total_price
                           )}
                         </span>
                       </div>
@@ -552,12 +538,12 @@ export default function RiwayatPemesanan() {
                     </div>
                   </div>
 
-                  {selectedFlight.status !== "CANCELED" && (
+                  {/* {selectedFlight.status !== "CANCELED" && (
                     <CetakTiket
                       flightDetail={selectedFlight}
                       bookingDetail={bookingDetail}
                     />
-                  )}
+                  )} */}
 
                   {/* {selectedFlight.status !== "CANCELED" && (
                     <button

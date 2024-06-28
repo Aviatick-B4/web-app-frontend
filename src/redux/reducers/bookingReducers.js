@@ -44,6 +44,5 @@ export const {
   setDataPayment,
   setDataMidtrans,
 } = bookingSlicer.actions;
-};
 
 export default bookingSlicer.reducer;

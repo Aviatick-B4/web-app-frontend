@@ -45,6 +45,10 @@ function Pemesanan() {
   };
 
   useEffect(() => {
+    dispatch(getCountries());
+  }, []);
+
+  useEffect(() => {
     setFormData((prevFormData) => ({
       ...prevFormData,
       donation: isDonated,
@@ -107,13 +111,12 @@ function Pemesanan() {
       type: "select",
       options: [
         { label: "", value: "null" },
-        ...countries
-          .slice() // Duplicate the array to prevent mutating the original
-          .sort((a, b) => a.name.common.localeCompare(b.name.common)) // Sort by country name
-          .map((country) => ({
-            label: country.name.common,
-            value: country.name.common,
-          })),
+        ...(Array.isArray(countries) ? countries.slice() : []) // Check if countries is an array
+        .sort((a, b) => a.name.common.localeCompare(b.name.common)) // Sort by country name
+        .map((country) => ({
+          label: country.name.common,
+          value: country.name.common,
+        })),
       ],
     },
     {
@@ -132,13 +135,12 @@ function Pemesanan() {
       type: "select",
       options: [
         { label: "", value: "null" },
-        ...countries
-          .slice() // Duplicate the array to prevent mutating the original
-          .sort((a, b) => a.name.common.localeCompare(b.name.common)) // Sort by country name
-          .map((country) => ({
-            label: country.name.common,
-            value: country.name.common,
-          })),
+        ...(Array.isArray(countries) ? countries.slice() : []) // Check if countries is an array
+        .sort((a, b) => a.name.common.localeCompare(b.name.common)) // Sort by country name
+        .map((country) => ({
+          label: country.name.common,
+          value: country.name.common,
+        })),
       ],
     },
     { label: "Nomor Identitas", name: "identityNumber", type: "text" },
@@ -172,10 +174,6 @@ function Pemesanan() {
       passenger: updatedPassenger,
     }));
   };
-
-  useEffect(() => {
-    dispatch(getCountries());
-  }, []);
 
   const handleBookingSubmit = async () => {
     setIsLoading(true); // Mulai animasi loading
