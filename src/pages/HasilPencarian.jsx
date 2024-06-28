@@ -35,7 +35,7 @@ export default function HasilPencarian() {
   const [selectedDeparture, setSelectedDeparture] = useState(null);
   const [selectedReturn, setSelectedReturn] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
-
+  
   const {
     departureResults = [],
     returnResults = [],
@@ -67,6 +67,12 @@ export default function HasilPencarian() {
   const initialData = {
     passengers: { adults, children, infants },
   };
+
+  useEffect(() => {
+    console.log("tripType", tripTypeSaved);
+    console.log("keyword", flightKeyword);
+    console.log("booking", booking);
+  }, [tripTypeSaved]);
 
   const openModal = (type, data) => {
     setModalType(type);
@@ -451,7 +457,7 @@ export default function HasilPencarian() {
                       onClick={() => openModal("date", "departure")}
                     >
                       {formatDateToDayMonthYear(
-                        changedFlightKeyword?.departureDate || departureDate
+                        changedFlightKeyword?.departureDate || departureDate || new Date().toISOString().split("T")[0]
                       )}
                     </span>
                     {returnDate && (
@@ -462,7 +468,7 @@ export default function HasilPencarian() {
                           onClick={() => openModal("date", "return")}
                         >
                           {formatDateToDayMonthYear(
-                            changedFlightKeyword?.returnDate || returnDate
+                            changedFlightKeyword?.returnDate || returnDate || new Date().toISOString().split("T")[0]
                           )}
                         </span>
                       </>
@@ -545,7 +551,7 @@ export default function HasilPencarian() {
                     onClick={() => openModal("date", "departure")}
                   >
                     {formatDateToDayMonthYear(
-                      changedFlightKeyword?.departureDate || departureDate
+                      changedFlightKeyword?.departureDate || departureDate || new Date().toISOString().split("T")[0]
                     )}
                   </span>
                   {returnDate && (
@@ -556,7 +562,7 @@ export default function HasilPencarian() {
                         onClick={() => openModal("date", "return")}
                       >
                         {formatDateToDayMonthYear(
-                          changedFlightKeyword?.returnDate || returnDate
+                          changedFlightKeyword?.returnDate || returnDate || new Date().toISOString().split("T")[0]
                         )}
                       </span>
                     </>
@@ -848,7 +854,7 @@ export default function HasilPencarian() {
       <BackToTopButton />
       <Footer />
     </div>
-  );
+    );
 }
 
 const SwapButton = ({ onClick }) => (

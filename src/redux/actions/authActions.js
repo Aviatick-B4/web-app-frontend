@@ -201,49 +201,6 @@ export const changePassword = (data) => async (dispatch, getState) => {
   }
 };
 
-export const noAccessToken = (navigate) => async (dispatch, getState) => {
-  const loginType = getState().auth.login;
-  const token = getState().auth.token;
-  if (loginType) {
-    if (loginType === "google") {
-      const decoded = jwtDecode(token);
-      if (decoded?.exp < new Date() / 1000) {
-        dispatch(setToken(null));
-        dispatch(setIsLoggedIn(false));
-        dispatch(setUser(null));
-        dispatch(setLogin(null));
-        toast.error("Token kadaluarsa.");
-        setTimeout(() => {
-          navigate("/");
-          window.location.reload();
-        }, 1500);
-      }
-    } else {
-      try {
-        await axios.get(
-          `${url}/auth/users/profile`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-      } catch (error) {
-        dispatch(setToken(null));
-        dispatch(setIsLoggedIn(false));
-        dispatch(setUser(null));
-        dispatch(setLogin(null));
-        toast.error("Token kadaluarsa.");
-        setTimeout(() => {
-          navigate("/");
-          window.location.reload();
-        }, 1500);
-        toast.error(error);
-      }
-    }
-  }
-};
-
 // export const googleLogin = async (accessToken, navigate, dispatch) => {
 //   console.log("token ", accessToken);
 //   try {

@@ -43,9 +43,7 @@ export const getCitySearchResults = () => async (dispatch, getState) => {
 export const getFlightSearchResults =
   (flightData, navigate) => async (dispatch, getState) => {
     const tripTypeSaved = getState().search.tripTypeSaved;
-
     console.log("data", flightData);
-
     const { from, to, departureDate, returnDate, passengers, flightClass } =
       flightData;
 
@@ -64,7 +62,6 @@ export const getFlightSearchResults =
         console.log("hasil return", response2.data.data.tickets);
         dispatch(setReturnResults(response2.data.data.tickets || []));
       }
-
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error(error.message);
