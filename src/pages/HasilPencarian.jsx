@@ -35,7 +35,7 @@ export default function HasilPencarian() {
   const [selectedDeparture, setSelectedDeparture] = useState(null);
   const [selectedReturn, setSelectedReturn] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
-
+  
   const {
     departureResults = [],
     returnResults = [],
@@ -67,13 +67,6 @@ export default function HasilPencarian() {
   const initialData = {
     passengers: { adults, children, infants },
   };
-
-  // useEffect(() => {
-  //   setLoading(true);
-  //   if (selectedDeparture || promoResult || favDestinationResults) {
-  //     setLoading(false);
-  //   }
-  // }, [selectedDeparture, selectedReturn, promoResult, favDestinationResults]);
 
   const openModal = (type, data) => {
     setModalType(type);
@@ -855,7 +848,7 @@ export default function HasilPencarian() {
       <BackToTopButton />
       <Footer />
     </div>
-  );
+    );
 }
 
 const SwapButton = ({ onClick }) => (

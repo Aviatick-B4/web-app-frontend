@@ -25,7 +25,8 @@ const FlightSchedule = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
-  const [tripType, setTripType] = useState("roundtrip");
+  const [tripType, setTripType] = useState("singletrip");
+  const [swalProps, setSwalProps] = useState({});
   const [from, setFrom] = useState("BCN");
   const [to, setTo] = useState("RIO");
   const [departureDate, setDepartureDate] = useState(new Date());
@@ -101,6 +102,7 @@ const FlightSchedule = () => {
         tripType === "roundtrip" ? format(returnDate, "yyyy-MM-dd") : null,
       passengers,
       flightClass,
+      tripType,
     };
 
     dispatch(setTripTypeSaved(tripType));

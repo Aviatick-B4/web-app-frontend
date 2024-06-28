@@ -30,18 +30,13 @@ function PaymentSuccess() {
             </p>
             <p>Selesai</p>
           </div>
-          <div>
-            <p className="text-center text-white p-2 bg-[#00A310] rounded mt-3">
-              Terimakasih atas pembayaran transaksi
-            </p>
-          </div>
         </div>
         <div className="flex flex-col justify-center items-center p-[150px] gap-5">
-          <img src=".\src\assets\success.gif" alt="" className="w-[100px]" />
+          <img src=".\src\assets\error.svg" alt="" className="w-[300px]" />
           <p className="flex text-lg flex-col text-center">
-            <span className="text-[#00A8D0] text-4xl">Selamat! </span>
+            <span className="text-danger text-4xl">Galat! </span>
             <span className="text-sm my-2">
-              Transaksi Pembayaran Tiket sukses!
+              Mohon maaf, transaksi anda gagal
             </span>
           </p>
           <button

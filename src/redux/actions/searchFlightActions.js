@@ -43,9 +43,7 @@ export const getCitySearchResults = () => async (dispatch, getState) => {
 export const getFlightSearchResults =
   (flightData, navigate, setLoading) => async (dispatch, getState) => {
     const tripTypeSaved = getState().search.tripTypeSaved;
-
     console.log("data", flightData);
-
     const { from, to, departureDate, returnDate, passengers, flightClass } =
       flightData;
 
@@ -66,7 +64,6 @@ export const getFlightSearchResults =
       }
       setLoading(false);
       navigate("/hasil-pencarian");
-
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error(error.message);

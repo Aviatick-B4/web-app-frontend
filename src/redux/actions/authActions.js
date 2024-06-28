@@ -244,8 +244,6 @@ export const noAccessToken = (navigate) => async (dispatch, getState) => {
   }
 };
 
-
-
 export const googleLogin = async (accessToken, navigate, dispatch) => {
   // console.log("token ", accessToken);
   try {
