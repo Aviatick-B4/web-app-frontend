@@ -38,10 +38,10 @@ export const login = (data, navigate, setMessage) => async (dispatch) => {
     }
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      setMessage(error.response.data.message);
+      throw(error.response.data.message);
       return;
     }
-    toast.error(error.message);
+    throw(error.message);
   }
 };
 
@@ -97,7 +97,6 @@ export const fetchUser = () => async (dispatch, getState) => {
     dispatch(setUser(user));
     return user;
   } catch (error) {
-    toast.error(error.message);
     throw error; // Re-throw the error for the calling function to handle
   }
 };
@@ -112,7 +111,7 @@ export const loadUserProfile = (setUser) => async (dispatch) => {
       console.log("Failed to fetch user data");
     }
   } catch (error) {
-    toast.error(error.message);
+    throw(error.message);
   }
 };
 

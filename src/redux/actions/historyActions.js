@@ -22,9 +22,6 @@ export const getUserBookingHistory = () => async (dispatch, getState) => {
         },
       }
     );
-
-    console.log("history", response.data.data);
-
     dispatch(setBookingHistory(response.data.data));
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -99,7 +96,6 @@ export const getHistoryByDate = () => async (dispatch, getState) => {
         },
       }
     );
-    console.log("dateee", response.data.data);
     dispatch(setHistoryByDate(response.data.data || []));
   } catch (error) {
     if (axios.isAxiosError(error)) {

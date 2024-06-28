@@ -35,12 +35,15 @@ const TicketContent = React.forwardRef(
   ({ flightDetail, bookingDetail }, ref) => (
     <div ref={ref} className="p-4">
       <h1 className="font-bold text-xl my-2">
-        {flightDetail.departure_flight.departure_city} → {flightDetail.arrival_city}
+        {flightDetail.flight_detail.departure_flight.departure_city.name} → {flightDetail.flight_detail.departure_flight.departure_city.name}
       </h1>
-      <p className="text-sm">Booking Code: {flightDetail.departure_flight.booking_code}</p>
-      <p className="text-sm">Departure: {flightDetail.departure_flight.departure_time}</p>
-      <p className="text-sm">Arrival: {flightDetail.arrival_time}</p>
-      <p className="text-sm">Date: {flightDetail.date}</p>
+      <h1 className="font-bold text-xl my-2">
+        {flightDetail.flight_detail.return_flight.departure_city.name} → {flightDetail.flight_detail.return_flight.departure_city.name}
+      </h1>
+      <p className="text-sm">Booking Code: {flightDetail.booking_code}</p>
+      <p className="text-sm">Departure: {flightDetail.flight_detail.departure_flight.departure_time}</p>
+      <p className="text-sm">Arrival: {flightDetail.flight_detail.return_flight.arrival_time}</p>
+      <p className="text-sm">Date: {flightDetail.createdAt}</p>
       <p className="text-sm">Tax: {bookingDetail.price_detail.tax}</p>
       <p className="text-sm">
         Total Price: {bookingDetail.price_detail.total_price}

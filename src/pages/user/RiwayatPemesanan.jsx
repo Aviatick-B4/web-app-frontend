@@ -33,11 +33,16 @@ export default function RiwayatPemesanan() {
     historyByDate,
   } = useSelector((state) => state.history);
 
+  useEffect(() => {
+    console.log("selected", selectedFlight);  
+    console.log("detail", bookingDetail);  
+  }, [selectedFlight]);
+
   const searchHistory = (term) => {
     dispatch(getHistorySearchResults());
   };
 
-  const delayedSearch = useDebounce(searchHistory, 300);
+  const delayedSearch = useDebounce(searchHistory, 100);
 
   const handleSearchInputChange = (e) => {
     dispatch(setHistoryKeyword(e.target.value));
@@ -275,23 +280,23 @@ export default function RiwayatPemesanan() {
           {/* Card Section */}
           <div className="flex-col md:flex-row flex gap-4 mt-5">
             {/* Detail Card Mobile */}
-            {selectedFlight && (
+            {selectedFlight && bookingDetail && (
               <div className="block md:hidden w-full max-w-sm mx-auto bg-white shadow-lg rounded-lg overflow-hidden text-main self-start">
                 <div className="px-6 py-4">
                   <p className="text-xs font-medium text-gray">
                     Booking Code:{" "}
                     <span className="font-normal">
-                      {selectedFlight.flight_detail?.departure_flight?.booking_code}
+                      {bookingDetail.booking_code}
                     </span>
                   </p>
                   <h1 className="font-bold text-lg my-2">
-                    {selectedFlight.flight_detail?.departure_flight?.departure_city} →{" "} 
-                    {selectedFlight.flight_detail?.departure_flight?.arrival_city}
+                    {bookingDetail?.flight_detail?.departure_flight?.departure_city?.name} →{" "}
+                    {bookingDetail?.flight_detail?.departure_flight?.arrival_city?.name}
                   </h1>
                   <div className="flex gap-3 border border-neutral rounded-lg items-center mb-4 py-2 px-3">
                     <FaCalendarAlt className="text-gray" />
                     <p className="text-main font-normal text-sm lg:text-base">
-                      {formatDateToDayMonthYear(selectedFlight.flight_detail?.departure_flight?.departure_time)}
+                      {formatDateToDayMonthYear(bookingDetail.flight_detail?.departure_flight?.departure_time)}
                     </p>
                   </div>
 
@@ -351,7 +356,7 @@ export default function RiwayatPemesanan() {
                               <p className="font-semibold text-xs">
                                 <span className="text-main">
                                   {convertToTime(
-                                    selectedFlight.flight_detail?.departure_flight?.departure_time
+                                    bookingDetail.flight_detail?.departure_flight?.departure_time
                                   )}
                                 </span>{" "}
                                 -{" "}
@@ -368,7 +373,7 @@ export default function RiwayatPemesanan() {
                             <p className="font-semibold text-xs">
                               <span className="text-main">
                                 {convertToTime(
-                                  selectedFlight.flight_detail?.departure_flight?.arrival_time
+                                  bookingDetail.flight_detail?.departure_flight?.arrival_time
                                 )}
                               </span>{" "}
                               - <span className="text-primary">Kedatangan</span>
@@ -403,15 +408,15 @@ export default function RiwayatPemesanan() {
                           </span>
                         </div>
                       </div>
-                      {selectedFlight.status !== "dibatalkan" && (
+                      {bookingDetail.status !== "CANCELED" && (
                         <button
-                          className={`text-white font-medium text-sm py-2.5 px-10 rounded-full w-full mt-4 ${
-                            selectedFlight.status === "belum bayar"
+                          className={`text-white font-medium text-base py-2.5 px-10 rounded-full w-full mt-4 ${
+                            bookingDetail.status === "UNPAID"
                               ? "bg-secondary hover:bg-darksecondary"
                               : "bg-primary hover:bg-darkprimary"
                           }`}
                         >
-                          {selectedFlight.status === "belum bayar"
+                          {bookingDetail.status === "UNPAID"
                             ? "Lanjut Bayar"
                             : "Cetak Tiket"}
                         </button>
@@ -464,18 +469,18 @@ export default function RiwayatPemesanan() {
                   <p className="text-sm font-medium text-gray">
                     Booking Code:{" "}
                     <span className="font-normal">
-                      {selectedFlight.booking_code}
+                      {bookingDetail.booking_code}
                     </span>
                   </p>
                   <h1 className="font-bold text-xl my-2">
-                    {selectedFlight?.flight_detail?.departure_flight?.departure_city?.name} →{" "}
-                    {selectedFlight?.flight_detail?.departure_flight?.arrival_city?.name}
+                    {bookingDetail?.flight_detail?.departure_flight?.departure_city?.name} →{" "}
+                    {bookingDetail?.flight_detail?.departure_flight?.arrival_city?.name}
                   </h1>
 
                   <div className="flex gap-3 border border-neutral rounded-lg items-center mb-4 py-2 px-3">
                     <FaCalendarAlt className="text-gray" />
                     <p className="text-main font-normal text-sm lg:text-base">
-                      {formatDateToDayMonthYear(selectedFlight?.flight_detail.departure_flight?.departure_time)}
+                      {formatDateToDayMonthYear(bookingDetail?.flight_detail?.departure_flight?.departure_time)}
                     </p>
                   </div>
 
@@ -487,7 +492,7 @@ export default function RiwayatPemesanan() {
                           <p className="font-semibold text-sm">
                             <span className="text-main">
                               {convertToTime(
-                                selectedFlight.flight_detail?.departure_flight?.departure_time
+                                bookingDetail.flight_detail?.departure_flight?.departure_time
                               )}
                             </span>{" "}
                             -{" "}
@@ -502,7 +507,7 @@ export default function RiwayatPemesanan() {
                         <p className="font-semibold text-sm">
                           <span className="text-main">
                             {convertToTime(
-                              selectedFlight.flight_detail?.departure_flight?.arrival_time
+                              bookingDetail.flight_detail?.departure_flight?.arrival_time
                             )}
                           </span>{" "}
                           - <span className="text-primary">Kedatangan</span>
@@ -538,26 +543,26 @@ export default function RiwayatPemesanan() {
                     </div>
                   </div>
 
-                  {/* {selectedFlight.status !== "CANCELED" && (
+                  {/* {bookingDetail.status !== "CANCELED" && (
                     <CetakTiket
                       flightDetail={selectedFlight}
                       bookingDetail={bookingDetail}
                     />
                   )} */}
 
-                  {/* {selectedFlight.status !== "CANCELED" && (
+                  {bookingDetail.status !== "CANCELED" && (
                     <button
                       className={`text-white font-medium text-base py-2.5 px-10 rounded-full w-full mt-4 ${
-                        selectedFlight.status === "UNPAID"
+                        bookingDetail.status === "UNPAID"
                           ? "bg-secondary hover:bg-darksecondary"
                           : "bg-primary hover:bg-darkprimary"
                       }`}
                     >
-                      {selectedFlight.status === "UNPAID"
+                      {bookingDetail.status === "UNPAID"
                         ? "Lanjut Bayar"
                         : "Cetak Tiket"}
                     </button>
-                  )} */}
+                  )}
                 </div>
               </div>
             )}
