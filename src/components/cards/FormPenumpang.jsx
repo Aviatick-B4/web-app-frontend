@@ -30,7 +30,7 @@ function FormPenumpang({ title, fields, formData, handleInputChange }) {
   };
 
   return (
-    <div className="rounded-xl p-[32px] shadow-md">
+    <div className="bg-white rounded-xl p-[32px] shadow-md">
       <p className="text-xl mb-[32px]">
         <strong>{title}</strong>
       </p>

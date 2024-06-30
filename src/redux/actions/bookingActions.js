@@ -3,6 +3,7 @@ import {
   setCountries,
   setDataMidtrans,
   setDataPayment,
+  setDetailBooking,
 } from "../reducers/bookingReducers";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -22,7 +23,7 @@ export const getCountries = () => async (dispatch) => {
 };
 
 export const getBookingTicket =
-  (formData, tripType, navigate, setIsLoading) =>
+  (formData, tripType, navigate, setIsLoading, setDetailLoading) =>
   async (dispatch, getState) => {
     setIsLoading(true);
     const token = getState().auth.token;
@@ -41,9 +42,11 @@ export const getBookingTicket =
       console.log("Response:", response.data);
       const bookingId = response.data.data.id;
       console.log("bookingId", bookingId);
-      dispatch(getPayment(bookingId, navigate, setIsLoading));
+      dispatch(getPayment(bookingId, navigate, setIsLoading, setDetailLoading));
       dispatch(setDataPayment(response.data));
+      toast.warning("Pemesanan sedang di proses");
     } catch (error) {
+      setIsLoading(false);
       if (error.response.status == 400) {
         toast.error("Pemesanan gagal! Silakan periksa kembali data Anda.");
       } else if (error.response.status == 401) {
@@ -78,7 +81,8 @@ export const getBookingTicket =
   };
 
 export const getPayment =
-  (bookingId, navigate, setIsLoading) => async (dispatch, getState) => {
+  (bookingId, navigate, setIsLoading, setDetailLoading) =>
+  async (dispatch, getState) => {
     setIsLoading(true);
     const token = getState().auth.token;
     console.log("booking ID", bookingId);
@@ -97,9 +101,12 @@ export const getPayment =
       setIsLoading(false);
       console.log("Response Payment:", response.data);
       dispatch(setDataMidtrans(response.data));
-      await dispatch(getBookingHistoryDetail(bookingId, setIsLoading));
+      await dispatch(
+        getBookingHistoryDetail(bookingId, setIsLoading, setDetailLoading)
+      );
       navigate("/pembayaran");
     } catch (error) {
+      setIsLoading(false);
       console.error(error.message);
     }
   };

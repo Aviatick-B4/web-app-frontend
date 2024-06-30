@@ -30,10 +30,11 @@ export const getUserBookingHistory = () => async (dispatch, getState) => {
 };
 
 export const getBookingHistoryDetail =
-  (bookingId, setIsLoading) => async (dispatch, getState) => {
+  (bookingId, setIsLoading, setDetailLoading) => async (dispatch, getState) => {
     setIsLoading(true);
-    const token = getState().auth.token;
     setDetailLoading(true);
+
+    const token = getState().auth.token;
     try {
       const response = await axios.get(
         `${url}/bookings/booking-history/${bookingId}`,
@@ -46,11 +47,12 @@ export const getBookingHistoryDetail =
       );
       console.log("detail", response.data.data);
       dispatch(setBookingHistoryDetail(response.data.data));
-
       setIsLoading(false);
+      setDetailLoading(false);
     } catch (error) {
+      setIsLoading(false);
+      setDetailLoading(false);
       if (axios.isAxiosError(error)) {
-        setDetailLoading(false);
         console.error(error.message);
         return;
       }
