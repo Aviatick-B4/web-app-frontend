@@ -9,10 +9,11 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   getCountries,
   getBookingTicket,
+  getPrepareTicket,
 } from "../redux/actions/bookingActions";
-import ModalBooking from "../components/modals/detailBookingModal";
 import { ThreeDots } from "react-loader-spinner";
 import { toast } from "react-toastify";
+import "animate.css";
 
 function Pemesanan() {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ function Pemesanan() {
   const [isLoading, setIsLoading] = useState(false);
   const [detailLoading, setDetailLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [confirmModal, setShowConfirmModal] = useState(false);
   const [tripType, settripType] = useState("");
   const [promo, setPromo] = useState("");
   const [titleOptions, setTitleOptions] = useState([
@@ -30,33 +32,22 @@ function Pemesanan() {
     { label: "Nyonya", value: "Mrs." },
     { label: "Nona", value: "Ms." },
   ]);
-  const [detailModal, setDetailModal] = useState({
-    totalpajak: 0,
-    totalHarga: 0,
-    donasi: false,
-    tripType: null,
-  });
 
   //Mengambil Data dari Reducer
   const user = useSelector((state) => state?.auth?.user);
+  const dataPrepare = useSelector(
+    (state) => state?.bookingFlight?.prepareBooking?.data
+  );
   const booking = useSelector((state) => state?.bookingFlight?.bookings);
   const countries = useSelector((state) => state?.bookingFlight?.countries);
   const flightKeyword = useSelector(
     (state) => state?.search?.flightKeyword || {}
   );
-  console.log("booking", booking);
 
   useEffect(() => {
     if (booking?.selectedReturn !== null) return settripType("roundtrip");
     if (booking?.selectedReturn === null) return settripType("singletrip");
   }, []);
-
-  //Seting Modal
-  const handleOpenModal = () => {
-    setShowModal(true);
-    setDataModal();
-  };
-  const handleCloseModal = () => setShowModal(false);
 
   //GET Negara
   useEffect(() => {
@@ -196,17 +187,22 @@ function Pemesanan() {
     }));
   };
 
+  //Seting Modal
+  const handleOpenModal = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
+  const handleOpenConfirmModal = async () => {
+    await dispatch(
+      getPrepareTicket(formData, tripType, navigate, setIsLoading)
+    );
+    setShowConfirmModal(true);
+  };
+  const handleCloseConfirmModal = () => setShowConfirmModal(false);
+
   //Lanjut Bayar
   const handleBookingSubmit = async () => {
     try {
       await dispatch(
-        getBookingTicket(
-          formData,
-          tripType,
-          navigate,
-          setIsLoading,
-          setDetailLoading
-        )
+        getBookingTicket(dataPrepare, navigate, setIsLoading, setDetailLoading)
       );
     } catch (error) {
       toast.error("Terjadi kesalahan saat booking", { autoClose: 5000 });
@@ -276,9 +272,6 @@ function Pemesanan() {
       );
   }, [booking, tripType]);
 
-  console.log("booking", booking);
-  console.log("totalHarga", totalHarga);
-
   //Perhitungan Total Pajak
   const totalPajak = (price) => {
     price = price * (penumpangData.length - infantPassengers);
@@ -292,7 +285,6 @@ function Pemesanan() {
     if (isDonated) return price + totalPajak(price) + 1000;
     return price + totalPajak(price);
   };
-  console.log("Total Pembayaran", calculateTotal(totalHarga));
 
   // Group passengers by type and count
   const groupPenumpangData = penumpangData.reduce((acc, penumpang) => {
@@ -303,87 +295,38 @@ function Pemesanan() {
     return acc;
   }, {});
 
-  console.log("form data", formData);
-
   return (
     <div className={`bg-background`}>
-      <Navbar transparent={false} />
-      <ModalBooking
-        show={showModal}
-        handleClose={handleCloseModal}
-        overlayClassName="overlay"
-      >
-        <div className="flex flex-col">
-          <button
-            className="px-4 rounded flex justify-end"
-            onClick={handleCloseModal}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="1.5rem"
-              height="1.5rem"
-              viewBox="0 0 24 24"
-            >
-              <path
-                fill="none"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="m7 7l10 10M7 17L17 7"
-              />
-            </svg>
-          </button>
-          <h2 className="text-2xl pb-4">Detail Harga</h2>
-          <p className="flex gap-5 text-lg items-center py-5">
-            <strong>{booking?.selectedDeparture?.flight?.arrival?.city}</strong>
-
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="size-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3"
-              />
-            </svg>
-
-            <strong>
-              {booking?.selectedDeparture?.flight?.departure?.city}
-            </strong>
-          </p>
-          <div className="text-sm">
-            <p className="py-3">
-              <strong>Harga</strong>
-            </p>
-            {Object.entries(groupPenumpangData).map(
-              ([name, { count, ageGroup }]) => (
-                <div className="flex justify-between col-span-2" key={name}>
-                  <div className="flex gap-2">
-                    <p>{name}</p>
-                    <p>(x{count})</p>
-                  </div>
-                  <p>
-                    {ageGroup === "BABY"
-                      ? "0"
-                      : formatPrice(booking?.selectedDeparture?.price * count)}
-                  </p>
-                </div>
-              )
-            )}
-          </div>
-          {tripType === "roundtrip" && (
-            <>
-              <hr className="my-8 text-neutral" />
-              <p className="flex gap-5 text-lg items-center pb-5">
+      {showModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30">
+          <div className="flex flex-col bg-white w-1/2 max-sm:w-3/4 justify-center items-center bg-gray-900 p-8 rounded-lg shadow-md border animate__animated animate__pulse">
+            <div className="flex flex-col bg-white w-full">
+              <button
+                className="px-4 rounded flex justify-end"
+                onClick={handleCloseModal}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="1.5rem"
+                  height="1.5rem"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="m7 7l10 10M7 17L17 7"
+                  />
+                </svg>
+              </button>
+              <h2 className="text-2xl pb-4">Detail Harga</h2>
+              <p className="flex gap-5 text-lg items-center py-5">
                 <strong>
-                  {booking?.selectedReturn?.flight?.arrival?.city}
+                  {booking?.selectedDeparture?.flight?.arrival?.city}
                 </strong>
+
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -400,7 +343,7 @@ function Pemesanan() {
                 </svg>
 
                 <strong>
-                  {booking?.selectedReturn?.flight?.departure?.city}
+                  {booking?.selectedDeparture?.flight?.departure?.city}
                 </strong>
               </p>
               <div className="text-sm">
@@ -417,54 +360,150 @@ function Pemesanan() {
                       <p>
                         {ageGroup === "BABY"
                           ? "0"
-                          : formatPrice(booking?.selectedReturn?.price * count)}
+                          : formatPrice(
+                              booking?.selectedDeparture?.price * count
+                            )}
                       </p>
                     </div>
                   )
                 )}
               </div>
-            </>
-          )}
-          <div className="text-sm">
-            <hr className="my-8 text-neutral" />
-            <p className="pb-3">
-              <strong>Biaya Lainnya</strong>
-            </p>
-            <div className="flex justify-between">
-              <p>Pajak</p>
-              <p>{formatPrice(totalPajak(totalHarga))}</p>
-            </div>
-            {isDonated === true && (
-              <div className="flex justify-between">
-                {" "}
-                <p>Donasi</p>
-                <p>Rp. 1.000</p>
-              </div>
-            )}
+              {tripType === "roundtrip" && (
+                <>
+                  <hr className="my-8 text-neutral" />
+                  <p className="flex gap-5 text-lg items-center pb-5">
+                    <strong>
+                      {booking?.selectedReturn?.flight?.arrival?.city}
+                    </strong>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="size-6"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3"
+                      />
+                    </svg>
 
-            <hr className="my-8 text-neutral" />
-            <div className="flex justify-between">
-              <p>
-                <strong>Total</strong>
-              </p>
-              <div className="flex flex-col items-end">
-                <p>
-                  <strong>{formatPrice(calculateTotal(totalHarga))}</strong>
-                </p>
-                {promo === "true" ? (
-                  <>
-                    <p className="text-primary text-xs">
-                      *Harga sudah termasuk promo
+                    <strong>
+                      {booking?.selectedReturn?.flight?.departure?.city}
+                    </strong>
+                  </p>
+                  <div className="text-sm">
+                    <p className="py-3">
+                      <strong>Harga</strong>
                     </p>
-                  </>
-                ) : (
-                  <></>
+                    {Object.entries(groupPenumpangData).map(
+                      ([name, { count, ageGroup }]) => (
+                        <div
+                          className="flex justify-between col-span-2"
+                          key={name}
+                        >
+                          <div className="flex gap-2">
+                            <p>{name}</p>
+                            <p>(x{count})</p>
+                          </div>
+                          <p>
+                            {ageGroup === "BABY"
+                              ? "0"
+                              : formatPrice(
+                                  booking?.selectedReturn?.price * count
+                                )}
+                          </p>
+                        </div>
+                      )
+                    )}
+                  </div>
+                </>
+              )}
+              <div className="text-sm">
+                <hr className="my-8 text-neutral" />
+                <p className="pb-3">
+                  <strong>Biaya Lainnya</strong>
+                </p>
+                <div className="flex justify-between">
+                  <p>Pajak</p>
+                  <p>{formatPrice(totalPajak(totalHarga))}</p>
+                </div>
+                {isDonated === true && (
+                  <div className="flex justify-between">
+                    {" "}
+                    <p>Donasi</p>
+                    <p>Rp. 1.000</p>
+                  </div>
                 )}
+
+                <hr className="my-8 text-neutral" />
+                <div className="flex justify-between">
+                  <p>
+                    <strong>Total</strong>
+                  </p>
+                  <div className="flex flex-col items-end">
+                    <p>
+                      <strong>{formatPrice(calculateTotal(totalHarga))}</strong>
+                    </p>
+                    {promo === "true" ? (
+                      <>
+                        <p className="text-primary text-xs">
+                          *Harga sudah termasuk promo
+                        </p>
+                      </>
+                    ) : (
+                      <></>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </ModalBooking>
+      )}
+      {confirmModal && (
+        <div className="fixed  inset-0 flex items-center justify-center bg-black bg-opacity-30">
+          <div className="flex flex-col px-8 gap-2 w-[400px] max-sm:w-[300px] text-center justify-center bg-white items-center bg-gray-900 py-8 rounded-lg shadow-md animate__animated animate__pulse">
+            <p className="text-xl text-primary py-2">
+              <strong>Apakah sudah yakin data pribadi anda benar?</strong>
+            </p>
+            <p className="">
+              Anda tidak dapat mengubah data diri setelah lanjut ke pembayaran
+            </p>
+            <div className="flex flex-col w-full gap-2 mt-6">
+              <button
+                onClick={handleCloseConfirmModal}
+                className=" text-primary border bg-transparent p-3 rounded-xl hover:bg-slate-100"
+              >
+                Periksa Kembali
+              </button>
+              <button
+                onClick={handleBookingSubmit}
+                className="bg-primary text-white p-3 flex items-center justify-center rounded-xl  hover:bg-darkprimary"
+              >
+                {isLoading ? (
+                  <ThreeDots
+                    visible={true}
+                    height="20"
+                    width="20"
+                    color="#FFB423"
+                    radius="9"
+                    ariaLabel="three-dots-loading"
+                    wrapperStyle={{}}
+                    wrapperClass=""
+                  />
+                ) : (
+                  "Ya, saya yakin"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      <Navbar transparent={false} />
+
       <div className="container">
         <div className="container px-3 mx-auto lg:flex mt-24 text-sm ">
           <section className="flex flex-col gap-4 lg:w-2/3 lg:me-6">
@@ -910,7 +949,7 @@ function Pemesanan() {
                 </div>{" "}
                 <hr className="my-4 text-neutral" />
                 <button
-                  onClick={handleBookingSubmit}
+                  onClick={handleOpenConfirmModal}
                   className="bg-primary w-full p-4 rounded-xl text-center flex justify-center items-center text-white hover:bg-darkprimary"
                   disabled={isLoading} // Nonaktifkan tombol saat loading
                 >

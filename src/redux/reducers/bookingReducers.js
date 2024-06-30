@@ -8,6 +8,7 @@ const initialState = {
   detailBooking: null,
   payment: null,
   midtrans: null,
+  prepareBooking: null,
 };
 
 const bookingSlicer = createSlice({
@@ -26,6 +27,9 @@ const bookingSlicer = createSlice({
     setBooking: (state, action) => {
       state.bookings = action.payload;
     },
+    setPrepareBooking: (state, action) => {
+      state.prepareBooking = action.payload;
+    },
     setDataPayment: (state, action) => {
       state.payment = action.payload;
     },
@@ -43,6 +47,7 @@ export const {
   setDetailBooking,
   setDataPayment,
   setDataMidtrans,
+  setPrepareBooking,
 } = bookingSlicer.actions;
 
 export default bookingSlicer.reducer;
