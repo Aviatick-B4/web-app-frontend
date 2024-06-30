@@ -7,12 +7,19 @@ export default function Footer() {
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="w-full md:w-2/3 text-left md:col-span-1">
-            <img
-              src="/logo-blue.png"
-              alt="Aviatick Logo"
-              className="mx-0 mb-4"
-              style={{ width: "60px", height: "auto" }}
-            />
+            <div className="flex justify-start items-center gap-4">
+              <img
+                src="/logo-blue.png"
+                alt="Aviatick Logo"
+                className="mx-0 mb-4 h-12"
+              />
+              <p className="text-lg font-semibold text-white">X</p>
+               <img
+                src="/logo-kibowtin.png"
+                alt="Kibowtin Logo"
+                className="mx-0 mb-4 h-12"
+              />
+            </div>
             <p className="text-xs md:text-sm text-white font-normal">
               Aviatick adalah platform pemesanan tiket pesawat yang terpercaya,
               menawarkan berbagai pilihan penerbangan dengan harga terbaik. Kami

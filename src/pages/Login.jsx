@@ -98,20 +98,6 @@ function Login() {
 
   return (
     <div>
-      {/* {loading && (
-        <div className="fixed inset-0 flex items-center justify-center bg-opacity-75 z-50">
-          <ThreeDots
-            visible={true}
-            height="60"
-            width="60"
-            color="#FFB423"
-            radius="9"
-            ariaLabel="three-dots-loading"
-            wrapperStyle={{}}
-            wrapperClass=""
-          />
-        </div>
-      )} */}
       <div
         className="min-h-screen flex mx-3 md:mx-0 bg-white"
       >

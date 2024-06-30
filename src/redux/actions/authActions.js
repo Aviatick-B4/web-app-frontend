@@ -14,39 +14,40 @@ import { cleanDigitSectionValue } from "@mui/x-date-pickers/internals/hooks/useF
 
 const url = import.meta.env.VITE_BASE_URL;
 
-export const login = (data, navigate, setMessage, setLoading) => async (dispatch) => {
-  setLoading(true);
-  try {
-    const response = await axios.post(`${url}/auth/login`, data, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+export const login =
+  (data, navigate, setMessage, setLoading) => async (dispatch) => {
+    setLoading(true);
+    try {
+      const response = await axios.post(`${url}/auth/login`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-    const token = response.data.data.token;
+      const token = response.data.data.token;
 
-    console.log(response.data.data.token);
+      console.log(response.data.data.token);
 
-    if (response.status === 200) {
+      if (response.status === 200) {
+        setLoading(false);
+        toast.success("Login successful");
+        dispatch(setToken(token));
+        dispatch(setIsLoggedIn(true));
+        dispatch(setLogin("login"));
+        dispatch(setUser(response.data.data.user));
+        setTimeout(() => {
+          navigate("/");
+        }, 1500);
+      }
+    } catch (error) {
       setLoading(false);
-      toast.success("Login successful");
-      dispatch(setToken(token));
-      dispatch(setIsLoggedIn(true));
-      dispatch(setLogin("login"));
-      dispatch(setUser(response.data.data.user));
-      setTimeout(() => {
-        navigate("/");
-      }, 1500);
+      if (axios.isAxiosError(error)) {
+        setMessage(error.response.data.message);
+        return;
+      }
+      setMessage(error.message);
     }
-  } catch (error) {
-    setLoading(false);
-    if (axios.isAxiosError(error)) {
-      setMessage(error.response.data.message);
-      return;
-    }
-    setMessage(error.message);
-  }
-};
+  };
 
 export const register =
   (data, navigate, setMessage, setLoading) => async (dispatch, getState) => {
@@ -58,7 +59,7 @@ export const register =
         "https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/register",
         data
       );
-      
+
       if (response.status === 200) {
         setLoading(false);
         toast.success("Berhasil mendaftar akun.");
@@ -68,12 +69,33 @@ export const register =
     } catch (error) {
       setLoading(false);
       if (axios.isAxiosError(error)) {
-        throw(error.response.data.message);
+        throw error.response.data.message;
         return;
       }
       setMessage(error.message);
     }
   };
+
+export const googleAction = (accessToken, navigate) => async (dispatch) => {
+  try {
+    console.log("token", accessToken);
+    const response = await axios.post(
+      "https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/login-google",
+      { access_token: accessToken },
+      { headers: { "Content-Type": "application/json" } }
+    );
+    toast.success("Login successful");
+    dispatch(setToken(response.data.data.token));
+    dispatch(setIsLoggedIn(true));
+    dispatch(setLogin("google"));
+    dispatch(setUser(response.data.data.user));
+    setTimeout(() => {
+      navigate("/");
+    }, 1500);
+  } catch (error) {
+    console.error("Gagal masuk dengan google", error);
+  }
+};
 
 export const fetchUser = () => async (dispatch, getState) => {
   const token = getState().auth.token;
@@ -111,41 +133,42 @@ export const loadUserProfile = (setUser) => async (dispatch) => {
       console.log("Failed to fetch user data");
     }
   } catch (error) {
-    throw(error.message);
+    throw error.message;
   }
 };
 
-export const deleteAccount = (navigate, setLoading) => async (dispatch, getState) => {
-  const token = getState().auth.token;
-  setLoading(true);
-  try {
-    const response = await axios.delete(`${url}/auth/users`, {
-      headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+export const deleteAccount =
+  (navigate, setLoading) => async (dispatch, getState) => {
+    const token = getState().auth.token;
+    setLoading(true);
+    try {
+      const response = await axios.delete(`${url}/auth/users`, {
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    if (response.status === 200) {
+      if (response.status === 200) {
+        setLoading(false);
+        toast.success("Akun berhasil dihapus");
+        dispatch(setToken(null));
+        dispatch(setIsLoggedIn(false));
+        dispatch(setUser(null));
+        dispatch(setLogin(null));
+        setTimeout(() => {
+          navigate("/masuk");
+        }, 1500);
+      }
+    } catch (error) {
       setLoading(false);
-      toast.success("Akun berhasil dihapus");
-      dispatch(setToken(null));
-      dispatch(setIsLoggedIn(false));
-      dispatch(setUser(null));
-      dispatch(setLogin(null));
-      setTimeout(() => {
-        navigate("/masuk");
-      }, 1500);
+      if (axios.isAxiosError(error)) {
+        console.error(error.response.data.message);
+        return;
+      }
+      console.error(error.message);
     }
-  } catch (error) {
-    setLoading(false);
-    if (axios.isAxiosError(error)) {
-      console.error(error.response.data.message);
-      return;
-    }
-    console.error(error.message);
-  }
-};
+  };
 
 export const updateUserProfile = (user) => async (dispatch, getState) => {
   const state = getState();
@@ -221,14 +244,11 @@ export const noAccessToken = (navigate) => async (dispatch, getState) => {
       }
     } else {
       try {
-        await axios.get(
-          `${url}/auth/users/profile`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        await axios.get(`${url}/auth/users/profile`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
       } catch (error) {
         dispatch(setToken(null));
         dispatch(setIsLoggedIn(false));
@@ -440,7 +460,9 @@ export const verifyEmail = (data, navigate) => async (dispatch) => {
     );
 
     if (response.status === 200) {
-      toast.success("Berhasil verifikasi email, silakan login terlebih dahulu.");
+      toast.success(
+        "Berhasil verifikasi email, silakan login terlebih dahulu."
+      );
       setTimeout(() => {
         navigate("/masuk");
       }, 1500);
@@ -475,16 +497,18 @@ export const resendOtp = (email) => async (dispatch) => {
     }
   }
 };
-    
+
 export const checkToken = (navigate) => (dispatch, getState) => {
   const token = getState().auth.token;
 
   if (!token) {
-    toast.error("Ups.. tidak dapat mengakses halaman, silakan masuk terlebih dahulu.");
+    toast.error(
+      "Ups.. tidak dapat mengakses halaman, silakan masuk terlebih dahulu."
+    );
     navigate("/masuk");
   }
 };
-    
+
 export const logout = (navigate) => (dispatch) => {
   try {
     dispatch(setToken(null));

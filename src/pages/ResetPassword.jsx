@@ -7,9 +7,6 @@ import "slick-carousel/slick/slick-theme.css";
 import { Link, useLocation } from "react-router-dom";
 import {
   resetPassword,
-  // setPassword,
-  // setConfirmPassword,
-  // setMessage,
 } from "../redux/actions/authActions";
 import { ThreeDots } from "react-loader-spinner";
 

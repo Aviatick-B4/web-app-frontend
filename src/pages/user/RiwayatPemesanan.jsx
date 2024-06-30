@@ -595,6 +595,7 @@ export default function RiwayatPemesanan() {
                               ? "bg-secondary hover:bg-darksecondary"
                               : "bg-primary hover:bg-darkprimary"
                           }`}
+                          onClick={() => handleBookingSubmit()}
                         >
                           {bookingDetail?.status === "UNPAID"
                             ? "Lanjut Bayar"

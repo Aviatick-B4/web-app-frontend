@@ -1,24 +1,26 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useGoogleLogin } from "@react-oauth/google";
 import { useDispatch } from "react-redux";
-import { toast } from "react-toastify";
-import axios from "axios";
-import { setLogin } from "../redux/reducers/authReducers";
+import { useGoogleLogin } from "@react-oauth/google";
+import { googleAction } from "../redux/actions/authActions";
 
 function GoogleLogin({ buttonText }) {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const handleOAuth = () => {
-    window.open(`https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/google`);
-  };
+  const googleLogin = useGoogleLogin({
+    onSuccess: (responseGoogle) => {
+      dispatch(googleAction(responseGoogle.access_token, navigate));
+    },
+    onError: (error) => {
+      console.error("Gagal masuk dengan google");
+    },
+  });
 
   return (
-    <>
-      <button
+    <button
         className="w-full flex justify-center py-2 px-4 rounded-full border border-neutral/50 shadow-md text-sm md:text-base font-medium text-main hover:bg-darkprimary/20 focus:outline-none"
-        onClick={handleOAuth}
+         onClick={() => googleLogin()}
       >
         <div className="flex items-center gap-2">
           <svg
@@ -49,7 +51,6 @@ function GoogleLogin({ buttonText }) {
           <p>Masuk dengan Google</p>
         </div>
       </button>
-    </>
   );
 }
 
