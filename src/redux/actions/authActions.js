@@ -41,7 +41,7 @@ export const login = (data, navigate, setMessage, setLoading) => async (dispatch
   } catch (error) {
     setLoading(false);
     if (axios.isAxiosError(error)) {
-      throw(error.response.data.message);
+      setMessage(error.response.data.message);
       return;
     }
     setMessage(error.message);
@@ -49,7 +49,7 @@ export const login = (data, navigate, setMessage, setLoading) => async (dispatch
 };
 
 export const register =
-  (data, navigate, setMessage) => async (dispatch, getState) => {
+  (data, navigate, setMessage, setLoading) => async (dispatch, getState) => {
     console.log("data", data);
     const { fullName, email, phoneNumber, password } = data;
     console.log("email", email);
@@ -68,7 +68,7 @@ export const register =
     } catch (error) {
       setLoading(false);
       if (axios.isAxiosError(error)) {
-        setMessage(error.response.data.message);
+        throw(error.response.data.message);
         return;
       }
       setMessage(error.message);
@@ -115,9 +115,9 @@ export const loadUserProfile = (setUser) => async (dispatch) => {
   }
 };
 
-export const deleteAccount = (navigate) => async (dispatch, getState) => {
+export const deleteAccount = (navigate, setLoading) => async (dispatch, getState) => {
   const token = getState().auth.token;
-
+  setLoading(true);
   try {
     const response = await axios.delete(`${url}/auth/users`, {
       headers: {
@@ -127,6 +127,7 @@ export const deleteAccount = (navigate) => async (dispatch, getState) => {
     });
 
     if (response.status === 200) {
+      setLoading(false);
       toast.success("Akun berhasil dihapus");
       dispatch(setToken(null));
       dispatch(setIsLoggedIn(false));
@@ -137,6 +138,7 @@ export const deleteAccount = (navigate) => async (dispatch, getState) => {
       }, 1500);
     }
   } catch (error) {
+    setLoading(false);
     if (axios.isAxiosError(error)) {
       console.error(error.response.data.message);
       return;

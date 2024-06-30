@@ -13,6 +13,7 @@ import {
 import { updateUserProfile } from "../../redux/actions/authActions";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { ThreeDots } from "react-loader-spinner";
 
 export default function Akun() {
   const dispatch = useDispatch();
@@ -36,6 +37,7 @@ export default function Akun() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
   const [activeMenuItem, setActiveMenuItem] = useState("ubahProfil");
+  const [loading, setLoading] = useState(false);
 
   const user = useSelector((state) => state.auth.user);
 
@@ -133,6 +135,20 @@ export default function Akun() {
 
   return (
     <div className="bg-background">
+      {loading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-white backdrop-blur-sm bg-opacity-50 z-50">
+          <ThreeDots
+            visible={true}
+            height="60"
+            width="60"
+            color="#00A8D0"
+            radius="9"
+            ariaLabel="three-dots-loading"
+            wrapperStyle={{}}
+            wrapperClass=""
+          />
+        </div>
+      )}
       {/* Desktop Navbar */}
       <div className="hidden md:block">
         <Navbar transparent={false} />
@@ -605,7 +621,7 @@ export default function Akun() {
                     </button>
                     <button
                       onClick={() => {
-                        dispatch(deleteAccount(navigate));
+                        dispatch(deleteAccount(navigate, setLoading));
                         handleConfirmModalToggle();
                       }}
                       type="submit"

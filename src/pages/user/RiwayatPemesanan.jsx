@@ -331,7 +331,7 @@ export default function RiwayatPemesanan() {
                       {bookingDetail?.booking_code}
                     </span>
                   </p>
-                  {bookingDetail?.paid_before && (
+                  {bookingDetail?.status === "UNPAID" && (
                     <p className="text-xs font-semibold text-secondary">
                       Bayar Sebelum:{" "}
                       <span>
@@ -627,7 +627,7 @@ export default function RiwayatPemesanan() {
                       {bookingDetail?.booking_code}
                     </span>
                   </p>
-                  {bookingDetail?.paid_before && (
+                  {bookingDetail?.status === "UNPAID" && (
                     <p className="text-sm font-semibold text-secondary">
                       Bayar Sebelum:{" "}
                       <span>

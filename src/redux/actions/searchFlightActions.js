@@ -4,6 +4,8 @@ import {
   setCities,
   setCitySearchResult,
   setDepartureResults,
+  setFavDestinationResults,
+  setPromoResult,
   setReturnResults,
 } from "../reducers/searchFlightReducers";
 
@@ -55,6 +57,8 @@ export const getFlightSearchResults =
         const response2 = await axios.get(url2);
         dispatch(setReturnResults(response2.data.data.tickets || []));
       }
+      setFavDestinationResults([])
+      setPromoResult(null)
       setLoading(false);
       navigate("/hasil-pencarian");
     } catch (error) {

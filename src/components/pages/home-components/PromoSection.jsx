@@ -6,7 +6,7 @@ import "slick-carousel/slick/slick-theme.css";
 import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
 import { getPromoById, getPromos } from "../../../redux/actions/promoActions";
 import { useNavigate } from "react-router-dom";
-import { setDepartureResults, setFavDestinationResults } from "../../../redux/reducers/searchFlightReducers";
+import { setDepartureResults, setFavDestinationResults, setTripTypeSaved } from "../../../redux/reducers/searchFlightReducers";
 import { ThreeDots } from "react-loader-spinner";
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'

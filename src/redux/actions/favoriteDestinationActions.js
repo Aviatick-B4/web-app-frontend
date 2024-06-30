@@ -7,6 +7,8 @@ import {
 import {
   setDepartureResults,
   setFavDestinationResults,
+  setFlightKeyword,
+  setTripTypeSaved,
 } from "../reducers/searchFlightReducers";
 
 const url = import.meta.env.VITE_BASE_URL;
@@ -54,6 +56,8 @@ export const getFavDestinationById =
         })
       );
       dispatch(setFavDestinationResults(results));
+      dispatch(setFlightKeyword([]));
+      dispatch(setTripTypeSaved(null));
       setLoading(false);
       navigate("/hasil-pencarian/destinasi");
     } catch (error) {

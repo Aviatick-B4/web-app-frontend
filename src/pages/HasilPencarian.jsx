@@ -49,7 +49,7 @@ export default function HasilPencarian() {
     flightKeyword;
 
   const {
-    adults = 0,
+    adults = 1,
     children = 0,
     infants = 0,
   } = flightKeyword?.passengers || {};
@@ -57,7 +57,7 @@ export default function HasilPencarian() {
 
   const changedPassengers = changedFlightKeyword?.passengers || {};
   const {
-    adults: changedAdults = 0,
+    adults: changedAdults = 1,
     children: changedChildren = 0,
     infants: changedInfants = 0,
   } = changedPassengers;
@@ -65,23 +65,23 @@ export default function HasilPencarian() {
     changedAdults + changedChildren + changedInfants;
 
   const initialData = {
-    passengers: { adults, children, infants },
+    passengers: { adults: 1, children: 0, infants: 0 },
   };
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    // const storedSelectedDeparture = localStorage.getItem("selectedDeparture");
-    // if (storedSelectedDeparture) {
-    //   setSelectedDeparture(JSON.parse(storedSelectedDeparture));
-    // }
   }, []);
 
   useEffect(() => {
-    if (selectedDeparture && selectedReturn) {
+    if (tripTypeSaved === "roundtrip" && selectedDeparture && selectedReturn) {
       handleConfirmPage();
     } else if (tripTypeSaved === "singletrip" && selectedDeparture) {
       handleConfirmPage();
-    }
+    } else if (tripTypeSaved === null && promoResult && selectedDeparture) {
+      handleConfirmPage();
+    } else if (tripTypeSaved === null && favDestinationResults.length > 0 && selectedDeparture) {
+      handleConfirmPage();
+    } 
   }, [selectedDeparture, selectedReturn, tripTypeSaved]);
 
   const openModal = (type, data) => {
@@ -394,10 +394,11 @@ export default function HasilPencarian() {
   };
 
   const handleConfirmPage = () => {
+    const defaultPassengers = { adults: 1, children: 0, infants: 0 };
     const data = {
       selectedDeparture,
       selectedReturn,
-      passengers,
+      passengers: passengers || defaultPassengers,
     };
     dispatch(setBooking(data));
     navigate("/konfirmasi-tiket");
@@ -523,7 +524,7 @@ export default function HasilPencarian() {
                     className="cursor-pointer"
                     onClick={() => openModal("class")}
                   >
-                    {changedFlightKeyword?.flightClass || flightClass}
+                    {changedFlightKeyword?.flightClass || flightClass || "Economy"}
                   </span>
                 </div>
                 {/* Button Change Search */}

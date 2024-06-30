@@ -9,7 +9,7 @@ export const getNotifications = () => async (dispatch, getState) => {
 
   try {
     const response = await axios.get(
-      `${url}/notifications?page=1&limit=10`,
+      `${url}/notifications?limit=100`,
       {
         headers: {
           accept: "application/json",
@@ -18,7 +18,8 @@ export const getNotifications = () => async (dispatch, getState) => {
       }
     );
 
-    dispatch(setNotifications(response.data.data));
+    const sortedData = response.data.data.sort((a, b) => b.id - a.id);
+    dispatch(setNotifications(sortedData));
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error(error.message);

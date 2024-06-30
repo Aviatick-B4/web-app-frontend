@@ -1,7 +1,7 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 import { setPromo } from "../reducers/promoReducers";
-import { setPromoResult } from "../reducers/searchFlightReducers";
+import { setFlightKeyword, setPromoResult, setTripTypeSaved } from "../reducers/searchFlightReducers";
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 
@@ -30,6 +30,8 @@ export const getPromoById =
       const response = await axios.get(`${url}/tickets/${ticketId}`);
       console.log("by id", response.data.data);
       dispatch(setPromoResult(response.data.data));
+      dispatch(setFlightKeyword([]));
+      dispatch(setTripTypeSaved(null));
       setLoading(false);
       navigate(`/hasil-pencarian/promo/${ticketId}`);
     } catch (error) {
