@@ -17,6 +17,7 @@ import { useNavigate } from "react-router-dom";
 export default function Akun() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  // const [loading, setLoading] = useState(true); 
   const [fullName, setFullName] = useState("");
   const [familyName, setFamilyName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -39,12 +40,9 @@ export default function Akun() {
   const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
-    console.log("user", user);
-  }, [user]);
-
-  useEffect(() => {
     if (!user) {
-      dispatch(loadUserProfile());
+      navigate("/masuk");
+      toast.error("Ups.. tidak dapat mengakses halaman, silakan masuk terlebih dahulu.");
     } else {
       setFullName(user.fullName);
       setFamilyName(user.familyName);
@@ -54,7 +52,16 @@ export default function Akun() {
       setIdentityNumber(user.identityNumber);
       setNationality(user.nationality);
     }
-  }, [user, dispatch]);
+    // setLoading(false);
+  }, [user, dispatch, navigate]);
+
+  if (!user) {
+    return null; // Return null to prevent rendering if user is not logged in
+  }
+
+  // if (loading) {
+  //   return <div>Loading...</div>; // Show a loading indicator while fetching user data
+  // }
 
   const handleUpdateProfile = async (e) => {
     e.preventDefault();

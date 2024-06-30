@@ -6,8 +6,9 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../redux/actions/authActions";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import GoogleLogin from "./googleLogin";
+import { toast } from "react-toastify";
 
 function Login() {
   const navigate = useNavigate();
@@ -16,16 +17,66 @@ function Login() {
   const [emailOrPhoneNumber, setEmailOrPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const token = useSelector((state) => state?.auth.token);
+
+  useEffect(() => {
+    if (token) {
+      toast.error("Kamu sudah login.");
+      navigate("/");
+    }
+  }, []);
+
+  useEffect(() => {
+    const savedEmailOrPhoneNumber = localStorage.getItem("emailOrPhoneNumber");
+    const savedPassword = localStorage.getItem("password");
+    if (savedEmailOrPhoneNumber && savedPassword) {
+      setEmailOrPhoneNumber(savedEmailOrPhoneNumber);
+      setPassword(savedPassword);
+      setRememberMe(true);
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (rememberMe) {
+      localStorage.setItem("emailOrPhoneNumber", emailOrPhoneNumber);
+      localStorage.setItem("password", password);
+    } else {
+      localStorage.removeItem("emailOrPhoneNumber");
+      localStorage.removeItem("password");
+    }
+
+    // Simple email validation regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^[0-9]{10,12}$/;
+
+    if (emailOrPhoneNumber === "" || password === "") {
+      setMessage("Email/Phone Number dan Password tidak boleh kosong.");
+      return false;
+    }
+
+    if (
+      !emailRegex.test(emailOrPhoneNumber) &&
+      !phoneRegex.test(emailOrPhoneNumber)
+    ) {
+      setMessage("Format Email atau Nomor Telepon tidak valid.");
+      return false;
+    }
+
+    if (password.length < 6) {
+      setMessage("Password harus lebih dari 6 karakter.");
+      return false;
+    }
 
     let data = {
       emailOrPhoneNumber,
       password,
     };
 
-    dispatch(login(data, navigate, setMessage));
+    dispatch(login(data, navigate, setMessage, setLoading));
   };
 
   const toggleShowPassword = () => {
@@ -46,27 +97,44 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen flex mx-3 md:mx-0 bg-white">
-      <div className="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
-        <div className="mx-auto w-full max-w-sm lg:w-96">
-          <div>
-            <Link to="/">
-              <img
-                className="h-12 w-auto"
-                src="/logo-blue.png"
-                alt="Aviatick Logo"
-              />
-            </Link>
-            <h2 className="mt-6 text-2xl md:text-3xl font-bold text-main">
-              Masuk ke Akun Anda
-            </h2>
-            <p className="mt-2 text-xs md:text-sm font-semibold text-primary">
-              Masuk{" "}
-              <span href="#" className="font-medium text-main">
-                dan dapatkan harga terbaik untuk penerbangan Anda!
-              </span>
-            </p>
-          </div>
+    <div>
+      {/* {loading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-opacity-75 z-50">
+          <ThreeDots
+            visible={true}
+            height="60"
+            width="60"
+            color="#FFB423"
+            radius="9"
+            ariaLabel="three-dots-loading"
+            wrapperStyle={{}}
+            wrapperClass=""
+          />
+        </div>
+      )} */}
+      <div
+        className="min-h-screen flex mx-3 md:mx-0 bg-white"
+      >
+        <div className="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24 z-40">
+          <div className="mx-auto w-full max-w-sm lg:w-96">
+            <div>
+              <Link to="/">
+                <img
+                  className="h-12 w-auto"
+                  src="/logo-blue.png"
+                  alt="Aviatick Logo"
+                />
+              </Link>
+              <h2 className="mt-6 text-2xl md:text-3xl font-bold text-main">
+                Masuk ke Akun Anda
+              </h2>
+              <p className="mt-2 text-xs md:text-sm font-semibold text-primary">
+                Masuk{" "}
+                <span href="#" className="font-medium text-main">
+                  dan dapatkan harga terbaik untuk penerbangan Anda!
+                </span>
+              </p>
+            </div>
 
           <div className="mt-8">
             <div className="mt-6">
@@ -143,21 +211,23 @@ function Login() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <input
-                      id="remember-me"
-                      name="remember-me"
-                      type="checkbox"
-                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                    />
-                    <label
-                      htmlFor="remember-me"
-                      className="ml-2 block text-xs md:text-sm text-main"
-                    >
-                      Ingat saya
-                    </label>
-                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <input
+                        id="remember-me"
+                        name="remember-me"
+                        type="checkbox"
+                        checked={rememberMe}
+                        onChange={(e) => setRememberMe(e.target.checked)}
+                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                      />
+                      <label
+                        htmlFor="remember-me"
+                        className="ml-2 block text-xs md:text-sm text-main"
+                      >
+                        Ingat saya
+                      </label>
+                    </div>
 
                   <div className="text-xs md:text-sm">
                     <a
@@ -169,20 +239,49 @@ function Login() {
                   </div>
                 </div>
 
-                <p className="text-sm text-red-500 font-medium">{message}</p>
-                <div>
+                  <p className="text-sm text-red-500 font-medium">{message}</p>
+
                   <button
                     type="submit"
-                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-full shadow-sm text-sm md:text-base font-medium text-white bg-primary hover:bg-darkprimary focus:outline-none"
+                    className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-full shadow-sm text-sm md:text-base font-medium text-white bg-primary hover:bg-darkprimary focus:outline-none ${loading ? "opacity-50" : ""}`}
+                    disabled={loading}
                   >
-                    Masuk
+                    {loading ? (
+                      <div className="flex items-center justify-center text-center">
+                        <svg
+                          className="animate-spin h-5 w-5 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="#00A8D0"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                          ></path>
+                        </svg>
+                      </div>
+                    ) : (
+                      "Masuk"
+                    )}
                   </button>
-                  <div className="flex justify-center mt-4">
-                    <GoogleLogin />
-                  </div>
+                </form>
+                <p className="text-sm font-medium text-center text-main mx-4 py-2">
+                  atau
+                </p>
+                <div className="flex justify-center">
+                  <GoogleLogin />
                 </div>
 
-                <p className="text-xs md:text-sm font-regular text-main">
+                <p className="text-xs md:text-sm font-regular text-main mt-4">
                   Belum punya akun?{" "}
                   <a
                     href="/daftar"
@@ -191,37 +290,29 @@ function Login() {
                     Daftar
                   </a>
                 </p>
-
-                {/* <div className="flex items-center justify-center mt-4">
-                  <div className="flex-1 h-[1px] bg-gray-200"></div>
-                  <p className="text-sm font-medium text-center text-gray-700 mx-4">
-                    or
-                  </p>
-                  <div className="flex-1 h-[1px] bg-gray-200"></div>
-                </div> */}
-              </form>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div className="hidden lg:block relative w-0 flex-1">
-        <img
-          className="absolute inset-0 h-full w-full object-cover"
-          src="/bg/plane.jpg"
-          alt="Auth Page Image"
-        />
-        <div className="absolute inset-0 bg-black opacity-20"></div>
-        <div className="absolute inset-0 top-[50%] items-center text-center tracking-[2px] justify-center text-white font-thin text-base px-4 overflow-x-hidden">
-          <Slider {...settings}>
-            <h3>Nikmati kemudahan memesan tiket pesawat di Aviatick.</h3>
-            <h3>
-              Temukan penawaran eksklusif dengan opsi pembayaran fleksibel.
-            </h3>
-            <h3>
-              Jelajahi destinasi impian Anda bersama Aviatick untuk pengalaman
-              booking yang sempurna.
-            </h3>
-          </Slider>
+        <div className="hidden lg:block relative w-0 flex-1">
+          <img
+            className="absolute inset-0 h-full w-full object-cover"
+            src="/bg/plane.jpg"
+            alt="Auth Page Image"
+          />
+          <div className="absolute inset-0 bg-black opacity-20"></div>
+          <div className="absolute inset-0 top-[50%] items-center text-center tracking-[2px] justify-center text-white font-thin text-base px-4 overflow-x-hidden">
+            <Slider {...settings}>
+              <h3>Nikmati kemudahan memesan tiket pesawat di Aviatick.</h3>
+              <h3>
+                Temukan penawaran eksklusif dengan opsi pembayaran fleksibel.
+              </h3>
+              <h3>
+                Jelajahi destinasi impian Anda bersama Aviatick untuk pengalaman
+                booking yang sempurna.
+              </h3>
+            </Slider>
+          </div>
         </div>
       </div>
     </div>

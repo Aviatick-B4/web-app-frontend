@@ -5,18 +5,26 @@ import Navbar from "../components/navigations/Navbar";
 import MobileNavbar from "../components/navigations/MobileNavbar";
 import Footer from "../components/navigations/Footer";
 import BackButtonMobile from "../components/navigations/BackButtonMobile";
+import { toast } from "react-toastify";
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
 
 function KonfirmasiTiket() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const booking = useSelector((state) => state?.booking?.bookings || null);
+  const booking = useSelector((state) => state?.bookingFlight?.bookings || null);
+  const user = useSelector((state) => state?.auth?.user || null);
   const totalPassenger =
     booking?.passengers?.adults + booking.passengers?.children;
 
-  useEffect(() => {
-    console.log("booking", booking);
-  }, [booking]);
+  const handleConfirmClick = () => {
+    if (!user) {
+      showSwal();
+    } else {
+      navigate("/pemesanan");
+    }
+  };
 
   const formatDateToDayMonthYear = (dateString) => {
     if (!dateString || typeof dateString !== "string") {
@@ -60,6 +68,25 @@ function KonfirmasiTiket() {
     }).format(price)}`;
   };
 
+  const showSwal = () => {
+    withReactContent(Swal).fire({
+      title: "<b>Kamu belum masuk nih!</b>",
+      html: `
+        Silakan masuk terlebih dahulu untuk memesan tiket.
+      `,
+      showCloseButton: true,
+      focusConfirm: false,
+      confirmButtonText: 'Masuk',
+      customClass: {
+          confirmButton: 'inline-block bg-[#00A8D0] hover:bg-darkprimary text-white px-12 py-2 rounded-full'
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate("/masuk");
+      }
+    });
+  };
+
   return (
     <div className="bg-background text-main">
       {/* Desktop Navbar */}
@@ -72,6 +99,14 @@ function KonfirmasiTiket() {
       {/* Booking History Section */}
       <section className="pt-4 md:pt-20 pb-8">
         <div className="container">
+          {/* Breadcrumb */}
+          <div className="container hidden md:flex gap-1.5 text-main text-xs font-medium -mt-4 md:-mt-0 mb-10 md:mb-5">
+            <a href="/">Beranda</a>
+            <img src="/icons/right-chev.svg" alt="chevron" />
+            <a href="/hasil-pencarian">Hasil Pencarian</a>
+            <img src="/icons/right-chev.svg" alt="chevron" />
+            <a>Konfirmasi Tiket</a>
+          </div>
           {/* Destination and Passengers */}
           <div className="mb-4">
             <div className="flex items-center gap-3">
@@ -375,12 +410,12 @@ function KonfirmasiTiket() {
                 <p className="text-xs">*Sudah termasuk promo</p>
               </div>
 
-              <a
-                href="/pemesanan"
+              <button
+                onClick={handleConfirmClick}
                 className="self-center text-center w-full md:w-auto inline-block py-2 px-8 border border-transparent rounded-full shadow-sm text-sm md:text-base font-medium text-white bg-primary hover:bg-darkprimary focus:outline-none"
               >
                 Konfirmasi Tiket
-              </a>
+              </button>
             </div>
           </div>
         </div>

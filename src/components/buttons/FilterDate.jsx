@@ -31,6 +31,7 @@ const FilterDate = ({ label, iconSrc }) => {
         new Date(selectedDate).toDateString() === date.toDateString())
     ) {
       setStartDate(new Date());
+      dispatch(setBookingHistoryDetail(null));
     } else {
       setStartDate(date);
       const formattedDate = date.toISOString().split("T")[0];

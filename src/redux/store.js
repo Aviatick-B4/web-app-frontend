@@ -17,13 +17,13 @@ const rootReducer = combineReducers({
   favDestination: favoriteDestination,
   history: historyReducers,
   notif: notifReducers,
-  booking: bookingReducers,
+  bookingFlight: bookingReducers,
 });
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["auth", "search", "booking"],
+  whitelist: ["auth", "search", "bookingFlight"],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

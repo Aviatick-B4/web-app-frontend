@@ -13,18 +13,12 @@ export const getUserBookingHistory = () => async (dispatch, getState) => {
   const token = getState().auth.token;
 
   try {
-    const response = await axios.get(
-      `${url}/bookings/booking-history`,
-      {
-        headers: {
-          accept: "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    console.log("history", response.data.data);
-
+    const response = await axios.get(`${url}/bookings/booking-history`, {
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
     dispatch(setBookingHistory(response.data.data));
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -36,9 +30,9 @@ export const getUserBookingHistory = () => async (dispatch, getState) => {
 };
 
 export const getBookingHistoryDetail =
-  (bookingId) => async (dispatch, getState) => {
+  (bookingId, setDetailLoading) => async (dispatch, getState) => {
     const token = getState().auth.token;
-
+    setDetailLoading(true);
     try {
       const response = await axios.get(
         `${url}/bookings/booking-history/${bookingId}`,
@@ -49,11 +43,12 @@ export const getBookingHistoryDetail =
           },
         }
       );
-    console.log("detail", response.data.data);
-
+      console.log("detail", response.data.data);
       dispatch(setBookingHistoryDetail(response.data.data));
+      setDetailLoading(false);
     } catch (error) {
       if (axios.isAxiosError(error)) {
+        setDetailLoading(false);
         console.error(error.message);
         return;
       }

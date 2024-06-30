@@ -1,15 +1,66 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import {
+  resetPassword,
+  // setPassword,
+  // setConfirmPassword,
+  // setMessage,
+} from "../redux/actions/authActions";
+import { ThreeDots } from "react-loader-spinner";
 
 function ResetPassword() {
+  const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { password, confirmPassword, message } = useSelector(
+    (state) => state.auth
+  );
+
+  const location = useLocation();
+  const token = new URLSearchParams(location.search).get("token");
+
+  const setPassword = (password) => ({
+    type: "SET_PASSWORD",
+    payload: password,
+  });
+
+  const setConfirmPassword = (confirmPassword) => ({
+    type: "SET_CONFIRM_PASSWORD",
+    payload: confirmPassword,
+  });
+
+  const setMessage = (message) => ({
+    type: "SET_MESSAGE",
+    payload: message,
+  });
+
+  useEffect(() => {
+    dispatch(setMessage("")); // Clear message when component mounts
+    console.log("ResetPasswordForm component mounted. token: ", token);
+  }, [dispatch]);
 
   const toggleShowPassword = () => {
     setShowPassword((prevShowPassword) => !prevShowPassword);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
+      dispatch(setMessage("Passwords do not match"));
+      console.log("Password validation error: Passwords do not match", message);
+      return;
+    }
+    setIsLoading(true); // Start loading
+    dispatch(resetPassword(password, token)).finally(() => {
+      setIsLoading(false);
+    }); // Stop loading
+    console.log("Reset password request dispatched", resetPassword);
   };
 
   const settings = {
@@ -48,7 +99,7 @@ function ResetPassword() {
 
           <div className="mt-8">
             <div className="mt-6">
-              <form action="#" method="POST" className="space-y-6">
+              <form onSubmit={handleSubmit} method="POST" className="space-y-6">
                 <div className="relative">
                   <label
                     htmlFor="password"
@@ -64,6 +115,8 @@ function ResetPassword() {
                       autoComplete="current-password"
                       placeholder="*******"
                       required
+                      value={password}
+                      onChange={(e) => dispatch(setPassword(e.target.value))}
                       className="appearance-none block w-full px-3 py-2 border-b border-gray placeholder-neutral focus:outline-none focus:ring-primary focus:border-primary text-sm"
                     />
                     <button
@@ -109,6 +162,10 @@ function ResetPassword() {
                       autoComplete="current-password"
                       placeholder="*******"
                       required
+                      value={confirmPassword}
+                      onChange={(e) =>
+                        dispatch(setConfirmPassword(e.target.value))
+                      }
                       className="appearance-none block w-full px-3 py-2 border-b border-gray placeholder-neutral focus:outline-none focus:ring-primary focus:border-primary text-sm"
                     />
                     <button
@@ -146,7 +203,22 @@ function ResetPassword() {
                   >
                     Reset Password
                   </button>
+                  {isLoading && (
+                    <div className="flex justify-center mt-4">
+                      <ThreeDots
+                        visible={true}
+                        height="80"
+                        width="80"
+                        color="#F93939"
+                        radius="9"
+                        ariaLabel="three-dots-loading"
+                        wrapperStyle={{}}
+                        wrapperClass=""
+                      />
+                    </div>
+                  )}
                 </div>
+                {message && <p>{message}</p>}
               </form>
             </div>
           </div>

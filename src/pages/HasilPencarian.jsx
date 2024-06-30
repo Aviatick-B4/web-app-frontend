@@ -68,6 +68,22 @@ export default function HasilPencarian() {
     passengers: { adults, children, infants },
   };
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    // const storedSelectedDeparture = localStorage.getItem("selectedDeparture");
+    // if (storedSelectedDeparture) {
+    //   setSelectedDeparture(JSON.parse(storedSelectedDeparture));
+    // }
+  }, []);
+
+  useEffect(() => {
+    if (selectedDeparture && selectedReturn) {
+      handleConfirmPage();
+    } else if (tripTypeSaved === "singletrip" && selectedDeparture) {
+      handleConfirmPage();
+    }
+  }, [selectedDeparture, selectedReturn, tripTypeSaved]);
+
   const openModal = (type, data) => {
     setModalType(type);
     if (type === "date") {
@@ -151,10 +167,7 @@ export default function HasilPencarian() {
 
     setSelectedDeparture(null);
     setSelectedReturn(null);
-    setLoading(true);
-    dispatch(getFlightSearchResults(updatedKeyword)).then(() => {
-      setLoading(false);
-    });
+    dispatch(getFlightSearchResults(updatedKeyword, navigate, setLoading));
     dispatch(setFlightKeyword(updatedKeyword));
   };
 
@@ -172,9 +185,18 @@ export default function HasilPencarian() {
   let resultsToUse;
 
   if (departureResults.length > 0 && tripTypeSaved === "singletrip") {
-  resultsToUse = departureResults;
+    resultsToUse = departureResults;
   } else if (departureResults.length > 0 && tripTypeSaved === "roundtrip") {
-    resultsToUse = selectedDeparture ? returnResults : departureResults;
+    // resultsToUse = selectedDeparture ? returnResults : departureResults;
+    if (selectedDeparture && selectedReturn) {
+      resultsToUse = [];
+    } else if (selectedDeparture && selectedReturn === null) {
+      resultsToUse = returnResults;
+    } else if (selectedDeparture === null && selectedReturn) {
+      resultsToUse = departureResults;
+    } else {
+      resultsToUse = departureResults;
+    }
   } else if (favDestinationResults.length > 0) {
     resultsToUse = favDestinationResults;
   } else if ([promoResult]) {
@@ -183,6 +205,12 @@ export default function HasilPencarian() {
     resultsToUse = [];
   }
 
+  console.log({
+    selectedDeparture: selectedDeparture,
+    selectedReturn: selectedReturn,
+    resultsToUse: resultsToUse,
+  });
+
   const uniqueFacilities = Array.from(
     new Set(
       resultsToUse.flatMap((flight) => flight?.airplane?.inFlightFacility || [])
@@ -190,22 +218,22 @@ export default function HasilPencarian() {
   );
 
   const facilityOptions = [
-  "WiFi",
-  "Entertainment",
-  "Meal",
-  "Extra Legroom",
-  "Lounge",
-];
+    "WiFi",
+    "Entertainment",
+    "Meal",
+    "Extra Legroom",
+    "Lounge",
+  ];
 
   const handleFacilityChange = (facility) => {
-  setSelectedFacilities((prev) => {
-    if (prev.includes(facility)) {
-      return prev.filter((f) => f !== facility);
-    } else {
-      return [...prev, facility];
-    }
-  });
-};
+    setSelectedFacilities((prev) => {
+      if (prev.includes(facility)) {
+        return prev.filter((f) => f !== facility);
+      } else {
+        return [...prev, facility];
+      }
+    });
+  };
 
   const handlePriceRangeChange = (range) => {
     if (range === "IDR 0 - 4.000.000") {
@@ -253,7 +281,9 @@ export default function HasilPencarian() {
     });
 
   const generateDateList = () => {
-    const startDate = parseISO(departureDate || new Date().toISOString().split("T")[0]);
+    const startDate = parseISO(
+      departureDate || new Date().toISOString().split("T")[0]
+    );
     const days = [];
     for (let i = 0; i < 7; i++) {
       const date = addDays(startDate, i);
@@ -316,9 +346,10 @@ export default function HasilPencarian() {
 
   const handleDateClick = (dateValue) => {
     const departureDate = dateValue;
-    const arrivalDate = tripTypeSaved === "roundtrip" 
-    ? addDays(new Date(dateValue), 1).toISOString().split("T")[0] 
-    : null;
+    const arrivalDate =
+      tripTypeSaved === "roundtrip"
+        ? addDays(new Date(dateValue), 1).toISOString().split("T")[0]
+        : null;
 
     setSelectedDay(dateValue);
 
@@ -328,10 +359,9 @@ export default function HasilPencarian() {
       returnDate: arrivalDate,
     };
 
-    setLoading(true);
-    dispatch(getFlightSearchResults(updatedKeyword)).then(() => {
-      setLoading(false);
-    });
+    setSelectedDeparture(null);
+    setSelectedReturn(null);
+    dispatch(getFlightSearchResults(updatedKeyword, navigate, setLoading))
     dispatch(setFlightKeyword(updatedKeyword));
   };
 
@@ -341,13 +371,14 @@ export default function HasilPencarian() {
         setSelectedDeparture(ticket);
       } else if (!selectedReturn) {
         setSelectedReturn(ticket);
-      } else {
-        setSelectedDeparture(ticket);
-        setSelectedReturn(null);
       }
     } else {
       setSelectedDeparture(ticket);
     }
+  };
+
+  const handleEditSelected = () => {
+    setSelectedDeparture(null);
   };
 
   const swapLocations = () => {
@@ -430,14 +461,18 @@ export default function HasilPencarian() {
                       className="cursor-pointer"
                       onClick={() => openModal("city", "from")}
                     >
-                      {changedFlightKeyword?.from?.name || from?.name || <div className="text-gray">Dari mana?</div>}
+                      {changedFlightKeyword?.from?.name || from?.name || (
+                        <div className="text-gray">Dari mana?</div>
+                      )}
                     </span>
                     <SwapButton onClick={swapLocations} />
                     <span
                       className="cursor-pointer"
                       onClick={() => openModal("city", "to")}
                     >
-                      {changedFlightKeyword?.to?.name || to?.name || <div className="text-gray">Mau ke mana?</div>}
+                      {changedFlightKeyword?.to?.name || to?.name || (
+                        <div className="text-gray">Mau ke mana?</div>
+                      )}
                     </span>
                   </div>
 
@@ -451,7 +486,9 @@ export default function HasilPencarian() {
                       onClick={() => openModal("date", "departure")}
                     >
                       {formatDateToDayMonthYear(
-                        changedFlightKeyword?.departureDate || departureDate
+                        changedFlightKeyword?.departureDate ||
+                          departureDate ||
+                          new Date().toISOString().split("T")[0]
                       )}
                     </span>
                     {returnDate && (
@@ -462,7 +499,9 @@ export default function HasilPencarian() {
                           onClick={() => openModal("date", "return")}
                         >
                           {formatDateToDayMonthYear(
-                            changedFlightKeyword?.returnDate || returnDate
+                            changedFlightKeyword?.returnDate ||
+                              returnDate ||
+                              new Date().toISOString().split("T")[0]
                           )}
                         </span>
                       </>
@@ -528,14 +567,18 @@ export default function HasilPencarian() {
                     className="cursor-pointer border border-neutral rounded-lg py-2 px-8"
                     onClick={() => openModal("city", "from")}
                   >
-                    {changedFlightKeyword?.from?.name || from?.name || <div className="text-gray">Dari mana?</div>}
+                    {changedFlightKeyword?.from?.name || from?.name || (
+                      <div className="text-gray">Dari mana?</div>
+                    )}
                   </span>
                   <SwapButton onClick={swapLocations} />
                   <span
                     className="cursor-pointer border border-neutral rounded-lg py-2 px-8"
                     onClick={() => openModal("city", "to")}
                   >
-                    {changedFlightKeyword?.to?.name || to?.name || <div className="text-gray">Mau ke mana?</div>}
+                    {changedFlightKeyword?.to?.name || to?.name || (
+                      <div className="text-gray">Mau ke mana?</div>
+                    )}
                   </span>
                 </div>
                 {/* Date */}
@@ -545,7 +588,9 @@ export default function HasilPencarian() {
                     onClick={() => openModal("date", "departure")}
                   >
                     {formatDateToDayMonthYear(
-                      changedFlightKeyword?.departureDate || departureDate
+                      changedFlightKeyword?.departureDate ||
+                        departureDate ||
+                        new Date().toISOString().split("T")[0]
                     )}
                   </span>
                   {returnDate && (
@@ -556,7 +601,9 @@ export default function HasilPencarian() {
                         onClick={() => openModal("date", "return")}
                       >
                         {formatDateToDayMonthYear(
-                          changedFlightKeyword?.returnDate || returnDate
+                          changedFlightKeyword?.returnDate ||
+                            returnDate ||
+                            new Date().toISOString().split("T")[0]
                         )}
                       </span>
                     </>
@@ -758,9 +805,22 @@ export default function HasilPencarian() {
           <div className="container mt-3 md:mt-5">
             {selectedDeparture && (
               <>
-                <h1 className="font-semibold text-main text-base">
-                  Tiket yang Dipilih:
-                </h1>
+                <div className="flex items-center justify-between">
+                  <h1 className="font-semibold text-main text-base">
+                    Tiket yang Dipilih:
+                  </h1>
+                  {(selectedDeparture || selectedReturn) && (
+                    <div className="flex justify-end mt-4">
+                      <button
+                        className="px-4 py-1 text-xs md:text-sm w-auto text-center bg-primary text-white rounded-full border-2 border-primary hover:bg-darkprimary hover:border-darkprimary"
+                        onClick={handleConfirmPage}
+                      >
+                        Lanjut
+                        <BsArrowRight className="inline-block ml-2" />
+                      </button>
+                    </div>
+                  )}
+                </div>
                 <SelectedTicketCard
                   ticket={selectedDeparture}
                   isExpanded={isExpanded}
@@ -768,6 +828,7 @@ export default function HasilPencarian() {
                   convertToTime={convertToTime}
                   formatPrice={formatPrice}
                   calculateDuration={calculateDuration}
+                  onEdit={handleEditSelected}
                 />
               </>
             )}
@@ -781,20 +842,9 @@ export default function HasilPencarian() {
                   convertToTime={convertToTime}
                   formatPrice={formatPrice}
                   calculateDuration={calculateDuration}
+                  onEdit={handleEditSelected}
                 />
               </>
-            )}
-
-            {(selectedDeparture || selectedReturn) && (
-              <div className="flex justify-end mt-4">
-                <button
-                  className="px-4 py-1 text-xs md:text-sm w-auto text-center bg-primary text-white rounded-full border-2 border-primary hover:bg-darkprimary hover:border-darkprimary"
-                  onClick={handleConfirmPage}
-                >
-                  Lanjutkan Pemesanan
-                  <BsArrowRight className="inline-block ml-2" />
-                </button>
-              </div>
             )}
           </div>
 
@@ -830,15 +880,20 @@ export default function HasilPencarian() {
                   className="w-[99px]"
                 />
                 {departureResults.length > 0 && returnResults.length === 0 ? (
-                <>
-                  <p className="text-main">Maaf, penerbangan untuk pulang tidak ditemukan</p>
-                  <p className="text-primary">Coba pilih tanggal lain!</p>
-                </>
-                ):(
-                <>
-                  <p className="text-main">Maaf, pencarian tidak ditemukan</p>
-                  <p className="text-primary">Coba cari penerbangan lainnya!</p>
-                </>)}
+                  <>
+                    <p className="text-main">
+                      Maaf, penerbangan untuk pulang tidak ditemukan
+                    </p>
+                    <p className="text-primary">Coba pilih tanggal lain!</p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-main">Maaf, pencarian tidak ditemukan</p>
+                    <p className="text-primary">
+                      Coba cari penerbangan lainnya!
+                    </p>
+                  </>
+                )}
               </div>
             )}
           </div>

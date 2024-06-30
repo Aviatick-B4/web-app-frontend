@@ -10,28 +10,34 @@ import ResetPassword from "./pages/ResetPassword.jsx";
 import Register from "./pages/Register.jsx";
 import Login from "./pages/Login.jsx";
 import EmailVerification from "./pages/EmailVerification.jsx";
-import KonfirmasiTiket from "./pages/KonfirmasiTiket.jsx";
 import Akun from "./pages/user/Akun.jsx";
 import Notifikasi from "./pages/user/Notifikasi.jsx";
 import { ToastContainer } from "react-toastify";
 import { Provider } from "react-redux";
 import { persistor, store } from "./redux/store.js";
 import { PersistGate } from "redux-persist/integration/react";
+import KonfirmasiTiket from "./pages/KonfirmasiTiket.jsx";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import Protected from "./components/Protected.jsx";
+import NotFound from "./pages/NotFound.jsx";
 import NoAccessToken from "./components/NoAccessToken.jsx";
+import GoogleCallback from "./pages/googleCallback.jsx";
 
 function App() {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <GoogleOAuthProvider clientId="418401514974-jb23d77jtvj8bg2jl31povog173514rj.apps.googleusercontent.com">
+        <GoogleOAuthProvider clientId="1056659934932-di3nci2kbsr0ouiqjp5fnn0v1asocgg7.apps.googleusercontent.com">
           <BrowserRouter>
             <Routes>
+              <Route
+                path="/auth/google/callback"
+                element={<GoogleCallback />}
+              />
               <Route path="/pemesanan" element={<Pemesanan />} />
               <Route path="/konfirmasi-tiket" element={<KonfirmasiTiket />} />
               <Route path="/pembayaran" element={<Pembayaran />} />
               <Route path="/success" element={<PaymentSuccess />} />
+              {/* <Route path="/error" element={<Error />} /> */}
               <Route path="/" element={<Beranda />} />
               <Route path="/daftar" element={<Register />} />
               <Route path="/masuk" element={<Login />} />
@@ -39,7 +45,6 @@ function App() {
                 path="/akun-saya"
                 element={
                   <div>
-                    <Protected />
                     <Akun />
                     <NoAccessToken />
                   </div>
@@ -49,7 +54,6 @@ function App() {
                 path="/notifikasi"
                 element={
                   <div>
-                    <Protected />
                     <Notifikasi />
                     <NoAccessToken />
                   </div>
@@ -59,6 +63,7 @@ function App() {
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/verifikasi-email" element={<EmailVerification />} />
               <Route path="/hasil-pencarian" element={<HasilPencarian />} />
+              <Route path="*" element={<NotFound />} />
               <Route
                 path="/hasil-pencarian/promo/:promoId"
                 element={<HasilPencarian />}
@@ -71,7 +76,6 @@ function App() {
                 path="/riwayat-pemesanan"
                 element={
                   <div>
-                    <Protected />
                     <RiwayatPemesanan />
                     <NoAccessToken />
                   </div>

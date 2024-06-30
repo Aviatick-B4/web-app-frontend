@@ -43,23 +43,25 @@ export const getFavDestinationsByFilter = (continent) => async (dispatch) => {
   }
 };
 
-export const getFavDestinationById = (ticketId) => async (dispatch) => {
-  console.log("ticketId", ticketId);
-  try {
-    const results = await Promise.all(
-      ticketId.map(async (id) => {
-        const response = await axios.get(`${url}/tickets/${id}`);
-        return response.data.data;
-      })
-    );
-    console.log("fav by id", results);
-    dispatch(setFavDestinationResults(results));
-    // dispatch(setDepartureResults([]));
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
+export const getFavDestinationById =
+  (ticketId, navigate, setLoading) => async (dispatch) => {
+    setLoading(true);
+    try {
+      const results = await Promise.all(
+        ticketId.map(async (id) => {
+          const response = await axios.get(`${url}/tickets/${id}`);
+          return response.data.data;
+        })
+      );
+      dispatch(setFavDestinationResults(results));
+      setLoading(false);
+      navigate("/hasil-pencarian/destinasi");
+    } catch (error) {
+      setLoading(false);
+      if (axios.isAxiosError(error)) {
+        console.error(error.message);
+        return;
+      }
       console.error(error.message);
-      return;
     }
-    console.error(error.message);
-  }
-};
+  };

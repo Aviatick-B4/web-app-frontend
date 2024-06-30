@@ -10,6 +10,7 @@ import WhyUs from "../components/pages/home-components/WhyChooseUsSection";
 import { BsArrowRight } from "react-icons/bs";
 import PromoSection from "../components/pages/home-components/PromoSection";
 import BackToTopButton from "../components/navigations/BackToTop";
+import OurTeamSection from "../components/pages/home-components/OurTeamSection";
 
 function Beranda() {
   return (
@@ -30,6 +31,7 @@ function Beranda() {
       </main>
       <AboutUs />
       <WhyUs />
+      <OurTeamSection />
       <BackToTopButton />
       <Footer />
     </div>
