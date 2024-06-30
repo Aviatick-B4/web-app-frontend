@@ -416,7 +416,7 @@ export default function HasilPencarian() {
       <section className="pt-3 md:pt-20 pb-8 md:pb-64">
         <div>
           {/* Breadcrumb */}
-          <div className="container hidden md:flex gap-1.5 text-main text-xs font-medium -mt-4 md:-mt-0 mb-10 md:mb-5">
+          <div className="container hidden md:flex gap-1.5 text-main text-xs font-medium -mt-4 md:-mt-0 mb-10 md:mb-10 lg:mb-5">
             <a href="/">Beranda</a>
             <img src="/icons/right-chev.svg" alt="chevron" />
             <span>Hasil Pencarian</span>
