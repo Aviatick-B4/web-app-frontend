@@ -171,7 +171,7 @@ const FlightSchedule = () => {
           openModal={openModal}
         />
       </div>
-      <SearchButton onClick={handleSaveToState} />
+      <SearchButton onClick={handleSaveToState} loading={loading} />
       <UnifiedModal
         isOpen={isModalOpen}
         onRequestClose={() => setIsModalOpen(false)}
@@ -301,11 +301,36 @@ const PassengerAndClassSelectors = ({ passengers, flightClass, openModal }) => (
 const SearchButton = ({ onClick, loading }) => (
   <div className="flex justify-center md:justify-end mt-4">
     <button
-      className="px-4 py-2 w-full md:w-auto text-center bg-primary text-white rounded-full border-2 border-primary hover:bg-white hover:text-primary"
+      className={`px-4 py-2 w-full md:w-56 text-center bg-primary text-white rounded-full border-2 border-primary ${loading ? "opacity-50 px-10" : "hover:bg-white hover:text-primary"}`}
       onClick={onClick}
+      disabled={loading}
     >
-      {loading ? ("Loading...") : ("Cari Jadwal")}
-      <BsArrowRight className="inline-block ml-2" />
+    {loading ? (
+      <div className="flex items-center justify-center text-center">
+        <svg
+          className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          ></circle>
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+          ></path>
+        </svg>
+      </div>
+    ) : (
+      <>Cari Penerbangan <BsArrowRight className="inline-block ml-2" /></>
+    )}
     </button>
   </div>
 );

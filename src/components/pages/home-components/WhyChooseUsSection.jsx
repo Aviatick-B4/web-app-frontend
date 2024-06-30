@@ -1,19 +1,36 @@
 import React from "react";
 
 const Card = ({ icon, title, description }) => (
-  <div className="card border rounded-lg p-3 flex flex-col m-4">
+  <div className="card border-2 border-primary rounded-xl p-4 flex flex-col text-main">
     <div className="overflow-hidden">{icon}</div>
-    <h3 className="mt-6 font-bold">{title}</h3>
-    <p className="mt-6">{description}</p>
+    <h3 className="mt-6 font-bold text-base md:text-lg">{title}</h3>
+    <p className="mt-6 text-sm md:text-sm">{description}</p>
   </div>
 );
 
 const WhyChooseUs = () => {
   return (
-    <div className="container">
-      <h2 className="font-bold text-3xl">Why Us?</h2>
-      <p>Mengapa harus pilih Aviatick?</p>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 my-10">
+    <div className="container text-main">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
+        <div>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width={40}
+            height={40}
+            viewBox="0 0 10 10"
+            className="text-secondary"
+          >
+            <path fill="currentColor" d="M0 7h16v1H0z"></path>
+          </svg>
+          <span className="text-xl md:text-2xl font-bold text-main">
+            Mengapa Harus
+          </span>
+          <span className="text-xl md:text-2xl ml-2 font-bold text-primary">
+            Pilih Kami?
+          </span>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-10 mb-20">
         <Card
           icon={
             <svg

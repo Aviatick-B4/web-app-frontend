@@ -312,13 +312,15 @@ function Navbar({ transparent }) {
             >
               Tentang Kami
             </a>
-
-            <Link
+            {!user && (
+              <Link
               to="/login"
               className="px-4 py-2 text-sm font-medium text-main hover:bg-primary/15 w-full text-left"
-            >
-              Masuk
-            </Link>
+              >
+                Masuk
+              </Link>
+            )}
+              
           </div>
         </div>
 

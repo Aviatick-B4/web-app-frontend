@@ -41,16 +41,33 @@ const people = [
 
 export default function AboutUs() {
   return (
-    <div className="bg-white" id="tentang-kami-section">
-      <div className="w-full mx-auto py-12 text-center lg:py-24">
-        <div className="flex-col md:flex-row flex space-y-8 sm:space-y-12">
-          <div
-            className="flex flex-col w-full md:w-1/2 p-8 space-y-5 sm:space-y-4 text-left justify-center bg-primary"
-          >
-            <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl text-white">
-              About Us
-            </h2>
-            <p className="text-sm text-white">
+    <div className="bg-white my-20 overflow-x-hidden overflow-y-hidden" id="tentang-kami-section">
+      <div className="w-full h-[600px] md:h-[400px] relative">
+        <div className="absolute inset-0 bg-black opacity-40 z-10"></div>
+
+        {/* Title*/}
+        <div className="absolute top-[25%] left-[30%] w-full flex flex-col items-center justify-center p-4 z-20 overflow-x-hidden">
+          <div className="bg-white py-8 pl-8 pr-40 rounded-lg shadow-lg w-[400px] md:w-[800px]">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between -mt-3">
+              <div>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width={40}
+                  height={40}
+                  viewBox="0 0 10 10"
+                  className="text-secondary"
+                >
+                  <path fill="currentColor" d="M0 7h16v1H0z"></path>
+                </svg>
+                <span className="text-xl md:text-2xl font-bold text-main">
+                  Tentang
+                </span>
+                <span className="text-xl md:text-2xl ml-2 font-bold text-primary">
+                  Kami
+                </span>
+              </div>
+            </div>
+            <p className="text-main font-medium text-sm text-left mt-4">
               Aviatick adalah platform terpercaya untuk memesan tiket pesawat
               dengan berbagai pilihan penerbangan dan harga terbaik. Kami
               menawarkan pengalaman pemesanan yang cepat, aman, dan efisien
@@ -59,9 +76,15 @@ export default function AboutUs() {
               diskon eksklusif hanya di Aviatick.
             </p>
           </div>
-          <div className="w-full md:w-1/2">
-            <img src="/bg/fullteam.png" alt="Aviatick's team" />
-          </div>
+        </div>
+        <div
+          className="h-[600px] md:h-[400px] relative"
+        >
+          <img
+            className="w-full h-[600px] md:h-[400px] object-cover"
+            src="/bg/plane.jpg"
+            alt="Tentang kami"
+          />
         </div>
       </div>
     </div>

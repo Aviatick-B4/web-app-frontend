@@ -14,7 +14,8 @@ import { cleanDigitSectionValue } from "@mui/x-date-pickers/internals/hooks/useF
 
 const url = import.meta.env.VITE_BASE_URL;
 
-export const login = (data, navigate, setMessage) => async (dispatch) => {
+export const login = (data, navigate, setMessage, setLoading) => async (dispatch) => {
+  setLoading(true);
   try {
     const response = await axios.post(`${url}/auth/login`, data, {
       headers: {
@@ -27,6 +28,7 @@ export const login = (data, navigate, setMessage) => async (dispatch) => {
     console.log(response.data.data.token);
 
     if (response.status === 200) {
+      setLoading(false);
       toast.success("Login successful");
       dispatch(setToken(token));
       dispatch(setIsLoggedIn(true));
@@ -37,11 +39,12 @@ export const login = (data, navigate, setMessage) => async (dispatch) => {
       }, 1500);
     }
   } catch (error) {
+    setLoading(false);
     if (axios.isAxiosError(error)) {
       throw(error.response.data.message);
       return;
     }
-    throw(error.message);
+    setMessage(error.message);
   }
 };
 
@@ -55,23 +58,20 @@ export const register =
         "https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/register",
         data
       );
-
-      const token = response.data.data;
-
+      
       if (response.status === 200) {
-        toast.success("Account registration successful.");
-        localStorage.setItem("userEmail", email); // Simpan email ke localStorage
-        dispatch(setToken(token));
-        dispatch(setUser(response.data.data.user));
-        // const email = getState().auth.user.email;
+        setLoading(false);
+        toast.success("Berhasil mendaftar akun.");
+        localStorage.setItem("userEmail", email);
         navigate("/verifikasi-email");
       }
     } catch (error) {
+      setLoading(false);
       if (axios.isAxiosError(error)) {
         setMessage(error.response.data.message);
         return;
       }
-      console.error(error.message);
+      setMessage(error.message);
     }
   };
 
@@ -433,15 +433,11 @@ export const verifyEmail = (data, navigate) => async (dispatch) => {
     );
 
     if (response.status === 200) {
-      toast.success("Berhasil verifikasi email.");
-      dispatch(setIsLoggedIn(true));
-      dispatch(setLogin("login"));
-      dispatch(setUser(response.data.data.user));
+      toast.success("Berhasil verifikasi email, silakan login terlebih dahulu.");
       setTimeout(() => {
-        navigate("/");
+        navigate("/masuk");
       }, 1500);
       localStorage.removeItem("userEmail");
-      // navigate("/");
     }
   } catch (error) {
     if (axios.isAxiosError(error)) {

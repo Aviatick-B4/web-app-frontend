@@ -15,15 +15,15 @@ export default function NotFound() {
           ></iframe>
           <div className="mt-4">
             <p className="text-main mb-4">
-              We're sorry, the page you requested could not be found.
+              Maaf, page yang kamu cari tidak ditemukan.
               <br />
-              Please go back to the homepage.
+              Mohon untuk kembali ke beranda
             </p>
             <button
               onClick={() => navigate("/")}
               className="px-4 py-2 bg-primary text-white rounded-full hover:bg-darkprimary"
             >
-              GO HOME
+              Beranda
             </button>
           </div>
         </div>

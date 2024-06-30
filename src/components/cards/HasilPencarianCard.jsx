@@ -57,13 +57,13 @@ const HasilPencarianCard = ({
     <>
       {/* Desktop Card */}
       <div
-        className={`hidden lg:block mx-auto bg-white rounded-xl shadow-md overflow-hidden my-4 ${
+        className={`hidden lg:block mx-auto bg-white rounded-xl shadow-md overflow-visible my-4 ${
           isSelected ? "border border-primary shadow shadow-primary/20" : ""
         }`}
       >
         {flight.afterDiscountPrice && (
-          <div className="relative">
-            <div className="absolute z-10 top-1 -left-1 w-[70px] md:w-[80px]">
+          <div className="relative overflow-visible">
+            <div className="absolute z-10 top-4 -left-1 w-[70px] md:w-[80px]">
               {/* Discount tag */}
               <img
                 className="relative z-10 w-full transform scale-x-[-1]"
@@ -249,11 +249,27 @@ const HasilPencarianCard = ({
 
       {/* Mobile Card */}
       <div
-        className={`block lg:hidden mx-auto bg-white rounded-lg shadow-md overflow-hidden my-3 p-4${
+        className={`block lg:hidden mx-auto bg-white rounded-lg shadow-md overflow-visible my-3 p-4${
           isSelected ? "border border-primary shadow-sm shadow-primary/20" : ""
         }`}
       >
-        <div className="flex flex-col">
+        {flight.afterDiscountPrice && (
+          <div className="relative overflow-visible">
+            <div className="absolute z-10 -top-2.5 -left-5 w-[70px] md:w-[80px]">
+              {/* Discount tag */}
+              <img
+                className="relative z-10 w-full transform scale-x-[-1]"
+                src="/discount-tag.png"
+                alt="Diskon"
+              />
+              <p className="absolute z-20 top-1.5 left-2 text-[10px] text-white font-medium">
+                Diskon{" "}
+                {discountPercentage(flight.price, flight.afterDiscountPrice)}%
+              </p>
+            </div>
+          </div>
+        )}
+        <div className="flex flex-col mt-4">
           <div className="flex justify-between items-center">
             <div className="flex">
               <img

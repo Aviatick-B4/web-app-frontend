@@ -6,31 +6,45 @@ import { useDispatch, useSelector } from "react-redux";
 import { getNotifByFilter, getNotifications } from "../../redux/actions/notifActions";
 import BackToTopButton from "../../components/navigations/BackToTop";
 import BackButtonMobile from "../../components/navigations/BackButtonMobile";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function Notifikasi() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [filterType, setFilterType] = useState("All");
   const notifications = useSelector((state) => state?.notif?.notifications);
   const notifByFilter = useSelector((state) => state?.notif?.notifByFilter);
+  const token = useSelector((state) => state.auth.token);
 
-   useEffect(() => {
-     const fetchData = async () => {
-       try {
-         setLoading(true);
-         if (filterType === "All") {
-           await dispatch(getNotifications());
-         } else {
-           await dispatch(getNotifByFilter(filterType));
-         }
-       } catch (error) {
-         console.error("Error fetching notifications:", error);
-       } finally {
-         setLoading(false);
-       }
-     };
-     fetchData();
-   }, [dispatch, filterType]);
+  useEffect(() => {
+    if (!token) {
+      navigate("/masuk");
+      toast.error("Ups.. tidak dapat mengakses halaman, silakan masuk terlebih dahulu.");
+    }
+  }, [token, navigate]);
+
+  useEffect(() => {
+    if (token) {
+      const fetchData = async () => {
+        try {
+          setLoading(true);
+          if (filterType === "All") {
+            await dispatch(getNotifications());
+          } else {
+            await dispatch(getNotifByFilter(filterType));
+          }
+        } catch (error) {
+          console.error("Error fetching notifications:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchData();
+    }
+    
+  }, [dispatch, filterType, token]);
 
   const handleFilterSelect = (option) => {
     const typeMap = {
@@ -94,6 +108,10 @@ export default function Notifikasi() {
       );
     }
   };
+
+  if (!token) {
+    return null;
+  }
 
   return (
     <div>

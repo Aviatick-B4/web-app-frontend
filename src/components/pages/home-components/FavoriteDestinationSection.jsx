@@ -11,17 +11,25 @@ import "slick-carousel/slick/slick-theme.css";
 import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import { setDepartureResults, setPromoResult } from "../../../redux/reducers/searchFlightReducers";
+import { ThreeDots } from "react-loader-spinner";
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 
 const FavoriteDestinationSection = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [destinationLoading, setDestinationLoading] = useState(false);
   const [selectedButton, setSelectedButton] = useState("Semua");
   const favDestination = useSelector(
     (state) => state?.favDestination.favDestinations
   );
 
   useEffect(() => {
-    dispatch(getFavDestinations());
+    setDestinationLoading(true);
+    dispatch(getFavDestinations())
+      .then(() => setDestinationLoading(false))
+      .catch(() => setDestinationLoading(true));
   }, [dispatch]);
 
   const handleButtonClick = (buttonName) => {
@@ -65,12 +73,10 @@ const FavoriteDestinationSection = () => {
     Oceania: "Oceania",
   };
 
-  const handleDestinationClick = (ticketId, navigate) => {
-    console.log("tiket id", ticketId);
-    dispatch(getFavDestinationById(ticketId, navigate));
+  const handleDestinationClick = (ticketId) => {
+    dispatch(getFavDestinationById(ticketId, navigate, setLoading));
     dispatch(setDepartureResults([]));
     dispatch(setPromoResult([]));
-    // navigate(`/hasil-pencarian/destinasi`);
   };
 
   function NextArrow(props) {
@@ -163,6 +169,7 @@ const FavoriteDestinationSection = () => {
         settings: {
           slidesToShow: 1,
           slidesToScroll: 1,
+          dots: false,
         },
       },
     ],
@@ -170,6 +177,21 @@ const FavoriteDestinationSection = () => {
 
   return (
     <section id="destinasi-favorit-section">
+      {loading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-white backdrop-blur-sm bg-opacity-50 z-50">
+          <ThreeDots
+            visible={true}
+            height="60"
+            width="60"
+            color="#00A8D0"
+            radius="9"
+            ariaLabel="three-dots-loading"
+            wrapperStyle={{}}
+            wrapperClass=""
+          />
+        </div>
+      )}
+
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
         <div>
           <svg
@@ -192,6 +214,7 @@ const FavoriteDestinationSection = () => {
           </h1>
         </div>
       </div>
+
       <div className="mt-4 md:mt-10">
         <div className="flex flex-wrap justify-between mb-5">
           <div className="flex flex-wrap space-x-1 md:space-x-2 w-full">
@@ -210,16 +233,41 @@ const FavoriteDestinationSection = () => {
             ))}
           </div>
         </div>
+      </div>
 
-        {favDestination.length > 0 && (
+      {destinationLoading ? (
+        <div className="mt-4 md:mt-10">
           <Slider {...settings}>
-            {favDestination.map((fav, id) => (
-              <div
-                onClick={() => handleDestinationClick(fav.ticketId)}
-                key={id}
-                className="px-2 py-1"
-              >
-                <div className="relative w-full bg-white rounded-lg shadow-md h-full bg-transparent overflow-visible text-main hover:shadow-lg cursor-pointer">
+            {Array.from({ length: 28 }).map((_, index) => (
+              <div key={index} className="px-2 py-1">
+                <div className="relative w-full bg-white rounded-lg h-full bg-transparent overflow-visible text-main">
+                  {/* Skeleton for Image */}
+                  <Skeleton height={136} width="100%" className="rounded-t-lg" />
+                  <div className="p-3">
+                    {/* Skeleton for Title */}
+                    <Skeleton width="60%" height={20} className="mb-2" />
+                    {/* Skeleton for Date */}
+                    <Skeleton width="40%" height={15} className="mb-1" />
+                    {/* Skeleton for Airline */}
+                    <Skeleton width="50%" height={15} className="mb-1" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </Slider>
+      </div>
+      ) : (
+        <>
+          <div className="mt-4 md:mt-10">
+            {favDestination.length > 0 && (
+              <Slider {...settings}>
+                {favDestination.map((fav, id) => (
+                  <div
+                    key={id}
+                    className="px-2 py-1"
+                    onClick={() => handleDestinationClick(fav.ticketId)}
+                  >
+                    <div className="relative w-full bg-white rounded-lg shadow-md h-full bg-transparent overflow-visible text-main hover:shadow-lg cursor-pointer">
                   {/* Image and span container */}
                   <div className="relative">
                     <img
@@ -255,11 +303,13 @@ const FavoriteDestinationSection = () => {
                     </p>
                   </div>
                 </div>
-              </div>
-            ))}
-          </Slider>
-        )}
-      </div>
+                  </div>
+                ))}
+              </Slider>
+            )}
+          </div>
+        </>
+      )}
     </section>
   );
 };

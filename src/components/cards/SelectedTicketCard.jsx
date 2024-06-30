@@ -2,11 +2,9 @@ import React from "react";
 
 const SelectedTicketCard = ({
   ticket,
-  isExpanded,
-  toggleExpand,
   formatPrice,
   convertToTime,
-  calculateDuration,
+  onEdit
 }) => {
   const formatDateToDayMonthYear = (dateString) => {
     if (!dateString || typeof dateString !== "string") {
@@ -28,6 +26,9 @@ const SelectedTicketCard = ({
             <div className="text-base font-bold text-main">
               {ticket.airplane.airline.name}
             </div>
+            <div className="text-sm font-medium text-main">
+              {ticket.flight.departure.city} → {""} {ticket.flight.arrival.city}
+            </div>
             <div className="flex items-center gap-3 mt-1">
               <div className="text-sm font-normal text-darkgray">
                 {formatDateToDayMonthYear(ticket.flight.departure.time)}
@@ -42,9 +43,14 @@ const SelectedTicketCard = ({
         </div>
         <div className="flex flex-col items-end pl-4">
           <div className="w-full flex flex-col items-end text-right space-y-2">
+            <button onClick={onEdit} className="text-primary font-medium text-sm">Ubah</button>
             <div className="flex items-center">
               <span className="text-base font-semibold text-main">
-                {formatPrice(ticket.price)}
+                {formatPrice(
+                  ticket.afterDiscountPrice
+                    ? ticket.afterDiscountPrice
+                    : ticket.price
+                )}
               </span>
               <span className="text-base font-medium text-gray ml-1">/pax</span>
             </div>

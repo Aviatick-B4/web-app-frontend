@@ -2,6 +2,8 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { setPromo } from "../reducers/promoReducers";
 import { setPromoResult } from "../reducers/searchFlightReducers";
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 
 const url = import.meta.env.VITE_BASE_URL;
 
@@ -20,20 +22,22 @@ export const getPromos = () => async (dispatch) => {
   }
 };
 
-export const getPromoById = (ticketId, navigate) => async (dispatch) => {
-  console.log("ticketId", ticketId);
-  try {
-    const response = await axios.get(
-      `${url}/tickets/${ticketId}`
-    );
-    console.log("by id", response.data.data);
-    dispatch(setPromoResult(response.data.data));
-    navigate(`/hasil-pencarian/promo/${ticketId}`);
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
+export const getPromoById =
+  (ticketId, navigate, setLoading) => async (dispatch) => {
+    console.log("ticketId", ticketId);
+    setLoading(true);
+    try {
+      const response = await axios.get(`${url}/tickets/${ticketId}`);
+      console.log("by id", response.data.data);
+      dispatch(setPromoResult(response.data.data));
+      setLoading(false);
+      navigate(`/hasil-pencarian/promo/${ticketId}`);
+    } catch (error) {
+      setLoading(false);
+      if (axios.isAxiosError(error)) {
+        console.error(error.message);
+        return;
+      }
       console.error(error.message);
-      return;
     }
-    console.error(error.message);
-  }
-};
+  };
