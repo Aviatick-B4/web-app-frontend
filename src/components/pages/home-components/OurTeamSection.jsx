@@ -155,32 +155,32 @@ const OurTeamSection = () => {
       <div className="mt-10">
         <Slider {...settings}>
           <TeamCard
-            imageSrc=".\src\assets\team\abiyyi.png"
+            imageSrc="/team/abiyyi.png"
             name="Muhammad Faiq Al Abiyyi"
             role="Back-end Developer"
           />
           <TeamCard
-            imageSrc=".\src\assets\team\rama.png"
+            imageSrc="/team/rama.png"
             name="I Putu Rama Astra Arimbawa"
             role="Back-end Developer"
           />
           <TeamCard
-            imageSrc=".\src\assets\team\rizki.png"
+            imageSrc="/team/rizki.png"
             name="Rizki Setyo Putro Robawa"
             role="Back-end Developer"
           />
           <TeamCard
-            imageSrc=".\src\assets\team\adit.png"
+            imageSrc="/team/adit.png"
             name="Aditya Herdiansyah Putra"
             role="Front-end Developer"
           />
           <TeamCard
-            imageSrc=".\src\assets\team\amal.png"
+            imageSrc="/team/amal.png"
             name="Amalia Rodhya Ulfa"
             role="Front-end Developer"
           />
           <TeamCard
-            imageSrc=".\src\assets\team\talitha.png"
+            imageSrc="/team/talitha.png"
             name="Talitha Syafiyah"
             role="Front-end Developer"
           />
