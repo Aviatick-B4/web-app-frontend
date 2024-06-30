@@ -140,9 +140,9 @@ const FlightSchedule = () => {
   };
 
   return (
-    <div className="relative z-20 py-4 md:py-4 px-6 bg-white shadow-lg rounded-tr-xl rounded-br-xl rounded-bl-xl w-full mx-auto -mt-14 md:-mt-24">
+    <div className="relative z-20 py-4 lg:py-4 px-6 bg-white shadow-lg rounded-tr-xl rounded-br-xl rounded-bl-xl w-full mx-auto -mt-14 lg:-mt-24">
       <TripTypeSelector tripType={tripType} setTripType={setTripType} />
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-6 md:gap-2 items-center mt-4 md:mt-8">
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-6 lg:gap-2 items-center mt-4 lg:mt-8">
         <LocationSelector
           label="Dari"
           icon={<FaPlaneDeparture className="mr-2 text-secondary" />}
@@ -190,7 +190,7 @@ const TripTypeSelector = ({ tripType, setTripType }) => (
   <div className="absolute top-0 left-0 w-full flex justify-start -translate-y-10">
     <div className="bg-white rounded-t-xl flex">
       <button
-        className={`px-3 py-2.5 md:px-4 md:py-2 rounded-tl-xl text-sm md:text-base font-medium ${
+        className={`px-3 py-2.5 lg:px-4 lg:py-2 rounded-tl-xl text-sm lg:text-base font-medium ${
           tripType === "singletrip" ? "bg-white" : "bg-primary text-white"
         }`}
         onClick={() => setTripType("singletrip")}
@@ -198,7 +198,7 @@ const TripTypeSelector = ({ tripType, setTripType }) => (
         Sekali Jalan
       </button>
       <button
-        className={`px-3 py-2.5 md:px-4 md:py-2 rounded-tr-xl text-sm md:text-base font-medium ${
+        className={`px-3 py-2.5 lg:px-4 lg:py-2 rounded-tr-xl text-sm lg:text-base font-medium ${
           tripType === "roundtrip" ? "bg-white" : "bg-primary text-white"
         }`}
         onClick={() => setTripType("roundtrip")}
@@ -211,7 +211,7 @@ const TripTypeSelector = ({ tripType, setTripType }) => (
 
 const LocationSelector = ({ label, icon, location, openModal }) => (
   <div className="flex flex-col border border-neutral p-3 rounded-xl cursor-pointer">
-    <label className="mb-0 md:mb-2 flex items-center text-primary">
+    <label className="mb-0 lg:mb-2 flex items-center text-primary">
       {icon}
       {label}
     </label>
@@ -226,7 +226,7 @@ const LocationSelector = ({ label, icon, location, openModal }) => (
 const SwapButton = ({ onClick, tripType }) => (
   <button
     onClick={onClick}
-    className={`absolute md:top-[35%] left-[80%] md:left-[17.5%] transform md:-translate-x-1/2 bg-gray-200 p-2 rounded-full bg-white shadow ${
+    className={`absolute lg:top-[35%] left-[80%] lg:left-[17.5%] transform lg:-translate-x-1/2 bg-gray-200 p-2 rounded-full bg-white shadow ${
       tripType === "singletrip" ? "top-[22%]" : "top-[18%]"
     }`}
   >
@@ -236,7 +236,7 @@ const SwapButton = ({ onClick, tripType }) => (
 
 const DateSelector = ({ label, date, openModal }) => (
   <div className="flex flex-col border border-neutral p-3 rounded-xl cursor-pointer w-full">
-    <label className="mb-0 md:mb-2 flex items-center text-primary">
+    <label className="mb-0 lg:mb-2 flex items-center text-primary">
       <FaCalendarAlt className="mr-2 text-secondary" />
       {label}
     </label>
@@ -248,8 +248,8 @@ const DateSelector = ({ label, date, openModal }) => (
 
 const PassengerAndClassSelectors = ({ passengers, flightClass, openModal }) => (
   <>
-    <div className="hidden md:flex flex-col border border-neutral p-3 rounded-xl cursor-pointer">
-      <label className="mb-0 md:mb-2 flex items-center text-primary">
+    <div className="hidden lg:flex flex-col border border-neutral p-3 rounded-xl cursor-pointer">
+      <label className="mb-0 lg:mb-2 flex items-center text-primary">
         <PassengerIcon />
         Penumpang
       </label>
@@ -260,8 +260,8 @@ const PassengerAndClassSelectors = ({ passengers, flightClass, openModal }) => (
         {`${passengers.adults} Dewasa, ${passengers.children} Anak, ${passengers.infants} Bayi`}
       </button>
     </div>
-    <div className="hidden md:flex flex-col border border-neutral p-3 rounded-xl cursor-pointer">
-      <label className="mb-0 md:mb-2 flex items-center text-primary">
+    <div className="hidden lg:flex flex-col border border-neutral p-3 rounded-xl cursor-pointer">
+      <label className="mb-0 lg:mb-2 flex items-center text-primary">
         <ClassIcon />
         Kelas
       </label>
@@ -272,9 +272,9 @@ const PassengerAndClassSelectors = ({ passengers, flightClass, openModal }) => (
         {flightClass}
       </button>
     </div>
-    <div className="grid grid-cols-2 gap-2 md:hidden">
+    <div className="grid grid-cols-2 gap-2 lg:hidden">
       <div className="flex flex-col border border-neutral p-3 rounded-xl cursor-pointer">
-        <label className="mb-0 md:mb-2 flex items-center text-primary">
+        <label className="mb-0 lg:mb-2 flex items-center text-primary">
           <PassengerIcon />
           Penumpang
         </label>
@@ -286,7 +286,7 @@ const PassengerAndClassSelectors = ({ passengers, flightClass, openModal }) => (
         </button>
       </div>
       <div className="flex flex-col border border-neutral p-3 rounded-xl cursor-pointer">
-        <label className="mb-0 md:mb-2 flex items-center text-primary">
+        <label className="mb-0 lg:mb-2 flex items-center text-primary">
           <ClassIcon />
           Kelas
         </label>
@@ -302,9 +302,9 @@ const PassengerAndClassSelectors = ({ passengers, flightClass, openModal }) => (
 );
 
 const SearchButton = ({ onClick, loading }) => (
-  <div className="flex justify-center md:justify-end mt-4">
+  <div className="flex justify-center lg:justify-end mt-4">
     <button
-      className={`px-4 py-2 w-full md:w-56 text-center bg-primary text-white rounded-full border-2 border-primary ${
+      className={`px-4 py-2 w-full lg:w-56 text-center bg-primary text-white rounded-full border-2 border-primary ${
         loading ? "opacity-50 px-10" : "hover:bg-white hover:text-primary"
       }`}
       onClick={onClick}

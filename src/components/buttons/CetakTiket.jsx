@@ -4,14 +4,16 @@ import { useReactToPrint } from "react-to-print";
 import { Footnote, PageBottom, CSS } from "@fileforge/react-print";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import { getBookingHistoryDetail } from "../../redux/actions/historyActions";
+import { useNavigate } from "react-router-dom";
 
 const CetakTiket = ({ flightDetail, bookingDetail }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const componentRef = useRef();
 
-  useEffect(() => {
-    dispatch(getBookingHistoryDetail());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(getBookingHistoryDetail());
+  // }, [dispatch]);
 
   const bookingHistoryDetail = useSelector(
     (state) => state.history.bookingHistoryDetail
@@ -27,7 +29,11 @@ const CetakTiket = ({ flightDetail, bookingDetail }) => {
   return (
     <div>
       <button
-        onClick={handlePrint}
+        onClick={() => {
+          flightDetail.status === "UNPAID"
+            ? navigate("/pembayaran")
+            : handlePrint();
+        }}
         className={`text-white font-medium text-sm py-2.5 px-10 rounded-full w-full mt-4 ${
           flightDetail.status === "UNPAID"
             ? "bg-secondary hover:bg-darksecondary"
@@ -116,7 +122,7 @@ const TicketContent = React.forwardRef(
               />
               <h1 className="text-2xl font-bold">Flight E-ticket</h1>
               <p className="text-slate-400 mb-8 pt-1">
-                Order ID {flightDetail.booking_code}
+                Order ID {flightDetail?.booking_code}
               </p>
             </div>
             <div className="flex-grow" />
@@ -129,46 +135,46 @@ const TicketContent = React.forwardRef(
               <div className="basis-0 flex-grow gap-4">
                 <img
                   src={
-                    bookingDetail.flight_detail.departure_flight.airline
+                    bookingDetail?.flight_detail.departure_flight.airline
                       .logo_url
                   }
-                  alt={`${bookingDetail.flight_detail.departure_flight.airline.name} logo`}
+                  alt={`${bookingDetail?.flight_detail.departure_flight.airline.name} logo`}
                   className="h-12 w-12 mr-4 object-contain"
                 />
                 <h2 className="font-bold">
-                  {bookingDetail.flight_detail.departure_flight.airline.name}
+                  {bookingDetail?.flight_detail.departure_flight.airline.name}
                 </h2>
-                {bookingDetail.flight_detail.departure_flight.seat_class}
+                {bookingDetail?.flight_detail.departure_flight.seat_class}
               </div>
               <div className="basis-0 flex-grow">
                 <p>{formatDateToDayMonthYear(flightDetail.date)} </p>
                 <p>
                   {
-                    bookingDetail.flight_detail.departure_flight.airport
+                    bookingDetail?.flight_detail.departure_flight.airport
                       .departure
                   }{" "}
                   -{" "}
-                  {bookingDetail.flight_detail.departure_flight.departure_city}{" "}
+                  {bookingDetail?.flight_detail.departure_flight.departure_city}{" "}
                 </p>
                 <p>
                   {convertToTime(
-                    bookingDetail.flight_detail.departure_flight.departure_time
+                    bookingDetail?.flight_detail.departure_flight.departure_time
                   )}{" "}
                 </p>
                 <p className="font-semibold">To</p>
                 <p>
-                  {bookingDetail.flight_detail.departure_flight.airport.arrival}{" "}
-                  - {bookingDetail.flight_detail.departure_flight.arrival_city}{" "}
+                  {bookingDetail?.flight_detail.departure_flight.airport.arrival}{" "}
+                  - {bookingDetail?.flight_detail.departure_flight.arrival_city}{" "}
                 </p>
                 <p>
                   {convertToTime(
-                    bookingDetail.flight_detail.departure_flight.arrival_time
+                    bookingDetail?.flight_detail.departure_flight.arrival_time
                   )}{" "}
                 </p>
               </div>
             </div>
           </div>
-          {bookingDetail.flight_detail.return_flight && (
+          {bookingDetail?.flight_detail.return_flight && (
             <div className="p-6 bg-slate-100 rounded-xl -mx-6 mb-6">
               <h2 className="mb-2 text-xs font-bold text-slate-500 uppercase">
                 Penerbangan Pulang
@@ -177,15 +183,15 @@ const TicketContent = React.forwardRef(
                 <div className="basis-0 flex-grow gap-4">
                   <img
                     src={
-                      bookingDetail.flight_detail.return_flight.airline.logo_url
+                      bookingDetail?.flight_detail.return_flight.airline.logo_url
                     }
-                    alt={`${bookingDetail.flight_detail.return_flight.airline.name} logo`}
+                    alt={`${bookingDetail?.flight_detail.return_flight.airline.name} logo`}
                     className="h-12 w-12 mr-4 object-contain"
                   />
                   <h2 className="font-bold">
-                    {bookingDetail.flight_detail.return_flight.airline.name}
+                    {bookingDetail?.flight_detail.return_flight.airline.name}
                   </h2>
-                  {bookingDetail.flight_detail.return_flight.seat_class}
+                  {bookingDetail?.flight_detail.return_flight.seat_class}
                 </div>
                 <div className="basis-0 flex-grow">
                   <p>
@@ -195,24 +201,24 @@ const TicketContent = React.forwardRef(
                   </p>
                   <p>
                     {
-                      bookingDetail.flight_detail.return_flight.airport
+                      bookingDetail?.flight_detail.return_flight.airport
                         .departure
                     }{" "}
-                    - {bookingDetail.flight_detail.return_flight.departure_city}{" "}
+                    - {bookingDetail?.flight_detail.return_flight.departure_city}{" "}
                   </p>
                   <p>
                     {convertToTime(
-                      bookingDetail.flight_detail.return_flight.departure_time
+                      bookingDetail?.flight_detail.return_flight.departure_time
                     )}{" "}
                   </p>
                   <p className="font-semibold">To</p>
                   <p>
-                    {bookingDetail.flight_detail.return_flight.airport.arrival}{" "}
-                    - {bookingDetail.flight_detail.return_flight.arrival_city}{" "}
+                    {bookingDetail?.flight_detail.return_flight.airport.arrival}{" "}
+                    - {bookingDetail?.flight_detail.return_flight.arrival_city}{" "}
                   </p>
                   <p>
                     {convertToTime(
-                      bookingDetail.flight_detail.return_flight.arrival_time
+                      bookingDetail?.flight_detail.return_flight.arrival_time
                     )}{" "}
                   </p>
                 </div>
@@ -241,15 +247,15 @@ const TicketContent = React.forwardRef(
                     </td>
                     <td className="text-left py-3">
                       {
-                        bookingDetail.flight_detail.departure_flight
+                        bookingDetail?.flight_detail.departure_flight
                           .flightNumber
                       }
-                      {bookingDetail.flight_detail.return_flight && (
+                      {bookingDetail?.flight_detail.return_flight && (
                         <>
                           {" "}
                           /{" "}
                           {
-                            bookingDetail.flight_detail.return_flight
+                            bookingDetail?.flight_detail.return_flight
                               .flightNumber
                           }
                         </>
@@ -258,15 +264,15 @@ const TicketContent = React.forwardRef(
                     </td>
                     <td className="text-left py-3">
                       {
-                        bookingDetail.flight_detail.departure_flight.airline
+                        bookingDetail?.flight_detail.departure_flight.airline
                           .facility
                       }
-                      {bookingDetail.flight_detail.return_flight && (
+                      {bookingDetail?.flight_detail.return_flight && (
                         <>
                           {" "}
                           /{" "}
                           {
-                            bookingDetail.flight_detail.return_flight.airline
+                            bookingDetail?.flight_detail.return_flight.airline
                               .facility
                           }
                         </>
