@@ -15,6 +15,8 @@ import { useDebounce } from "../../utils/debounce";
 
 import { FaCalendarAlt } from "react-icons/fa";
 import { setHistoryKeyword } from "../../redux/reducers/historyReducers";
+import ReactToPrint from "react-to-print";
+import { useReactToPrint } from "react-to-print";
 import CetakTiket from "../../components/buttons/CetakTiket";
 
 export default function RiwayatPemesanan() {
@@ -570,6 +572,11 @@ export default function RiwayatPemesanan() {
                           ? "bg-secondary hover:bg-darksecondary"
                           : "bg-primary hover:bg-darkprimary"
                       }`}
+                      onClick={() => {
+                        if (selectedFlight.status !== "UNPAID") {
+                          generatePDF(selectedFlight, bookingDetail);
+                        }
+                      }}
                     >
                       {selectedFlight.status === "UNPAID"
                         ? "Lanjut Bayar"

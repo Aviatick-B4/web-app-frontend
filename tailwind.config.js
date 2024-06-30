@@ -120,6 +120,56 @@ export default {
             alignItems: "center",
             zIndex: "9999" /* Make sure it's on top */,
           },
+
+          ".ticket-container": {
+            border: "1px solid #ccc",
+            borderRadius: "8px",
+            padding: "16px",
+            fontFamily: "Arial, sans-serif",
+            width: "600px",
+            margin: "auto",
+          },
+          ".header": {
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            borderBottom: "1px solid #ccc",
+            paddingBottom: "8px",
+            marginBottom: "16px",
+          },
+          ".title": {
+            fontSize: "24px",
+            fontWeight: "bold",
+          },
+          ".order-id": {
+            fontSize: "14px",
+            color: "#777",
+          },
+          ".flight-info .section": {
+            marginBottom: "16px",
+          },
+          ".section-title": {
+            fontSize: "18px",
+            fontWeight: "bold",
+            marginBottom: "8px",
+          },
+          ".flight-detail .flight": {
+            display: "flex",
+            justifyContent: "space-between",
+            marginBottom: "8px",
+          },
+          ".flight .airline": {
+            fontWeight: "bold",
+          },
+          ".flight .flight-number, .flight .departure-time, .flight .departure-city, .flight .arrival-time, .flight .arrival-city":
+            {
+              marginLeft: "8px",
+            },
+          ".passenger": {
+            display: "flex",
+            justifyContent: "space-between",
+            marginBottom: "8px",
+          },
         },
       });
     }),

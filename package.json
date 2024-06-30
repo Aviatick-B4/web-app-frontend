@@ -12,7 +12,9 @@
   "dependencies": {
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
+    "@fileforge/react-print": "^0.1.141",
     "@fontsource/roboto": "^5.0.13",
+    "@heroicons/react": "^2.1.4",
     "@iconify-icons/mdi": "^1.2.48",
     "@mui/icons-material": "^5.15.19",
     "@mui/material": "^5.15.19",
@@ -25,6 +27,7 @@
     "bootstrap": "^5.3.3",
     "date-fns": "^3.6.0",
     "dayjs": "^1.11.11",
+    "jspdf": "^2.5.1",
     "jwt-decode": "^4.0.0",
     "localforage": "^1.10.0",
     "match-sorter": "^6.3.4",
