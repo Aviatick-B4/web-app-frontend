@@ -187,7 +187,6 @@ export default function HasilPencarian() {
   if (departureResults.length > 0 && tripTypeSaved === "singletrip") {
     resultsToUse = departureResults;
   } else if (departureResults.length > 0 && tripTypeSaved === "roundtrip") {
-    // resultsToUse = selectedDeparture ? returnResults : departureResults;
     if (selectedDeparture && selectedReturn) {
       resultsToUse = [];
     } else if (selectedDeparture && selectedReturn === null) {

@@ -35,7 +35,7 @@ export const getNotifByFilter = (filterType) => async (dispatch, getState) => {
 
   try {
     const response = await axios.get(
-      `${url}/notifications?page=1&limit=10&type=${type}`,
+      `${url}/notifications?limit=100&type=${type}`,
       {
         headers: {
           accept: "application/json",
@@ -46,7 +46,8 @@ export const getNotifByFilter = (filterType) => async (dispatch, getState) => {
 
     console.log("notif by filter", response.data.data);
 
-    dispatch(setNotifByFilter(response.data.data));
+    const sortedData = response.data.data.sort((a, b) => b.id - a.id);
+    dispatch(setNotifByFilter(sortedData));
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error(error.message);
