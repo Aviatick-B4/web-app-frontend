@@ -46,7 +46,9 @@ export default function RiwayatPemesanan() {
   useEffect(() => {
     if (!token) {
       navigate("/masuk");
-      toast.error("Ups.. tidak dapat mengakses halaman, silakan masuk terlebih dahulu.");
+      toast.error(
+        "Ups.. tidak dapat mengakses halaman, silakan masuk terlebih dahulu."
+      );
     }
   }, [token, navigate]);
 
@@ -86,7 +88,7 @@ export default function RiwayatPemesanan() {
 
   const handleCardClick = (flight) => {
     setSelectedFlight(selectedFlight === flight ? null : flight);
-    dispatch(getBookingHistoryDetail(flight.id, setLoading));
+    dispatch(getBookingHistoryDetail(flight.id, setLoading, setDetailLoading));
   };
 
   const filteredFlightData =
@@ -113,15 +115,15 @@ export default function RiwayatPemesanan() {
 
   const convertDateTime = (dateString) => {
     const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
-    
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    
+
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+
     return `${day}-${month}-${year} ${hours}:${minutes}`;
-};
+  };
 
   const formatPrice = (price) => {
     return `IDR ${new Intl.NumberFormat("id-ID", {
@@ -134,7 +136,9 @@ export default function RiwayatPemesanan() {
       return "";
     }
     const date = new Date(dateString);
-    const adjustedDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+    const adjustedDate = new Date(
+      date.getTime() + date.getTimezoneOffset() * 60000
+    );
     return adjustedDate.toLocaleDateString("id-ID", {
       weekday: "long",
       day: "numeric",
@@ -338,13 +342,14 @@ export default function RiwayatPemesanan() {
                   {bookingDetail?.status === "UNPAID" && (
                     <p className="text-xs font-semibold text-secondary">
                       Bayar Sebelum:{" "}
-                      <span>
-                        {convertDateTime(bookingDetail?.paid_before)}
-                      </span>
+                      <span>{convertDateTime(bookingDetail?.paid_before)}</span>
                     </p>
                   )}
                   <h1 className="flex gap-2 font-bold text-lg my-2">
-                    {bookingDetail?.flight_detail?.departure_flight?.departure_city}
+                    {
+                      bookingDetail?.flight_detail?.departure_flight
+                        ?.departure_city
+                    }
                     {bookingDetail?.flight_detail?.return_flight ? (
                       <svg
                         className="w-3 md:w-4 fill-main"
@@ -353,19 +358,36 @@ export default function RiwayatPemesanan() {
                       >
                         <path d="M438.6 150.6c12.5-12.5 12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.7 96 32 96C14.3 96 0 110.3 0 128s14.3 32 32 32l306.7 0-41.4 41.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l96-96zm-333.3 352c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 416 416 416c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0 41.4-41.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3l96 96z" />
                       </svg>
-                      ) : (
-                        <svg className="w-3 md:w-4 fill-main" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-                          <path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/>
-                        </svg>
+                    ) : (
+                      <svg
+                        className="w-3 md:w-4 fill-main"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 448 512"
+                      >
+                        <path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z" />
+                      </svg>
                     )}
-                    {bookingDetail?.flight_detail?.departure_flight?.arrival_city}
+                    {
+                      bookingDetail?.flight_detail?.departure_flight
+                        ?.arrival_city
+                    }
                   </h1>
                   <div className="flex gap-3 border border-neutral rounded-lg items-center mb-4 py-2 px-3">
                     <FaCalendarAlt className="text-gray" />
                     <p className="text-main font-normal text-sm lg:text-base">
-                      {formatDateToDayMonthYear(bookingDetail?.flight_detail?.departure_flight?.departure_time)}
+                      {formatDateToDayMonthYear(
+                        bookingDetail?.flight_detail?.departure_flight
+                          ?.departure_time
+                      )}
                       {bookingDetail?.flight_detail?.return_flight && (
-                        <> - {formatDateToDayMonthYear(bookingDetail?.flight_detail?.return_flight?.departure_time)}</>
+                        <>
+                          {" "}
+                          -{" "}
+                          {formatDateToDayMonthYear(
+                            bookingDetail?.flight_detail?.return_flight
+                              ?.departure_time
+                          )}
+                        </>
                       )}
                     </p>
                   </div>
@@ -429,11 +451,15 @@ export default function RiwayatPemesanan() {
                               <div className="flex items-center font-semibold text-sm">
                                 <p className="text-main text-sm mr-2">
                                   {convertToTime(
-                                    bookingDetail?.flight_detail?.departure_flight?.departure_time
+                                    bookingDetail?.flight_detail
+                                      ?.departure_flight?.departure_time
                                   )}
                                 </p>
                                 <p className="text-main font-medium">
-                                  {bookingDetail?.flight_detail?.departure_flight?.departure_city}
+                                  {
+                                    bookingDetail?.flight_detail
+                                      ?.departure_flight?.departure_city
+                                  }
                                 </p>
                               </div>
                             </div>
@@ -446,12 +472,16 @@ export default function RiwayatPemesanan() {
                               <div className="flex items-center font-semibold text-sm">
                                 <p className="text-main text-sm mr-2">
                                   {convertToTime(
-                                    bookingDetail?.flight_detail?.departure_flight?.arrival_time
+                                    bookingDetail?.flight_detail
+                                      ?.departure_flight?.arrival_time
                                   )}
                                 </p>
 
                                 <p className="text-main font-medium">
-                                  {bookingDetail?.flight_detail?.departure_flight?.arrival_city}
+                                  {
+                                    bookingDetail?.flight_detail
+                                      ?.departure_flight?.arrival_city
+                                  }
                                 </p>
                               </div>
                             </div>
@@ -459,44 +489,52 @@ export default function RiwayatPemesanan() {
                         </div>
                         {bookingDetail?.flight_detail?.return_flight && (
                           <>
-                          <div className="inline-block w-auto bg-primary/20 justify-center px-4 py-1 text-main font-semibold rounded-full text-xs mb-2 mt-4">
-                            Pulang
-                          </div>
-                          <div className="flex-col">
-                            <div className="flex flex-col">
-                              <div className="flex items-center space-x-2">
-                                <div className="w-2.5 h-2.5 border-neutral border-2 rounded-full"></div>
-                                <div className="flex items-center font-semibold text-sm">
-                                  <p className="text-main text-sm mr-2">
-                                    {convertToTime(
-                                      bookingDetail?.flight_detail?.return_flight?.departure_time
-                                    )}
-                                  </p>
-                                  <p className="text-main font-medium">
-                                    {bookingDetail?.flight_detail?.return_flight?.departure_city}
-                                  </p>
+                            <div className="inline-block w-auto bg-primary/20 justify-center px-4 py-1 text-main font-semibold rounded-full text-xs mb-2 mt-4">
+                              Pulang
+                            </div>
+                            <div className="flex-col">
+                              <div className="flex flex-col">
+                                <div className="flex items-center space-x-2">
+                                  <div className="w-2.5 h-2.5 border-neutral border-2 rounded-full"></div>
+                                  <div className="flex items-center font-semibold text-sm">
+                                    <p className="text-main text-sm mr-2">
+                                      {convertToTime(
+                                        bookingDetail?.flight_detail
+                                          ?.return_flight?.departure_time
+                                      )}
+                                    </p>
+                                    <p className="text-main font-medium">
+                                      {
+                                        bookingDetail?.flight_detail
+                                          ?.return_flight?.departure_city
+                                      }
+                                    </p>
+                                  </div>
+                                </div>
+                                <div className="ml-1 h-[20px] w-[1px] bg-neutral"></div>
+                              </div>
+
+                              <div className="flex flex-col">
+                                <div className="flex items-center space-x-2">
+                                  <div className="w-2.5 h-2.5 bg-neutral rounded-full"></div>
+                                  <div className="flex items-center font-semibold text-sm">
+                                    <p className="text-main text-sm mr-2">
+                                      {convertToTime(
+                                        bookingDetail?.flight_detail
+                                          ?.return_flight?.arrival_time
+                                      )}
+                                    </p>
+
+                                    <p className="text-main font-medium">
+                                      {
+                                        bookingDetail?.flight_detail
+                                          ?.return_flight?.arrival_city
+                                      }
+                                    </p>
+                                  </div>
                                 </div>
                               </div>
-                              <div className="ml-1 h-[20px] w-[1px] bg-neutral"></div>
                             </div>
-
-                            <div className="flex flex-col">
-                              <div className="flex items-center space-x-2">
-                                <div className="w-2.5 h-2.5 bg-neutral rounded-full"></div>
-                                <div className="flex items-center font-semibold text-sm">
-                                  <p className="text-main text-sm mr-2">
-                                    {convertToTime(
-                                      bookingDetail?.flight_detail?.return_flight?.arrival_time
-                                    )}
-                                  </p>
-
-                                  <p className="text-main font-medium">
-                                    {bookingDetail?.flight_detail?.return_flight?.arrival_city}
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
                           </>
                         )}
                       </div>
@@ -522,20 +560,18 @@ export default function RiwayatPemesanan() {
                           <div className="flex items-center justify-between text-xs text-main">
                             <span className="font-normal">Pajak</span>
                             <span className="font-medium">
-                              {formatPrice(
-                                bookingDetail?.price_detail?.tax
-                              )}
+                              {formatPrice(bookingDetail?.price_detail?.tax)}
                             </span>
                           </div>
                           {bookingDetail?.price_detail?.tax && (
                             <div className="flex items-center justify-between text-xs text-main">
-                            <span className="font-normal">Donasi</span>
-                            <span className="font-medium">
-                              {formatPrice(
-                                bookingDetail?.price_detail?.donation
-                              )}
-                            </span>
-                          </div>
+                              <span className="font-normal">Donasi</span>
+                              <span className="font-medium">
+                                {formatPrice(
+                                  bookingDetail?.price_detail?.donation
+                                )}
+                              </span>
+                            </div>
                           )}
                         </div>
                       </div>
@@ -634,13 +670,14 @@ export default function RiwayatPemesanan() {
                   {bookingDetail?.status === "UNPAID" && (
                     <p className="text-sm font-semibold text-secondary">
                       Bayar Sebelum:{" "}
-                      <span>
-                        {convertDateTime(bookingDetail?.paid_before)}
-                      </span>
+                      <span>{convertDateTime(bookingDetail?.paid_before)}</span>
                     </p>
                   )}
                   <h1 className="flex gap-2 font-bold text-xl my-2">
-                    {bookingDetail?.flight_detail?.departure_flight?.departure_city}
+                    {
+                      bookingDetail?.flight_detail?.departure_flight
+                        ?.departure_city
+                    }
                     {bookingDetail?.flight_detail?.return_flight ? (
                       <svg
                         className="w-3 md:w-4 fill-main"
@@ -649,27 +686,93 @@ export default function RiwayatPemesanan() {
                       >
                         <path d="M438.6 150.6c12.5-12.5 12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.7 96 32 96C14.3 96 0 110.3 0 128s14.3 32 32 32l306.7 0-41.4 41.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l96-96zm-333.3 352c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 416 416 416c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0 41.4-41.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3l96 96z" />
                       </svg>
-                      ) : (
-                        <svg className="w-3 md:w-4 fill-main" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-                          <path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/>
-                        </svg>
+                    ) : (
+                      <svg
+                        className="w-3 md:w-4 fill-main"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 448 512"
+                      >
+                        <path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z" />
+                      </svg>
                     )}
-                    {bookingDetail?.flight_detail?.departure_flight?.arrival_city}
+                    {
+                      bookingDetail?.flight_detail?.departure_flight
+                        ?.arrival_city
+                    }
                   </h1>
 
                   <div className="flex gap-3 border border-neutral rounded-lg items-center mb-4 py-2 px-3">
                     <FaCalendarAlt className="text-gray" />
                     <p className="text-main font-normal text-sm">
-                      {formatDateToDayMonthYear(bookingDetail.flight_detail?.departure_flight?.departure_time)} <br />
+                      {formatDateToDayMonthYear(
+                        bookingDetail.flight_detail?.departure_flight
+                          ?.departure_time
+                      )}{" "}
+                      <br />
                       {bookingDetail?.flight_detail?.return_flight && (
-                        <> - {formatDateToDayMonthYear(bookingDetail?.flight_detail?.return_flight?.departure_time)}</>
+                        <>
+                          {" "}
+                          -{" "}
+                          {formatDateToDayMonthYear(
+                            bookingDetail?.flight_detail?.return_flight
+                              ?.departure_time
+                          )}
+                        </>
                       )}
                     </p>
                   </div>
 
                   <div className="border-t border-neutral py-4">
                     <div className="inline-block w-auto bg-primary/20 justify-center px-4 py-1 text-main font-semibold rounded-full text-xs mb-2">
-                          Pergi
+                      Pergi
+                    </div>
+                    <div className="flex-col">
+                      <div className="flex flex-col">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-2.5 h-2.5 border-neutral border-2 rounded-full"></div>
+                          <div className="flex items-center font-semibold text-sm">
+                            <p className="text-main text-sm mr-2">
+                              {convertToTime(
+                                bookingDetail?.flight_detail?.departure_flight
+                                  ?.departure_time
+                              )}
+                            </p>
+                            <p className="text-main font-medium">
+                              {
+                                bookingDetail?.flight_detail?.departure_flight
+                                  ?.departure_city
+                              }
+                            </p>
+                          </div>
+                        </div>
+                        <div className="ml-1 h-[20px] w-[1px] bg-neutral"></div>
+                      </div>
+
+                      <div className="flex flex-col">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-2.5 h-2.5 bg-neutral rounded-full"></div>
+                          <div className="flex items-center font-semibold text-sm">
+                            <p className="text-main text-sm mr-2">
+                              {convertToTime(
+                                bookingDetail?.flight_detail?.departure_flight
+                                  ?.arrival_time
+                              )}
+                            </p>
+
+                            <p className="text-main font-medium">
+                              {
+                                bookingDetail?.flight_detail?.departure_flight
+                                  ?.arrival_city
+                              }
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    {bookingDetail?.flight_detail?.return_flight && (
+                      <>
+                        <div className="inline-block w-auto bg-primary/20 justify-center px-4 py-1 text-main font-semibold rounded-full text-xs mb-2 mt-4">
+                          Pulang
                         </div>
                         <div className="flex-col">
                           <div className="flex flex-col">
@@ -678,11 +781,15 @@ export default function RiwayatPemesanan() {
                               <div className="flex items-center font-semibold text-sm">
                                 <p className="text-main text-sm mr-2">
                                   {convertToTime(
-                                    bookingDetail?.flight_detail?.departure_flight?.departure_time
+                                    bookingDetail?.flight_detail?.return_flight
+                                      ?.departure_time
                                   )}
                                 </p>
                                 <p className="text-main font-medium">
-                                  {bookingDetail?.flight_detail?.departure_flight?.departure_city}
+                                  {
+                                    bookingDetail?.flight_detail?.return_flight
+                                      ?.departure_city
+                                  }
                                 </p>
                               </div>
                             </div>
@@ -695,59 +802,23 @@ export default function RiwayatPemesanan() {
                               <div className="flex items-center font-semibold text-sm">
                                 <p className="text-main text-sm mr-2">
                                   {convertToTime(
-                                    bookingDetail?.flight_detail?.departure_flight?.arrival_time
+                                    bookingDetail?.flight_detail?.return_flight
+                                      ?.arrival_time
                                   )}
                                 </p>
 
                                 <p className="text-main font-medium">
-                                  {bookingDetail?.flight_detail?.departure_flight?.arrival_city}
+                                  {
+                                    bookingDetail?.flight_detail?.return_flight
+                                      ?.arrival_city
+                                  }
                                 </p>
                               </div>
                             </div>
                           </div>
                         </div>
-                        {bookingDetail?.flight_detail?.return_flight && (
-                          <>
-                          <div className="inline-block w-auto bg-primary/20 justify-center px-4 py-1 text-main font-semibold rounded-full text-xs mb-2 mt-4">
-                            Pulang
-                          </div>
-                          <div className="flex-col">
-                            <div className="flex flex-col">
-                              <div className="flex items-center space-x-2">
-                                <div className="w-2.5 h-2.5 border-neutral border-2 rounded-full"></div>
-                                <div className="flex items-center font-semibold text-sm">
-                                  <p className="text-main text-sm mr-2">
-                                    {convertToTime(
-                                      bookingDetail?.flight_detail?.return_flight?.departure_time
-                                    )}
-                                  </p>
-                                  <p className="text-main font-medium">
-                                    {bookingDetail?.flight_detail?.return_flight?.departure_city}
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="ml-1 h-[20px] w-[1px] bg-neutral"></div>
-                            </div>
-
-                            <div className="flex flex-col">
-                              <div className="flex items-center space-x-2">
-                                <div className="w-2.5 h-2.5 bg-neutral rounded-full"></div>
-                                <div className="flex items-center font-semibold text-sm">
-                                  <p className="text-main text-sm mr-2">
-                                    {convertToTime(
-                                      bookingDetail?.flight_detail?.return_flight?.arrival_time
-                                    )}
-                                  </p>
-
-                                  <p className="text-main font-medium">
-                                    {bookingDetail?.flight_detail?.return_flight?.arrival_city}
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          </>
-                        )}
+                      </>
+                    )}
                   </div>
 
                   <div className="w-full border-t border-neutral py-4">
@@ -772,18 +843,14 @@ export default function RiwayatPemesanan() {
                       <div className="flex items-center justify-between text-sm text-main">
                         <span className="font-normal">Pajak</span>
                         <span className="font-medium">
-                          {formatPrice(
-                            bookingDetail?.price_detail?.tax
-                          )}
+                          {formatPrice(bookingDetail?.price_detail?.tax)}
                         </span>
                       </div>
                       {bookingDetail?.price_detail?.tax && (
                         <div className="flex items-center justify-between text-sm text-main">
                           <span className="font-normal">Donasi</span>
                           <span className="font-medium">
-                            {formatPrice(
-                              bookingDetail?.price_detail?.donation
-                            )}
+                            {formatPrice(bookingDetail?.price_detail?.donation)}
                           </span>
                         </div>
                       )}
@@ -818,7 +885,7 @@ export default function RiwayatPemesanan() {
                   )}
                 </div>
               </div>
-            )} 
+            )}
           </div>
         </div>
       </section>

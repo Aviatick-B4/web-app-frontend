@@ -21,7 +21,6 @@ import KonfirmasiTiket from "./pages/KonfirmasiTiket.jsx";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import NotFound from "./pages/NotFound.jsx";
 import NoAccessToken from "./components/NoAccessToken.jsx";
-import Pemesananbaru from "./components/cards/FormPenumpang2.jsx";
 
 function App() {
   return (
@@ -78,8 +77,6 @@ function App() {
                   </div>
                 }
               />
-
-              <Route path="/pemesanan2" element={<Pemesananbaru />} />
             </Routes>
             <ToastContainer />
           </BrowserRouter>

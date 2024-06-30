@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../components/navigations/Navbar";
 import Footer from "../components/navigations/Footer";
+import modalCss from "../components/navigations/Navbar";
 import { useNavigate } from "react-router-dom";
 import BackToTopButton from "../components/navigations/BackToTop";
 import FormPenumpang from "../components/cards/FormPenumpang";
@@ -20,6 +21,7 @@ function Pemesanan() {
   const [totalHarga, setTotalHarga] = useState();
   const [penumpangData, setPenumpangData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [detailLoading, setDetailLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [tripType, settripType] = useState("");
   const [promo, setPromo] = useState("");
@@ -28,6 +30,12 @@ function Pemesanan() {
     { label: "Nyonya", value: "Mrs." },
     { label: "Nona", value: "Ms." },
   ]);
+  const [detailModal, setDetailModal] = useState({
+    totalpajak: 0,
+    totalHarga: 0,
+    donasi: false,
+    tripType: null,
+  });
 
   //Mengambil Data dari Reducer
   const user = useSelector((state) => state?.auth?.user);
@@ -36,6 +44,7 @@ function Pemesanan() {
   const flightKeyword = useSelector(
     (state) => state?.search?.flightKeyword || {}
   );
+  console.log("booking", booking);
 
   useEffect(() => {
     if (booking?.selectedReturn !== null) return settripType("roundtrip");
@@ -43,7 +52,10 @@ function Pemesanan() {
   }, []);
 
   //Seting Modal
-  const handleOpenModal = () => setShowModal(true);
+  const handleOpenModal = () => {
+    setShowModal(true);
+    setDataModal();
+  };
   const handleCloseModal = () => setShowModal(false);
 
   //GET Negara
@@ -135,6 +147,7 @@ function Pemesanan() {
         { label: "", value: "null" },
         { label: "KTP", value: "KTP" },
         { label: "Paspor", value: "Paspor" },
+        { label: "SIM", value: "SIM" },
       ],
     },
     {
@@ -187,7 +200,13 @@ function Pemesanan() {
   const handleBookingSubmit = async () => {
     try {
       await dispatch(
-        getBookingTicket(formData, tripType, navigate, setIsLoading)
+        getBookingTicket(
+          formData,
+          tripType,
+          navigate,
+          setIsLoading,
+          setDetailLoading
+        )
       );
     } catch (error) {
       toast.error("Terjadi kesalahan saat booking", { autoClose: 5000 });
@@ -287,18 +306,14 @@ function Pemesanan() {
   console.log("form data", formData);
 
   return (
-    <div
-      className={`${
-        showModal ? "z-[1000] fixed inset-0 bg-black bg-opacity-50" : ""
-      }`}
-    >
+    <div className={`bg-background`}>
       <Navbar transparent={false} />
       <ModalBooking
         show={showModal}
         handleClose={handleCloseModal}
         overlayClassName="overlay"
       >
-        <div className="flex flex-col ">
+        <div className="flex flex-col">
           <button
             className="px-4 rounded flex justify-end"
             onClick={handleCloseModal}
@@ -470,7 +485,7 @@ function Pemesanan() {
               </div>
             </div>
             {/* Sisi Atas Mobile */}
-            <section className="flex flex-col lg:w-1/3 gap-4 lg:hidden">
+            <section className="flex bg-white flex-col lg:w-1/3 gap-4 lg:hidden">
               {/* Detail Pemesanan  */}
               <div className="rounded-xl shadow-md my-3 pb-4 lg:mt-[100px]">
                 {" "}
@@ -770,7 +785,7 @@ function Pemesanan() {
               </div>
             </section>
             {/* Formulir Pemesan */}
-            <div className="rounded-xl p-[32px] shadow-md">
+            <div className="bg-white rounded-xl p-[32px] shadow-md">
               <p className="text-xl mb-[32px]">
                 <strong>Data Pemesan</strong>
               </p>
@@ -812,7 +827,7 @@ function Pemesanan() {
               />
             ))}
             {/* SGDs */}
-            <div className="rounded-xl p-[32px] shadow-md">
+            <div className="bg-white rounded-xl p-[32px] shadow-md">
               <div className="text-xl border-neutral gap-2  py-2 rounded-xl">
                 <div className="flex gap-3">
                   <img src=".\src\assets\charity.svg" className="w-14" />
@@ -870,7 +885,7 @@ function Pemesanan() {
               </div>
             </div>
             {/* Total Harga*/}
-            <div className="rounded-xl p-[32px] shadow-md ">
+            <div className="bg-white rounded-xl p-[32px] shadow-md ">
               <div className="py-4 text-sm">
                 <div className="flex text-lg justify-between">
                   <p>Total Pembayaran</p>
@@ -920,7 +935,7 @@ function Pemesanan() {
           {/* Sisi Kanan Website */}
           <section className="flex flex-col lg:w-1/3 gap-4 max-lg:hidden">
             {/* Detail Pemesanan  */}
-            <div className="rounded-xl shadow-md my-3 pb-4 lg:mt-[100px]">
+            <div className="rounded-xl bg-white shadow-md my-3 pb-4 lg:mt-[100px]">
               {" "}
               {/* Route  */}
               <p className="flex gap-5 text-xl  p-8">
@@ -1170,7 +1185,7 @@ function Pemesanan() {
                 </div>
               )}
               {/* Total Harga*/}
-              <div className="px-8 py-4 text-sm">
+              <div className="bg-white px-8 py-4 text-sm">
                 <hr className="my-4 text-neutral" />
                 <div className="flex text-lg justify-between">
                   <p>Total Pembayaran</p>
