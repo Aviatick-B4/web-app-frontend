@@ -45,7 +45,7 @@ export const getBookingHistoryDetail =
           },
         }
       );
-      console.log("detail", response.data.data);
+      console.log("response booking history detail", response.data.data);
       dispatch(setBookingHistoryDetail(response.data.data));
       setIsLoading(false);
       setDetailLoading(false);
