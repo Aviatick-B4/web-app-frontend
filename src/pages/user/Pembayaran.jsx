@@ -1,24 +1,14 @@
+import { useAsyncError } from "react-router-dom";
 import Footer from "../../components/navigations/Footer";
 import Navbar from "../../components/navigations/Navbar";
 import * as React from "react";
-import { useState } from "react";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import Typography from "@mui/material/Typography";
-import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import { useNavigate, useSearchParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import ModalBooking from "../../components/modals/detailBookingModal";
+import { useState } from "react";
+import { useEffect } from "react";
 
 export default function Pembayaran() {
-  const navigate = useNavigate();
-
+  const [tripType, settripType] = useState("");
   const booking = useSelector((state) => state?.bookingFlight?.bookings);
-  const flightKeyword = useSelector(
-    (state) => state?.search?.flightKeyword || {}
-  );
   const airplane = useSelector(
     (state) =>
       state?.bookingFlight?.bookings?.selectedDeparture?.airplane?.airline || {}
@@ -28,6 +18,17 @@ export default function Pembayaran() {
   console.log("payment", payment);
   const midtrans = useSelector((state) => state?.bookingFlight?.midtrans?.data);
   console.log("midtrans", midtrans);
+  const bookingDetail = useSelector(
+    (state) => state?.history?.bookingHistoryDetail
+  );
+  console.log("bookingDetail", bookingDetail);
+
+  useEffect(() => {
+    if (booking?.selectedReturn !== null) return settripType("roundtrip");
+    if (booking?.selectedReturn === null) return settripType("singletrip");
+  }, []);
+
+  console.log(tripType);
 
   const formatDate = (isoString) => {
     const date = new Date(isoString);
@@ -95,7 +96,7 @@ export default function Pembayaran() {
                 <strong>
                   {booking?.selectedDeparture?.flight?.arrival?.city}
                 </strong>
-                {flightKeyword?.tripType === "singletrip" ? (
+                {tripType === "singletrip" ? (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -226,7 +227,7 @@ export default function Pembayaran() {
                 </div>
               </div>
               {/* RoundTrip Pages */}
-              {flightKeyword.tripType == "roundtrip" && (
+              {tripType == "roundtrip" && (
                 <div>
                   {/* Maskapai  */}
                   <div className="flex p-8">
@@ -329,11 +330,11 @@ export default function Pembayaran() {
           <section className="lg:w-[1300px] rounded  space-y-5 my-6">
             <div className="flex ">
               <iframe
-                src={midtrans?.redirect_url}
+                src={bookingDetail?.url_payment}
                 title="Midtrans Payment"
                 width="100%"
                 height="960px"
-                className="p-16 shadow-md rounded-xl"
+                className="p-16 md:w-[700px] md:p-20 max-sm:p-2 shadow-md rounded-xl"
               ></iframe>
             </div>
           </section>
@@ -347,7 +348,7 @@ export default function Pembayaran() {
                 <strong>
                   {booking?.selectedDeparture?.flight?.arrival?.city}
                 </strong>
-                {flightKeyword?.tripType === "singletrip" ? (
+                {tripType === "singletrip" ? (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -478,7 +479,7 @@ export default function Pembayaran() {
                 </div>
               </div>
               {/* RoundTrip Pages */}
-              {flightKeyword.tripType == "roundtrip" && (
+              {tripType == "roundtrip" && (
                 <div>
                   {/* Maskapai  */}
                   <div className="flex p-8">

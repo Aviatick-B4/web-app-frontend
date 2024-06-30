@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import Navbar from "../components/navigations/Navbar";
 import Footer from "../components/navigations/Footer";
 import { useNavigate } from "react-router-dom";
@@ -11,6 +10,8 @@ import {
   getBookingTicket,
 } from "../redux/actions/bookingActions";
 import ModalBooking from "../components/modals/detailBookingModal";
+import { ThreeDots } from "react-loader-spinner";
+import { toast } from "react-toastify";
 
 function Pemesanan() {
   const navigate = useNavigate();
@@ -19,34 +20,41 @@ function Pemesanan() {
   const [totalHarga, setTotalHarga] = useState();
   const [penumpangData, setPenumpangData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [tripType, settripType] = useState("");
+  const [promo, setPromo] = useState("");
   const [titleOptions, setTitleOptions] = useState([
     { label: "Tuan", value: "Mr." },
     { label: "Nyonya", value: "Mrs." },
     { label: "Nona", value: "Ms." },
   ]);
 
+  //Mengambil Data dari Reducer
   const user = useSelector((state) => state?.auth?.user);
-  const tripType = useSelector((state) => state?.search.tripTypeSaved);
   const booking = useSelector((state) => state?.bookingFlight?.bookings);
   const countries = useSelector((state) => state?.bookingFlight?.countries);
   const flightKeyword = useSelector(
     (state) => state?.search?.flightKeyword || {}
   );
-  const airplane = useSelector(
-    (state) =>
-      state?.bookingFlight?.bookings?.selectedDeparture?.airplane?.airline || {}
-  );
-  const bookingId = useSelector(
-    (state) => state?.bookingFlight?.payment?.data?.id
-  );
+
+  useEffect(() => {
+    if (booking?.selectedReturn !== null) return settripType("roundtrip");
+    if (booking?.selectedReturn === null) return settripType("singletrip");
+  }, []);
+
+  //Seting Modal
+  const handleOpenModal = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
+
+  //GET Negara
+  useEffect(() => {
+    dispatch(getCountries());
+  }, []);
+
   //Setting Donasi
   const handleDonasiClick = () => {
     setIsDonated((prevIsDonated) => !prevIsDonated);
   };
-
-  useEffect(() => {
-    dispatch(getCountries());
-  }, []);
 
   useEffect(() => {
     setFormData((prevFormData) => ({
@@ -112,11 +120,11 @@ function Pemesanan() {
       options: [
         { label: "", value: "null" },
         ...(Array.isArray(countries) ? countries.slice() : []) // Check if countries is an array
-        .sort((a, b) => a.name.common.localeCompare(b.name.common)) // Sort by country name
-        .map((country) => ({
-          label: country.name.common,
-          value: country.name.common,
-        })),
+          .sort((a, b) => a.name.common.localeCompare(b.name.common)) // Sort by country name
+          .map((country) => ({
+            label: country.name.common,
+            value: country.name.common,
+          })),
       ],
     },
     {
@@ -136,11 +144,11 @@ function Pemesanan() {
       options: [
         { label: "", value: "null" },
         ...(Array.isArray(countries) ? countries.slice() : []) // Check if countries is an array
-        .sort((a, b) => a.name.common.localeCompare(b.name.common)) // Sort by country name
-        .map((country) => ({
-          label: country.name.common,
-          value: country.name.common,
-        })),
+          .sort((a, b) => a.name.common.localeCompare(b.name.common)) // Sort by country name
+          .map((country) => ({
+            label: country.name.common,
+            value: country.name.common,
+          })),
       ],
     },
     { label: "Nomor Identitas", name: "identityNumber", type: "text" },
@@ -175,21 +183,19 @@ function Pemesanan() {
     }));
   };
 
+  //Lanjut Bayar
   const handleBookingSubmit = async () => {
-    setIsLoading(true); // Mulai animasi loading
     try {
-      await dispatch(getBookingTicket(formData, tripType));
-      setTimeout(() => {
-        navigate("/pembayaran");
-        setIsLoading(false); // Selesaikan animasi loading setelah navigasi
-      }, 5000);
+      await dispatch(
+        getBookingTicket(formData, tripType, navigate, setIsLoading)
+      );
     } catch (error) {
       toast.error("Terjadi kesalahan saat booking", { autoClose: 5000 });
       console.error("Error during booking submission:", error);
-      setIsLoading(false); // Selesaikan animasi loading saat terjadi error
     }
   };
 
+  //Format Tanggal
   const formatDate = (isoString) => {
     const date = new Date(isoString);
     const day = String(date.getUTCDate()).padStart(2, "0");
@@ -213,6 +219,7 @@ function Pemesanan() {
     return `${day} ${month} ${year}`;
   };
 
+  //Format Waktu
   const formatTime = (isoString) => {
     const date = new Date(isoString);
     const hours = String(date?.getUTCHours()).padStart(2, "0");
@@ -221,39 +228,52 @@ function Pemesanan() {
     return `${hours}:${minutes}`;
   };
 
+  //Format Harga
   const formatPrice = (price) => {
     return price
       .toLocaleString("id-ID", { style: "currency", currency: "IDR" })
       .replace(/\,00$/, "");
   };
 
+  //Mengecualikan Bayi dalam perhitungan harga
   const infantPassengers = penumpangData.filter(
     (p) => p.ageGroup === "BABY"
   ).length;
 
   useEffect(() => {
-    if (flightKeyword?.tripType === "singletrip") {
+    if (booking?.selectedDeparture?.promo !== null) return setPromo("true");
+    if (booking?.selectedReturn?.promo !== null) return setPromo("true");
+    return setPromo("false");
+  }, []);
+
+  //Pengecekan tipe penerbangan untuk perhitungan harga
+  useEffect(() => {
+    if (tripType === "singletrip") {
       return setTotalHarga(booking?.selectedDeparture?.price);
     }
-    if (flightKeyword?.tripType === "roundtrip")
+    if (tripType === "roundtrip")
       return setTotalHarga(
         booking?.selectedDeparture?.price + booking?.selectedReturn?.price
       );
-  }, []);
+  }, [booking, tripType]);
 
+  console.log("booking", booking);
+  console.log("totalHarga", totalHarga);
+
+  //Perhitungan Total Pajak
   const totalPajak = (price) => {
     price = price * (penumpangData.length - infantPassengers);
     return (price * 10) / 100;
   };
+  console.log("totalPajak", totalPajak(totalHarga));
 
+  //Perhitungan Total Harga
   const calculateTotal = (price) => {
     price = price * (penumpangData.length - infantPassengers);
-    if (booking?.flight?.promo !== null) {
-      price = price - booking?.selectedDeparture?.promo;
-    }
-    if (isDonated) return price + (price * 10) / 100 + 1000;
-    return price + (price * 10) / 100;
+    if (isDonated) return price + totalPajak(price) + 1000;
+    return price + totalPajak(price);
   };
+  console.log("Total Pembayaran", calculateTotal(totalHarga));
 
   // Group passengers by type and count
   const groupPenumpangData = penumpangData.reduce((acc, penumpang) => {
@@ -264,14 +284,20 @@ function Pemesanan() {
     return acc;
   }, {});
 
-  const [showModal, setShowModal] = useState(false);
+  console.log("form data", formData);
 
-  const handleOpenModal = () => setShowModal(true);
-  const handleCloseModal = () => setShowModal(false);
   return (
-    <div>
+    <div
+      className={`${
+        showModal ? "z-[1000] fixed inset-0 bg-black bg-opacity-50" : ""
+      }`}
+    >
       <Navbar transparent={false} />
-      <ModalBooking show={showModal} handleClose={handleCloseModal}>
+      <ModalBooking
+        show={showModal}
+        handleClose={handleCloseModal}
+        overlayClassName="overlay"
+      >
         <div className="flex flex-col ">
           <button
             className="px-4 rounded flex justify-end"
@@ -336,7 +362,7 @@ function Pemesanan() {
               )
             )}
           </div>
-          {flightKeyword?.tripType === "roundtrip" && (
+          {tripType === "roundtrip" && (
             <>
               <hr className="my-8 text-neutral" />
               <p className="flex gap-5 text-lg items-center pb-5">
@@ -410,6 +436,15 @@ function Pemesanan() {
                 <p>
                   <strong>{formatPrice(calculateTotal(totalHarga))}</strong>
                 </p>
+                {promo === "true" ? (
+                  <>
+                    <p className="text-primary text-xs">
+                      *Harga sudah termasuk promo
+                    </p>
+                  </>
+                ) : (
+                  <></>
+                )}
               </div>
             </div>
           </div>
@@ -417,7 +452,6 @@ function Pemesanan() {
       </ModalBooking>
       <div className="container">
         <div className="container px-3 mx-auto lg:flex mt-24 text-sm ">
-          {/* Sisi Kiri */}
           <section className="flex flex-col gap-4 lg:w-2/3 lg:me-6">
             {/* Navigasi  */}
             <div className="py-8 w-2/3">
@@ -435,6 +469,307 @@ function Pemesanan() {
                 <p>Isi Data Diri</p>
               </div>
             </div>
+            {/* Sisi Atas Mobile */}
+            <section className="flex flex-col lg:w-1/3 gap-4 lg:hidden">
+              {/* Detail Pemesanan  */}
+              <div className="rounded-xl shadow-md my-3 pb-4 lg:mt-[100px]">
+                {" "}
+                {/* Route  */}
+                <p className="flex gap-5 text-xl  p-8">
+                  <strong>
+                    {booking?.selectedDeparture?.flight?.arrival?.city}
+                  </strong>
+                  {tripType === "singletrip" ? (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="size-6"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="1em"
+                      height="1em"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        fill="currentColor"
+                        d="M14.293 2.293a1 1 0 0 1 1.414 0l4 4a1 1 0 0 1 0 1.414l-4 4a1 1 0 0 1-1.414-1.414L16.586 8H5a1 1 0 0 1 0-2h11.586l-2.293-2.293a1 1 0 0 1 0-1.414m-4.586 10a1 1 0 0 1 0 1.414L7.414 16H19a1 1 0 1 1 0 2H7.414l2.293 2.293a1 1 0 0 1-1.414 1.414l-4-4a1 1 0 0 1 0-1.414l4-4a1 1 0 0 1 1.414 0"
+                      />
+                    </svg>
+                  )}
+
+                  <strong>
+                    {booking?.selectedDeparture?.flight?.departure?.city}
+                  </strong>
+                </p>
+                <hr className="text-gray" />
+                {/* SingleTrip Pages */}
+                <div>
+                  {/* Maskapai  */}
+                  <div className="flex p-8">
+                    <div className="p-4 flex flex-col  border w-1/2 lg:flex-col gap-2 rounded-l-md items-center justify-center">
+                      <img
+                        src={
+                          booking?.selectedDeparture?.airplane?.airline?.logoUrl
+                        }
+                        className="w-[50px]"
+                      />
+                      <div className=" text-black ">
+                        <p className="text-lg text-center">
+                          <strong>
+                            {
+                              booking?.selectedDeparture?.airplane?.airline
+                                ?.name
+                            }
+                          </strong>
+                        </p>
+                        <p className="text-center">
+                          {
+                            booking?.selectedDeparture?.airplane?.seatClass
+                              ?.type
+                          }
+                        </p>
+                      </div>
+                    </div>
+                    <div className="p-2  flex flex-col border w-1/2 gap-2 rounded-r-md justify-center items-center">
+                      <p className=" text-black px-4 py-2 bg-slate-200 rounded-lg">
+                        Pergi
+                      </p>
+                      <p className=" text-black">
+                        {formatDate(
+                          booking?.selectedDeparture?.flight?.arrival?.time
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  {/* Detail Route  */}
+                  <div className="px-8 flex">
+                    <div className="px-4">
+                      <div className="flex gap-2 items-center">
+                        <div className="w-4 h-4 rounded-full bg-neutral"></div>
+                        <strong className="flex gap-2 ">
+                          <p>
+                            {formatTime(
+                              booking?.selectedDeparture?.flight?.arrival?.time
+                            )}
+                          </p>
+                          <p>-</p>
+                          <p className="text-[#00A8D0]">Keberangkatan</p>
+                        </strong>
+                      </div>
+                      <div className="flex my-2">
+                        <div className="mx-[7px] h-auto w-[1px] bg-neutral"></div>
+                        <div className="py-2 ps-3 text-sm">
+                          <p>
+                            {formatDate(
+                              booking?.selectedDeparture?.flight?.arrival?.time
+                            )}
+                          </p>
+                          <p>
+                            {
+                              booking?.selectedDeparture?.flight?.arrival
+                                ?.airport
+                            }
+                          </p>
+                          <p>
+                            (
+                            {
+                              booking?.selectedDeparture?.flight?.arrival
+                                ?.airportCode
+                            }
+                            )
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2 items-center">
+                        <div className="w-4 h-4 rounded-full bg-neutral"></div>
+                        <strong className="flex gap-2 ">
+                          <p>
+                            {formatTime(
+                              booking?.selectedDeparture?.flight?.departure
+                                ?.time
+                            )}
+                          </p>
+                          <p>-</p>
+                          <p className="text-[#00A8D0]">Kedatangan</p>
+                        </strong>
+                      </div>
+                      <div className="py-3 ps-7 text-sm">
+                        <p>
+                          {formatDate(
+                            booking?.selectedDeparture?.flight?.departure?.time
+                          )}
+                        </p>
+                        <p>
+                          {
+                            booking?.selectedDeparture?.flight?.departure
+                              ?.airport
+                          }
+                        </p>
+                        <p>
+                          (
+                          {
+                            booking?.selectedDeparture?.flight?.departure
+                              ?.airportCode
+                          }
+                          )
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {/* RoundTrip Pages */}
+                {tripType == "roundtrip" && (
+                  <div>
+                    {/* Maskapai  */}
+                    <div className="flex p-8">
+                      <div className="p-4 flex flex-col  border w-1/2 lg:flex-col gap-2 rounded-l-md items-center justify-center">
+                        <img
+                          src={
+                            booking?.selectedReturn?.airplane?.airline?.logoUrl
+                          }
+                          className="w-[50px]"
+                        />
+                        <div className=" text-black ">
+                          <p className="text-lg text-center">
+                            <strong>
+                              {booking?.selectedReturn?.airplane?.airline?.name}
+                            </strong>
+                          </p>
+                          <p className="text-center">
+                            {booking?.selectedReturn?.airplane?.seatClass?.type}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="p-2  flex flex-col border w-1/2 gap-2 rounded-r-md justify-center items-center">
+                        <p className=" text-black px-4 py-2 bg-slate-200 rounded-lg">
+                          Pulang
+                        </p>
+                        <p className=" text-black">
+                          {formatDate(
+                            booking?.selectedReturn?.flight?.arrival?.time
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                    {/* Detail Route  */}
+                    <div className="px-8 flex">
+                      <div className="px-4">
+                        <div className="flex gap-2 items-center">
+                          <div className="w-4 h-4 rounded-full bg-neutral"></div>
+                          <strong className="flex gap-2 ">
+                            <p>
+                              {formatTime(
+                                booking?.selectedReturn?.flight?.arrival?.time
+                              )}
+                            </p>
+                            <p>-</p>
+                            <p className="text-[#00A8D0]">Keberangkatan</p>
+                          </strong>
+                        </div>
+                        <div className="flex my-2">
+                          <div className="mx-[7px] h-auto w-[1px] bg-neutral"></div>
+                          <div className="py-2 ps-3 text-sm">
+                            <p>
+                              {formatDate(
+                                booking?.selectedReturn?.flight?.arrival?.time
+                              )}
+                            </p>
+                            <p>
+                              {
+                                booking?.selectedReturn?.flight?.arrival
+                                  ?.airport
+                              }
+                            </p>
+                            <p>
+                              (
+                              {
+                                booking?.selectedReturn?.flight?.arrival
+                                  ?.airportCode
+                              }
+                              )
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex gap-2 items-center">
+                          <div className="w-4 h-4 rounded-full bg-neutral"></div>
+                          <strong className="flex gap-2 ">
+                            <p>
+                              {formatTime(
+                                booking?.selectedReturn?.flight?.departure?.time
+                              )}
+                            </p>
+                            <p>-</p>
+                            <p className="text-[#00A8D0]">Kedatangan</p>
+                          </strong>
+                        </div>
+                        <div className="py-3 ps-7 text-sm">
+                          <p>
+                            {formatDate(
+                              booking?.selectedReturn?.flight?.departure?.time
+                            )}
+                          </p>
+                          <p>
+                            {
+                              booking?.selectedReturn?.flight?.departure
+                                ?.airport
+                            }
+                          </p>
+                          <p>
+                            (
+                            {
+                              booking?.selectedReturn?.flight?.departure
+                                ?.airportCode
+                            }
+                            )
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {/* Total Harga*/}
+                <div className="px-8 py-4 text-sm">
+                  <hr className="my-4 text-neutral" />
+                  <div className="flex text-lg justify-between">
+                    <p>Total Pembayaran</p>
+                    <div className="flex items-center gap-3">
+                      <p>
+                        <strong>
+                          {formatPrice(calculateTotal(totalHarga))}
+                        </strong>
+                      </p>
+                      <button onClick={handleOpenModal}>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="1em"
+                          height="1em"
+                          viewBox="0 0 1024 1024"
+                        >
+                          <path
+                            fill="currentColor"
+                            d="M8.2 275.4c0-8.6 3.4-17.401 10-24.001c13.2-13.2 34.8-13.2 48 0l451.8 451.8l445.2-445.2c13.2-13.2 34.8-13.2 48 0s13.2 34.8 0 48L542 775.399c-13.2 13.2-34.8 13.2-48 0l-475.8-475.8c-6.8-6.8-10-15.4-10-24.199"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+            {/* Formulir Pemesan */}
             <div className="rounded-xl p-[32px] shadow-md">
               <p className="text-xl mb-[32px]">
                 <strong>Data Pemesan</strong>
@@ -466,6 +801,7 @@ function Pemesanan() {
                 />
               </div>
             </div>
+            {/* Formulir Penumpang */}
             {penumpangData.map((penumpang, index) => (
               <FormPenumpang
                 key={penumpang.id}
@@ -533,9 +869,8 @@ function Pemesanan() {
                 </div>
               </div>
             </div>
-            {/* Tombol Bayar */}
-            <div className="rounded-xl p-[32px] shadow-md">
-              {/* Total Harga*/}
+            {/* Total Harga*/}
+            <div className="rounded-xl p-[32px] shadow-md ">
               <div className="py-4 text-sm">
                 <div className="flex text-lg justify-between">
                   <p>Total Pembayaran</p>
@@ -565,10 +900,16 @@ function Pemesanan() {
                   disabled={isLoading} // Nonaktifkan tombol saat loading
                 >
                   {isLoading ? (
-                    <svg
-                      className="animate-spin h-5 w-5 mr-3 border-t-2 border-b-2  border-white rounded-full"
-                      viewBox="0 0 24 24"
-                    ></svg>
+                    <ThreeDots
+                      visible={true}
+                      height="20"
+                      width="20"
+                      color="#FFB423"
+                      radius="9"
+                      ariaLabel="three-dots-loading"
+                      wrapperStyle={{}}
+                      wrapperClass=""
+                    />
                   ) : (
                     "Lanjut Bayar"
                   )}
@@ -576,8 +917,8 @@ function Pemesanan() {
               </div>
             </div>
           </section>
-          {/* Sisi Kanan */}
-          <section className="flex flex-col lg:w-1/3 gap-4 ">
+          {/* Sisi Kanan Website */}
+          <section className="flex flex-col lg:w-1/3 gap-4 max-lg:hidden">
             {/* Detail Pemesanan  */}
             <div className="rounded-xl shadow-md my-3 pb-4 lg:mt-[100px]">
               {" "}
@@ -586,7 +927,7 @@ function Pemesanan() {
                 <strong>
                   {booking?.selectedDeparture?.flight?.arrival?.city}
                 </strong>
-                {flightKeyword?.tripType === "singletrip" ? (
+                {tripType === "singletrip" ? (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -624,11 +965,18 @@ function Pemesanan() {
               <div>
                 {/* Maskapai  */}
                 <div className="flex p-8">
-                  <div className="p-4 flex border w-1/2 lg:flex-col gap-2 rounded-l-md items-center justify-center">
-                    <img src={airplane?.logoUrl} className="w-[50px]" />
+                  <div className="p-4 flex flex-col  border w-1/2 lg:flex-col gap-2 rounded-l-md items-center justify-center">
+                    <img
+                      src={
+                        booking?.selectedDeparture?.airplane?.airline?.logoUrl
+                      }
+                      className="w-[50px]"
+                    />
                     <div className=" text-black ">
                       <p className="text-lg text-center">
-                        <strong>{airplane?.name}</strong>
+                        <strong>
+                          {booking?.selectedDeparture?.airplane?.airline?.name}
+                        </strong>
                       </p>
                       <p className="text-center">
                         {booking?.selectedDeparture?.airplane?.seatClass?.type}
@@ -717,15 +1065,22 @@ function Pemesanan() {
                 </div>
               </div>
               {/* RoundTrip Pages */}
-              {flightKeyword.tripType == "roundtrip" && (
+              {tripType == "roundtrip" && (
                 <div>
                   {/* Maskapai  */}
                   <div className="flex p-8">
-                    <div className="p-4 flex border w-1/2 lg:flex-col gap-2 rounded-l-md items-center justify-center">
-                      <img src={airplane?.logoUrl} className="w-[50px]" />
+                    <div className="p-4 flex flex-col border w-1/2 lg:flex-col gap-2 rounded-l-md items-center justify-center">
+                      <img
+                        src={
+                          booking?.selectedReturn?.airplane?.airline?.logoUrl
+                        }
+                        className="w-[50px]"
+                      />
                       <div className=" text-black ">
                         <p className="text-lg text-center">
-                          <strong>{airplane?.name}</strong>
+                          <strong>
+                            {booking?.selectedReturn?.airplane?.airline?.name}
+                          </strong>
                         </p>
                         <p className="text-center">
                           {booking?.selectedReturn?.airplane?.seatClass?.type}
