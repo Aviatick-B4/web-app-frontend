@@ -9,9 +9,14 @@ function FormPenumpang({ title, fields, formData, handleInputChange }) {
     let error = "";
 
     if (!value) {
-      error = "Field is required";
-    } else if (name === "email" && !/\S+@\S+\.\S+/.test(value)) {
-      error = "Email is invalid";
+      error = "Data kosong, silahkan isi data diri anda!";
+      value = null;
+    } else if (value === "") {
+      error = "Data kosong, silahkan isi data diri anda!";
+      value = null;
+    } else if (value === null) {
+      error = "Data kosong, silahkan isi data diri anda!";
+      value = null;
     }
     // Add more validation rules as needed
 

@@ -13,15 +13,12 @@ export const getUserBookingHistory = () => async (dispatch, getState) => {
   const token = getState().auth.token;
 
   try {
-    const response = await axios.get(
-      `${url}/bookings/booking-history`,
-      {
-        headers: {
-          accept: "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await axios.get(`${url}/bookings/booking-history`, {
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
     dispatch(setBookingHistory(response.data.data));
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -33,7 +30,8 @@ export const getUserBookingHistory = () => async (dispatch, getState) => {
 };
 
 export const getBookingHistoryDetail =
-  (bookingId, setDetailLoading) => async (dispatch, getState) => {
+  (bookingId, setIsLoading) => async (dispatch, getState) => {
+    setIsLoading(true);
     const token = getState().auth.token;
     setDetailLoading(true);
     try {
@@ -48,7 +46,8 @@ export const getBookingHistoryDetail =
       );
       console.log("detail", response.data.data);
       dispatch(setBookingHistoryDetail(response.data.data));
-      setDetailLoading(false);
+
+      setIsLoading(false);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         setDetailLoading(false);

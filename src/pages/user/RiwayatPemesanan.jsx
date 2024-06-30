@@ -14,7 +14,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { useDebounce } from "../../utils/debounce";
 
 import { FaCalendarAlt } from "react-icons/fa";
-import { setBookingHistoryDetail, setHistoryKeyword } from "../../redux/reducers/historyReducers";
+import CetakTiket from "../../components/buttons/CetakTiket";
+import {
+  setBookingHistoryDetail,
+  setHistoryKeyword,
+} from "../../redux/reducers/historyReducers";
 import BackToTopButton from "../../components/navigations/BackToTop";
 import { ThreeDots } from "react-loader-spinner";
 import { useNavigate } from "react-router-dom";
@@ -82,7 +86,7 @@ export default function RiwayatPemesanan() {
 
   const handleCardClick = (flight) => {
     setSelectedFlight(selectedFlight === flight ? null : flight);
-    dispatch(getBookingHistoryDetail(flight.id, setDetailLoading));
+    dispatch(getBookingHistoryDetail(flight.id, setLoading));
   };
 
   const filteredFlightData =
@@ -804,6 +808,8 @@ export default function RiwayatPemesanan() {
                           ? "bg-secondary hover:bg-darksecondary"
                           : "bg-primary hover:bg-darkprimary"
                       }`}
+                      onClick={() => navigate("/pembayaran")}
+                      isSelected={selectedFlight}
                     >
                       {bookingDetail?.status === "UNPAID"
                         ? "Lanjut Bayar"
