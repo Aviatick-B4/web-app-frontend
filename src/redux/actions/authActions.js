@@ -371,6 +371,8 @@ export const forgotPassword = (email, navigate) => async (dispatch) => {
     if (response.status === 200) {
       console.log("forgotPassword - response data:", response.data);
       toast.success("Reset link sent to your email");
+      localStorage.setItem("userEmail", email); // Simpan email ke localStorage
+      dispatch(setToken(token));
       // dispatch(setUser(response.data.data.user));
       navigate("/reset-password");
       // dispatch(forgotPasswordSuccess("Reset link sent to your email"));
@@ -393,39 +395,42 @@ export const forgotPassword = (email, navigate) => async (dispatch) => {
 };
 
 // Action creators for reset password
-export const resetPassword = (password, token) => async (dispatch) => {
-  console.log("Dispatching RESET_PASSWORD_REQUEST action");
-  // dispatch({ type: "RESET_PASSWORD_REQUEST" });
+export const resetPassword =
+  (password, token, navigate) => async (dispatch) => {
+    console.log("Dispatching RESET_PASSWORD_REQUEST action");
+    // dispatch({ type: "RESET_PASSWORD_REQUEST" });
 
-  try {
-    console.log("Sending request to reset password...");
+    try {
+      console.log("Sending request to reset password...");
 
-    const response = await axios.post(
-      `https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/reset-password?token=${token}`,
-      { password },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const response = await axios.post(
+        `https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/reset-password?token=${token}`,
+        { password },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log("Response received:", response);
+
+      if (response.status !== 200) {
+        console.error("Failed to reset password, status:", response.status);
+        throw new Error("Failed to reset password");
       }
-    );
 
-    console.log("Response received:", response);
-
-    if (response.status !== 200) {
-      console.error("Failed to reset password, status:", response.status);
-      throw new Error("Failed to reset password");
+      console.log("Password reset successful, response data:", response.data);
+      toast.success("Password reset successful");
+      localStorage.removeItem("userEmail"); // Remove userEmail from localStorage
+      navigate("/masuk");
+      // dispatch(resetPasswordSuccess(response.data)); // Dispatch success action with data
+    } catch (error) {
+      console.error("Error occurred during password reset:", error.message);
+      toast.error("Error resetting password");
+      // dispatch(resetPasswordFailure(error.message)); // Dispatch failure action with error message
     }
-
-    console.log("Password reset successful, response data:", response.data);
-    toast.success("Password reset successful");
-    // dispatch(resetPasswordSuccess(response.data)); // Dispatch success action with data
-  } catch (error) {
-    console.error("Error occurred during password reset:", error.message);
-    toast.error("Error resetting password");
-    // dispatch(resetPasswordFailure(error.message)); // Dispatch failure action with error message
-  }
-};
+  };
 
 export const verifyEmail = (data, navigate) => async (dispatch) => {
   try {
