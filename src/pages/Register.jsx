@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { register } from "../redux/actions/authActions";
 import GoogleLogin from "./googleLogin";
 import { ThreeDots } from "react-loader-spinner";
+import { toast } from "react-toastify";
 
 function Register() {
   const [showPassword, setShowPassword] = useState(false);
@@ -28,7 +29,14 @@ function Register() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (token) {
+      toast.error("Kamu sudah login.");
+      navigate("/");
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -54,8 +62,6 @@ function Register() {
       return;
     }
 
-    setIsLoading(true); // Start loading
-
     let data = {
       fullName,
       email,
@@ -63,9 +69,7 @@ function Register() {
       password,
     };
 
-    dispatch(register(data, navigate, setMessage)).finally(() => {
-      setIsLoading(false);
-    }); // Stop loading
+    dispatch(register(data, navigate, setMessage, setLoading));
     console.log("Dispatching registration action...");
   };
 
@@ -90,24 +94,22 @@ function Register() {
 
   return (
     <div>
-      {isLoading && (
+      {/* {loading && (
         <div className="fixed inset-0 flex items-center justify-center bg-opacity-75 z-50">
           <ThreeDots
             visible={true}
-            height="80"
-            width="80"
-            color="#F93939"
+            height="60"
+            width="60"
+            color="#FFB423"
             radius="9"
             ariaLabel="three-dots-loading"
             wrapperStyle={{}}
             wrapperClass=""
           />
         </div>
-      )}
+      )} */}
       <div
-        className={`min-h-screen flex mx-3 md:mx-0 bg-white ${
-          isLoading ? "blur - background" : ""
-        }`}
+        className="min-h-screen flex mx-3 md:mx-0 bg-white"
       >
         <div className="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
           <div className="mx-auto w-full max-w-sm lg:w-96">
@@ -193,7 +195,7 @@ function Register() {
                           name="phoneNumber"
                           type="text"
                           autoComplete="phoneNumber"
-                          placeholder="01234567890"
+                          placeholder="87846737738"
                           required
                           value={phoneNumber} // value diatur menjadi nilai dari state email
                           onChange={(e) => setPhoneNumber(e.target.value)} // setiap kali nilai input berubah, state email akan diupdate
@@ -294,20 +296,48 @@ function Register() {
                       </button>
                     </div>
                   </div>
-                  {message && <p className="text-red-500">{message}</p>}{" "}
                   {/* Error message */}
-                  <div>
+                  <p className="text-sm text-red-500 font-medium">{message}</p>
                     <button
                       type="button"
-                      className="w-full flex justify-center py-2 px-4 border border-transparent rounded-full shadow-sm text-sm md:text-base font-medium text-white bg-primary hover:bg-darkprimary focus:outline-none"
+                      className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-full shadow-sm text-sm md:text-base font-medium text-white bg-primary hover:bg-darkprimary focus:outline-none ${loading ? "opacity-50" : ""}`}
+                      disabled={loading}
                       onClick={handleSubmit}
                     >
-                      Daftar
+                      {loading ? (
+                      <div className="flex items-center justify-center text-center">
+                        <svg
+                          className="animate-spin h-5 w-5 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="#00A8D0"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                          ></path>
+                        </svg>
+                      </div>
+                    ) : (
+                      "Daftar"
+                    )}
                     </button>
-                    <div className="flex justify-center mt-4">
+                    </form>
+                    <p className="text-sm font-medium text-center text-main mx-4 py-2">
+                      atau
+                    </p>
+                    <div className="flex justify-center">
                       <GoogleLogin />
                     </div>
-                  </div>
                   <p className="text-xs md:text-sm font-regular text-main">
                     Sudah punya akun?{" "}
                     <a
@@ -317,14 +347,6 @@ function Register() {
                       Masuk
                     </a>
                   </p>
-                  {/* <div className="flex items-center justify-center mt-4">
-                  <div className="flex-1 h-[1px] bg-gray-200"></div>
-                  <p className="text-sm font-medium text-center text-gray-700 mx-4">
-                    or
-                  </p>
-                  <div className="flex-1 h-[1px] bg-gray-200"></div>
-                </div> */}
-                </form>
               </div>
             </div>
           </div>

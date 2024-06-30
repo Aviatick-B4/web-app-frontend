@@ -41,51 +41,50 @@ const people = [
 
 export default function AboutUs() {
   return (
-    <div className="bg-white">
-      <div className="container w-full mx-auto py-12 text-center lg:py-24">
-        <div className="space-y-8 sm:space-y-12">
-          <div className="space-y-5 sm:space-y-4">
-            <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-              About Us
-            </h2>
-            <p className="text-sm text-main">
-              Aviatick adalah platform pemesanan tiket pesawat yang terpercaya,
-              menawarkan berbagai pilihan penerbangan dengan harga terbaik. Kami
-              berkomitmen untuk memberikan pengalaman pemesanan yang cepat,
-              aman, dan efisien dengan antarmuka ramah pengguna dan proses
-              pembayaran yang mudah. Keamanan transaksi adalah prioritas utama
-              kami, menggunakan teknologi enkripsi terbaru untuk memastikan
-              setiap transaksi terlindungi. Tim profesional kami siap memberikan
-              dukungan 24/7 untuk memastikan perjalanan Anda berjalan lancar.
-              Dengan berbagai pilihan penerbangan dari maskapai terkemuka, baik
-              domestik maupun internasional, serta promo dan diskon eksklusif,
-              Aviatick adalah pilihan terbaik untuk kebutuhan tiket pesawat
-              Anda. Nikmati kenyamanan dan keamanan dalam setiap langkah
-              pemesanan bersama kami.
+    <div className="bg-white my-20 overflow-x-hidden overflow-y-hidden" id="tentang-kami-section">
+      <div className="w-full h-[600px] md:h-[400px] relative">
+        <div className="absolute inset-0 bg-black opacity-40 z-10"></div>
+
+        {/* Title*/}
+        <div className="absolute top-[25%] left-[30%] w-full flex flex-col items-center justify-center p-4 z-20 overflow-x-hidden">
+          <div className="bg-white py-8 pl-8 pr-40 rounded-lg shadow-lg w-[400px] md:w-[800px]">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between -mt-3">
+              <div>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width={40}
+                  height={40}
+                  viewBox="0 0 10 10"
+                  className="text-secondary"
+                >
+                  <path fill="currentColor" d="M0 7h16v1H0z"></path>
+                </svg>
+                <span className="text-xl md:text-2xl font-bold text-main">
+                  Tentang
+                </span>
+                <span className="text-xl md:text-2xl ml-2 font-bold text-primary">
+                  Kami
+                </span>
+              </div>
+            </div>
+            <p className="text-main font-medium text-sm text-left mt-4">
+              Aviatick adalah platform terpercaya untuk memesan tiket pesawat
+              dengan berbagai pilihan penerbangan dan harga terbaik. Kami
+              menawarkan pengalaman pemesanan yang cepat, aman, dan efisien
+              dengan antarmuka ramah pengguna dan dukungan 24/7. Dapatkan
+              pilihan penerbangan dari maskapai terkemuka dengan promo dan
+              diskon eksklusif hanya di Aviatick.
             </p>
           </div>
-          <ul
-            role="list"
-            className="mx-auto grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-4 md:gap-x-6 lg:max-w-5xl lg:gap-x-8 lg:gap-y-12 xl:grid-cols-6"
-          >
-            {people.map((person) => (
-              <li key={person.name}>
-                <div className="space-y-4">
-                  <img
-                    className="mx-auto h-20 w-20 rounded-full lg:w-24 lg:h-24"
-                    src={person.imageUrl}
-                    alt=""
-                  />
-                  <div className="space-y-2">
-                    <div className="text-xs font-medium lg:text-sm">
-                      <h3>{person.name}</h3>
-                      <p className="text-indigo-600">{person.role}</p>
-                    </div>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
+        </div>
+        <div
+          className="h-[600px] md:h-[400px] relative"
+        >
+          <img
+            className="w-full h-[600px] md:h-[400px] object-cover"
+            src="/bg/plane.jpg"
+            alt="Tentang kami"
+          />
         </div>
       </div>
     </div>

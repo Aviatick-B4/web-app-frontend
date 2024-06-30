@@ -7,22 +7,18 @@ import {
   setHistorySearchResults,
 } from "../reducers/historyReducers";
 
+const url = import.meta.env.VITE_BASE_URL;
+
 export const getUserBookingHistory = () => async (dispatch, getState) => {
   const token = getState().auth.token;
 
   try {
-    const response = await axios.get(
-      "https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/bookings/booking-history",
-      {
-        headers: {
-          accept: "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    console.log("history", response.data.data);
-
+    const response = await axios.get(`${url}/bookings/booking-history`, {
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
     dispatch(setBookingHistory(response.data.data));
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -34,12 +30,14 @@ export const getUserBookingHistory = () => async (dispatch, getState) => {
 };
 
 export const getBookingHistoryDetail =
-  (bookingId) => async (dispatch, getState) => {
-    const token = getState().auth.token;
+  (bookingId, setIsLoading, setDetailLoading) => async (dispatch, getState) => {
+    setIsLoading(true);
+    setDetailLoading(true);
 
+    const token = getState().auth.token;
     try {
       const response = await axios.get(
-        `https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/bookings/booking-history/${bookingId}`,
+        `${url}/bookings/booking-history/${bookingId}`,
         {
           headers: {
             accept: "application/json",
@@ -48,9 +46,12 @@ export const getBookingHistoryDetail =
         }
       );
       console.log("detail", response.data.data);
-
       dispatch(setBookingHistoryDetail(response.data.data));
+      setIsLoading(false);
+      setDetailLoading(false);
     } catch (error) {
+      setIsLoading(false);
+      setDetailLoading(false);
       if (axios.isAxiosError(error)) {
         console.error(error.message);
         return;
@@ -65,7 +66,7 @@ export const getHistorySearchResults = () => async (dispatch, getState) => {
 
   try {
     const response = await axios.get(
-      `https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/bookings/booking-history?search=${searchTerm}`,
+      `${url}/bookings/booking-history?search=${searchTerm}`,
       {
         headers: {
           accept: "application/json",
@@ -89,7 +90,7 @@ export const getHistoryByDate = () => async (dispatch, getState) => {
 
   try {
     const response = await axios.get(
-      `https://web-app-backend-git-development-aviaticks-projects.vercel.app/api/v1/bookings/booking-history?date=${date}`,
+      `${url}/bookings/booking-history?date=${date}`,
       {
         headers: {
           accept: "application/json",
@@ -97,7 +98,6 @@ export const getHistoryByDate = () => async (dispatch, getState) => {
         },
       }
     );
-    console.log("dateee", response.data.data);
     dispatch(setHistoryByDate(response.data.data || []));
   } catch (error) {
     if (axios.isAxiosError(error)) {

@@ -4,18 +4,20 @@ import "react-datepicker/dist/react-datepicker.css";
 import "../../DatePickerStyles.css";
 import "../../modal.css";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import {
   getCities,
   getCitySearchResults,
 } from "../../redux/actions/searchFlightActions";
-import { setCityKeyword } from "../../redux/reducers/searchFlightReducers";
+import {
+  setCityKeyword,
+  setCitySearchResult,
+} from "../../redux/reducers/searchFlightReducers";
 import { useDebounce } from "../../utils/debounce";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import { DateRangePicker } from "react-date-range";
-import { addDays } from "date-fns";
 import { id } from "date-fns/locale";
+import { ThreeDots } from 'react-loader-spinner'
 
 Modal.setAppElement("#root");
 
@@ -27,6 +29,8 @@ const UnifiedModal = ({
   initialData,
 }) => {
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const searchTerm = useSelector((state) => state?.search.cityKeyword);
   const citySearchResult = useSelector(
     (state) => state?.search.citySearchResults
@@ -36,12 +40,15 @@ const UnifiedModal = ({
     initialData?.selectedClass || "Economy"
   );
   const [selectedCity, setSelectedCity] = useState(
-    initialData?.selectedCity || "Jakarta"
+    initialData?.selectedCity || {
+      cityIata: initialData?.selectedCity?.cityIata || "",
+      name: initialData?.selectedCity?.name || "",
+      country: initialData?.selectedCity?.country || "",
+    }
   );
   const [passengers, setPassengers] = useState(
     initialData?.passengers || { adults: 1, children: 0, infants: 0 }
   );
-
   const [state, setState] = useState([
     {
       startDate: new Date(),
@@ -51,8 +58,9 @@ const UnifiedModal = ({
   ]);
 
   useEffect(() => {
-    dispatch(getCities());
-    dispatch(getCitySearchResults());
+    dispatch(getCities())
+      .then(() => setLoading(false))
+      .catch(() => setLoading(true));
   }, [dispatch]);
 
   useEffect(() => {
@@ -64,10 +72,10 @@ const UnifiedModal = ({
   }, [initialData, type]);
 
   const searchCity = (term) => {
-    dispatch(getCitySearchResults());
+    dispatch(getCitySearchResults(term));
   };
 
-  const delayedSearch = useDebounce(searchCity, 200);
+  const delayedSearch = useDebounce(searchCity, 100);
 
   const handleSearchInputChange = (e) => {
     dispatch(setCityKeyword(e.target.value));
@@ -92,30 +100,35 @@ const UnifiedModal = ({
       const endDate = state[0].endDate ? stripTime(state[0].endDate) : null;
 
       onSave(startDate, endDate);
-    } else if (type === "class") {
+    }
+    if (type === "class") {
       onSave(selectedClass);
-    } else if (type === "passenger") {
+    }
+    if (type === "passenger") {
       onSave(passengers);
-    } else if (type === "city") {
+    }
+    if (type === "city") {
       onSave(selectedCity);
+      dispatch(setCityKeyword(""));
+      dispatch(setCitySearchResult([]));
+      dispatch(getCities());
     }
     onRequestClose();
   };
-
 
   return (
     <Modal
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       contentLabel="Pilih"
-      className="modal rounded-lg min-w-[440px]"
+      className="modal rounded-lg min-w-[340px] md:min-w-[440px]"
       overlayClassName="overlay"
       appElement={document.getElementById("root")}
     >
       <div className="p-4">
         {type === "date" && (
           <>
-            <h2 className="absolute top-[40%] text-xl text-left font-semibold text-main mb-6">
+            <h2 className="md:absolute md:top-[40%] text-xl text-left font-semibold text-main mb-6">
               Pilih <br /> Tanggal
             </h2>
             <DateRangePicker
@@ -124,14 +137,14 @@ const UnifiedModal = ({
               moveRangeOnFirstSelection={false}
               months={2}
               ranges={state}
-              direction="horizontal"
+              direction={windowWidth < 640 ? "vertical" : "horizontal"}
               color="#00A8D0"
               rangeColors={["#00A8D0"]}
               locale={id}
               minDate={new Date()}
               staticRanges={[]}
               inputRanges={[]}
-              className="-ms-9 bg-transparent"
+              className="-ms-56 md:-ms-9 bg-transparent"
             />
           </>
         )}
@@ -163,55 +176,8 @@ const UnifiedModal = ({
               Pilih Penumpang
             </h2>
             <PassengerInput
-              label="Dewasa"
-              description="(12 tahun keatas)"
-              count={passengers.adults}
-              onDecrease={() =>
-                setPassengers({
-                  ...passengers,
-                  adults: Math.max(1, passengers.adults - 1),
-                })
-              }
-              onIncrease={() =>
-                setPassengers({
-                  ...passengers,
-                  adults: passengers.adults + 1,
-                })
-              }
-            />
-            <PassengerInput
-              label="Anak"
-              description="(2 - 11 tahun)"
-              count={passengers.children}
-              onDecrease={() =>
-                setPassengers({
-                  ...passengers,
-                  children: Math.max(0, passengers.children - 1),
-                })
-              }
-              onIncrease={() =>
-                setPassengers({
-                  ...passengers,
-                  children: passengers.children + 1,
-                })
-              }
-            />
-            <PassengerInput
-              label="Bayi"
-              description="(Dibawah 2 tahun)"
-              count={passengers.infants}
-              onDecrease={() =>
-                setPassengers({
-                  ...passengers,
-                  infants: Math.max(0, passengers.infants - 1),
-                })
-              }
-              onIncrease={() =>
-                setPassengers({
-                  ...passengers,
-                  infants: passengers.infants + 1,
-                })
-              }
+              passengers={passengers}
+              setPassengers={setPassengers}
             />
           </>
         )}
@@ -226,6 +192,7 @@ const UnifiedModal = ({
               citySearchResult={citySearchResult}
               selectedCity={selectedCity}
               onCitySelect={setSelectedCity}
+              loading={loading}
             />
           </>
         )}
@@ -248,7 +215,63 @@ const UnifiedModal = ({
   );
 };
 
-const PassengerInput = ({
+const PassengerInput = ({ passengers, setPassengers }) => (
+  <>
+    <PassengerCounter
+      label="Dewasa"
+      description="(12 tahun keatas)"
+      count={passengers.adults}
+      onDecrease={() =>
+        setPassengers({
+          ...passengers,
+          adults: Math.max(1, passengers.adults - 1),
+        })
+      }
+      onIncrease={() =>
+        setPassengers({
+          ...passengers,
+          adults: passengers.adults + 1,
+        })
+      }
+    />
+    <PassengerCounter
+      label="Anak"
+      description="(2 - 11 tahun)"
+      count={passengers.children}
+      onDecrease={() =>
+        setPassengers({
+          ...passengers,
+          children: Math.max(0, passengers.children - 1),
+        })
+      }
+      onIncrease={() =>
+        setPassengers({
+          ...passengers,
+          children: passengers.children + 1,
+        })
+      }
+    />
+    <PassengerCounter
+      label="Bayi"
+      description="(Dibawah 2 tahun)"
+      count={passengers.infants}
+      onDecrease={() =>
+        setPassengers({
+          ...passengers,
+          infants: Math.max(0, passengers.infants - 1),
+        })
+      }
+      onIncrease={() =>
+        setPassengers({
+          ...passengers,
+          infants: passengers.infants + 1,
+        })
+      }
+    />
+  </>
+);
+
+const PassengerCounter = ({
   label,
   description,
   count,
@@ -284,6 +307,7 @@ const CityInput = ({
   citySearchResult,
   selectedCity,
   onCitySelect,
+  loading
 }) => (
   <>
     <div className="relative">
@@ -310,15 +334,27 @@ const CityInput = ({
         />
       </svg>
     </div>
-    <div className="scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar scrollbar-thumb-primary scrollbar-track-white overflow-y-scroll max-h-48 mt-4">
+    {/* Loading Indicator */}
+    {loading ? (<div className="flex justify-center items-center mt-2">
+      <ThreeDots
+        visible={true}
+        height="40"
+        width="40"
+        color="#00A8D0"
+        radius="9"
+        ariaLabel="three-dots-loading"
+        wrapperStyle={{}}
+        wrapperClass=""
+        />
+    </div>) : (<div className="scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar scrollbar-thumb-primary scrollbar-track-white overflow-y-scroll max-h-48 mt-4">
       {[...citySearchResult]
         .sort((a, b) => a.name.localeCompare(b.name))
         .map((city) => (
           <div
             key={city.cityIata}
-            onClick={() => onCitySelect(city.cityIata)}
+            onClick={() => onCitySelect(city)}
             className={`p-2 cursor-pointer hover:bg-primary/10 ${
-              selectedCity === city.name ? "bg-primary/10" : ""
+              selectedCity === city ? "bg-primary/10" : ""
             }`}
           >
             <div className="flex items-center justify-between">
@@ -337,7 +373,7 @@ const CityInput = ({
             </div>
           </div>
         ))}
-    </div>
+    </div>)}
   </>
 );
 

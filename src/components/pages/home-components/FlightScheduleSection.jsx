@@ -11,15 +11,24 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { addDays, format } from "date-fns";
 import { toast } from "react-toastify";
-import { setFlightKeyword } from "../../../redux/reducers/searchFlightReducers";
+import {
+  setDepartureResults,
+  setFavDestinationResults,
+  setFlightKeyword,
+  setPromoResult,
+  setTripTypeSaved,
+} from "../../../redux/reducers/searchFlightReducers";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
 const FlightSchedule = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  const [tripType, setTripType] = useState("round-trip");
-  const [from, setFrom] = useState("JKT");
-  const [to, setTo] = useState("SYD");
+  const [loading, setLoading] = useState(false);
+  const [tripType, setTripType] = useState("singletrip");
+  const [swalProps, setSwalProps] = useState({});
+  const [from, setFrom] = useState("BCN");
+  const [to, setTo] = useState("RIO");
   const [departureDate, setDepartureDate] = useState(new Date());
   const [returnDate, setReturnDate] = useState(addDays(new Date(), 1));
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -57,18 +66,20 @@ const FlightSchedule = () => {
 
   const handleSave = (data, endDate) => {
     if (modalType === "city") {
-      if (modalData === "from" && data === to) {
+      if (modalData === "from" && data.cityIata === to.cityIata) {
         toast.error("Kota keberangkatan tidak boleh sama dengan kota tujuan.");
         return;
       }
-      if (modalData === "to" && data === from) {
+      if (modalData === "to" && data.cityIata === from.cityIata) {
         toast.error("Kota tujuan tidak boleh sama dengan kota keberangkatan.");
         return;
       }
       modalData === "from" ? setFrom(data) : setTo(data);
     } else if (modalType === "date") {
       setDepartureDate(data);
-      if (returnDate) setReturnDate(endDate);
+      if (tripType === "roundtrip") {
+        setReturnDate(endDate);
+      }
     } else if (modalType === "class") {
       setFlightClass(data);
     } else if (modalType === "passenger") {
@@ -78,18 +89,54 @@ const FlightSchedule = () => {
   };
 
   const handleSaveToState = () => {
+    if (!from.cityIata || !to.cityIata) {
+      showSwal();
+      return;
+    }
+
     const flightData = {
       from,
       to,
       departureDate: format(departureDate, "yyyy-MM-dd"),
-      returnDate: returnDate ? format(returnDate, "yyyy-MM-dd") : null,
+      returnDate:
+        tripType === "roundtrip" ? format(returnDate, "yyyy-MM-dd") : null,
       passengers,
       flightClass,
+      tripType,
     };
 
-    dispatch(getFlightSearchResults(flightData));
-    navigate("/hasil-pencarian");
+    dispatch(setTripTypeSaved(tripType));
+    dispatch(setFavDestinationResults([]));
+    dispatch(setPromoResult([]));
+    dispatch(setDepartureResults([]));
+    dispatch(getFlightSearchResults(flightData, navigate, setLoading));
     dispatch(setFlightKeyword(flightData));
+  };
+
+  const showSwal = () => {
+    withReactContent(Swal)
+      .fire({
+        title: "<b>Pilih kota dulu yuk!</b>",
+        html: `
+        Pilih kota keberangkatan dan tujuan sebelum mencari penerbangan.
+      `,
+        showCloseButton: true,
+        focusConfirm: false,
+        confirmButtonText: "Pilih",
+        customClass: {
+          confirmButton:
+            "inline-block bg-[#00A8D0] hover:bg-darkprimary text-white px-12 py-2 rounded-full",
+        },
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          if (!from.cityIata) {
+            openModal("city", "from");
+          } else if (!to.cityIata) {
+            openModal("city", "to");
+          }
+        }
+      });
   };
 
   return (
@@ -114,7 +161,7 @@ const FlightSchedule = () => {
           date={departureDate}
           openModal={() => openModal("date", "departure")}
         />
-        {tripType === "round-trip" && (
+        {tripType === "roundtrip" && (
           <DateSelector
             label="Kepulangan"
             date={returnDate}
@@ -127,7 +174,7 @@ const FlightSchedule = () => {
           openModal={openModal}
         />
       </div>
-      <SearchButton onClick={handleSaveToState} />
+      <SearchButton onClick={handleSaveToState} loading={loading} />
       <UnifiedModal
         isOpen={isModalOpen}
         onRequestClose={() => setIsModalOpen(false)}
@@ -144,17 +191,17 @@ const TripTypeSelector = ({ tripType, setTripType }) => (
     <div className="bg-white rounded-t-xl flex">
       <button
         className={`px-3 py-2.5 md:px-4 md:py-2 rounded-tl-xl text-sm md:text-base font-medium ${
-          tripType === "one-way" ? "bg-primary text-white" : "bg-gray-200"
+          tripType === "singletrip" ? "bg-white" : "bg-primary text-white"
         }`}
-        onClick={() => setTripType("one-way")}
+        onClick={() => setTripType("singletrip")}
       >
         Sekali Jalan
       </button>
       <button
         className={`px-3 py-2.5 md:px-4 md:py-2 rounded-tr-xl text-sm md:text-base font-medium ${
-          tripType === "round-trip" ? "bg-primary text-white" : "bg-gray-200"
+          tripType === "roundtrip" ? "bg-white" : "bg-primary text-white"
         }`}
-        onClick={() => setTripType("round-trip")}
+        onClick={() => setTripType("roundtrip")}
       >
         Pulang-Pergi
       </button>
@@ -169,8 +216,8 @@ const LocationSelector = ({ label, icon, location, openModal }) => (
       {label}
     </label>
     <button className="p-2 text-left rounded outline-none" onClick={openModal}>
-      {location || (
-        <p className="text-gray">{`Mau ${label.toLowerCase()} mana?`}</p>
+      {location.name || (
+        <p className="text-gray">{`${label.toLowerCase()} mana?`}</p>
       )}
     </button>
   </div>
@@ -180,7 +227,7 @@ const SwapButton = ({ onClick, tripType }) => (
   <button
     onClick={onClick}
     className={`absolute md:top-[35%] left-[80%] md:left-[17.5%] transform md:-translate-x-1/2 bg-gray-200 p-2 rounded-full bg-white shadow ${
-      tripType === "one-way" ? "top-[22%]" : "top-[18%]"
+      tripType === "singletrip" ? "top-[22%]" : "top-[18%]"
     }`}
   >
     <img src="/icons/exchange.svg" alt="exchange" className="w-6 h-6" />
@@ -254,14 +301,43 @@ const PassengerAndClassSelectors = ({ passengers, flightClass, openModal }) => (
   </>
 );
 
-const SearchButton = ({ onClick }) => (
+const SearchButton = ({ onClick, loading }) => (
   <div className="flex justify-center md:justify-end mt-4">
     <button
-      className="px-4 py-2 w-full md:w-auto text-center bg-primary text-white rounded-full border-2 border-primary hover:bg-white hover:text-primary"
+      className={`px-4 py-2 w-full md:w-56 text-center bg-primary text-white rounded-full border-2 border-primary ${
+        loading ? "opacity-50 px-10" : "hover:bg-white hover:text-primary"
+      }`}
       onClick={onClick}
+      disabled={loading}
     >
-      Cari Jadwal
-      <BsArrowRight className="inline-block ml-2" />
+      {loading ? (
+        <div className="flex items-center justify-center text-center">
+          <svg
+            className="animate-spin h-5 w-5 text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+            ></path>
+          </svg>
+        </div>
+      ) : (
+        <>
+          Cari Penerbangan <BsArrowRight className="inline-block ml-2" />
+        </>
+      )}
     </button>
   </div>
 );

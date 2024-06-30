@@ -31,6 +31,7 @@ const FilterDate = ({ label, iconSrc }) => {
         new Date(selectedDate).toDateString() === date.toDateString())
     ) {
       setStartDate(new Date());
+      dispatch(setBookingHistoryDetail(null));
     } else {
       setStartDate(date);
       const formattedDate = date.toISOString().split("T")[0];
@@ -39,11 +40,11 @@ const FilterDate = ({ label, iconSrc }) => {
   };
 
   return (
-    <div className="inline-block relative text-left z-20" ref={wrapperRef}>
+    <div className="inline-block relative text-left z-30" ref={wrapperRef}>
       <div>
         <button
           type="button"
-          className={`inline-flex items-center justify-center w-full rounded-full border-2 border-primary shadow-sm px-4 py-2 text-xs md:text-sm font-medium focus:outline-none hover:shadow-md ${
+          className={`inline-flex items-center justify-center w-full rounded-full border-2 border-primary shadow-sm px-4 py-2 md:py-0.5 text-xs md:text-sm font-medium focus:outline-none hover:shadow-md ${
             isOpen ? "bg-primary text-white" : "bg-white text-primary"
           }`}
           id="options-menu"
@@ -54,7 +55,7 @@ const FilterDate = ({ label, iconSrc }) => {
           {iconSrc && <img src={iconSrc} alt="icon" className="mr-2" />}
           {label}
           <svg
-            className="ml-1 -mr-1 h-4 w-4 md:h-5 md:w-5"
+            className="ml-1 -mr-1 h-4 w-4 md:h-8 md:w-8"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
             fill="currentColor"
@@ -70,7 +71,7 @@ const FilterDate = ({ label, iconSrc }) => {
       </div>
       {isOpen && (
         <div
-          className="block origin-top-right absolute mt-2 w-56 md:relative md:right-0 md:mt-0 md:w-auto"
+          className="block origin-top-right absolute mt-2 w-56 md:right-0 md:mt-0 md:w-auto"
           role="menu"
           aria-orientation="vertical"
           aria-labelledby="options-menu"

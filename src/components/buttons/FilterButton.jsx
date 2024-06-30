@@ -6,6 +6,7 @@ const FilterButton = ({
   iconSrc,
   onOptionSelect,
   selectedOption,
+  notif,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -98,7 +99,11 @@ const FilterButton = ({
       <div className="md:hidden relative inline-block text-left">
         <div>
           <button
-            className="text-primary text-xs font-medium"
+            className={`text-primary text-xs font-medium ${
+              notif
+                ? "border border-primary rounded-full px-4 py-1"
+                : ""
+            }`}
             onClick={() => setIsOpen(!isOpen)}
           >
             <div className="flex flex-col items-center gap-1">

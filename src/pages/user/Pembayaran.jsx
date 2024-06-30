@@ -1,21 +1,63 @@
+import { useAsyncError } from "react-router-dom";
 import Footer from "../../components/navigations/Footer";
 import Navbar from "../../components/navigations/Navbar";
 import * as React from "react";
+import { useSelector } from "react-redux";
 import { useState } from "react";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import Typography from "@mui/material/Typography";
-import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function Pembayaran() {
-  const [isUnderline, isSetUnderline] = useState();
-  const navigate = useNavigate();
+  const [tripType, settripType] = useState("");
+  const booking = useSelector((state) => state?.bookingFlight?.bookings);
+  const airplane = useSelector(
+    (state) =>
+      state?.bookingFlight?.bookings?.selectedDeparture?.airplane?.airline || {}
+  );
 
-  const handleClickCreditCard = () => {
-    isSetUnderline(!isUnderline);
+  const payment = useSelector((state) => state?.bookingFlight?.payment?.data);
+  console.log("payment", payment);
+  const midtrans = useSelector((state) => state?.bookingFlight?.midtrans?.data);
+  console.log("midtrans", midtrans);
+  const bookingDetail = useSelector(
+    (state) => state?.history?.bookingHistoryDetail
+  );
+  console.log("bookingDetail", bookingDetail);
+
+  useEffect(() => {
+    if (booking?.selectedReturn !== null) return settripType("roundtrip");
+    if (booking?.selectedReturn === null) return settripType("singletrip");
+  }, []);
+
+  console.log(tripType);
+
+  const formatDate = (isoString) => {
+    const date = new Date(isoString);
+    const day = String(date.getUTCDate()).padStart(2, "0");
+    const monthNames = [
+      "Januari",
+      "Februari",
+      "Maret",
+      "April",
+      "Mei",
+      "Juni",
+      "Juli",
+      "Agustus",
+      "September",
+      "Oktober",
+      "November",
+      "Desember",
+    ];
+    const month = monthNames[date.getUTCMonth()]; // getUTCMonth() is zero-based
+    const year = date.getUTCFullYear();
+
+    return `${day} ${month} ${year}`;
+  };
+  const formatTime = (isoString) => {
+    const date = new Date(isoString);
+    const hours = String(date?.getUTCHours()).padStart(2, "0");
+    const minutes = String(date?.getUTCMinutes()).padStart(2, "0");
+
+    return `${hours}:${minutes}`;
   };
 
   return (
@@ -41,259 +83,499 @@ export default function Pembayaran() {
           </p>
           <p>Pembayaran</p>
         </div>
-        <div>
-          <p className="text-center text-white p-2 bg-[#FF0000] rounded mt-3">
-            Selesaikan Pembayaran sampai 10 Mei 2024 12.00
-          </p>
-        </div>
       </div>
-      <div className="flex justify-center">
-        <div className="container px-3 lg:flex lg:gap-5 lg:my-5  ">
-          {/* Sisi Kiri  */}
-          <section className=" flex flex-col lg:w-2/3 gap-5 mt-5 shadow-md rounded p-4">
-            <p>
-              <strong>Isi Data Pembayaran</strong>
-            </p>
-            <div>
-              <Accordion className="mb-3">
-                <AccordionSummary
-                  expandIcon={<ArrowDropDownIcon />}
-                  aria-controls="panel2-content"
-                  id="panel2-header"
-                >
-                  <Typography>E-Wallet</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Typography>
-                    <div className="flex flex-col gap-3">
-                      <button className="flex flex-row gap-2 items-center p-2 rounded-xl w-full text-start border">
-                        <img
-                          src=".\src\assets\gopay.png"
-                          className="rounded-full w-[30px]"
-                        />
-                        <p>Gopay</p>
-                      </button>{" "}
-                      <button className="flex flex-row gap-2 items-center border p-2 rounded-xl w-full text-start">
-                        <img
-                          src=".\src\assets\shopee.png"
-                          className="rounded-full w-[30px]"
-                        />
-                        <p>ShopeePay / SPayLater</p>
-                      </button>{" "}
-                      <button className="flex flex-row gap-2 items-center border p-2 rounded-xl w-full text-start">
-                        <img
-                          src=".\src\assets\dana.png"
-                          className="rounded-full w-[30px]"
-                        />
-                        <p>DANA</p>
-                      </button>{" "}
-                      <button className="flex flex-row gap-2 items-center border p-2 rounded-xl w-full text-start">
-                        <img
-                          src=".\src\assets\ovo.jpg"
-                          className="rounded-full w-[30px]"
-                        />
-                        <p>OVO</p>
-                      </button>
+      <div className="flex justify-center ">
+        <div className="container lg:flex lg:gap-5 lg:my-5  ">
+          {/* Sisi Kanan */}
+          <section className="flex flex-col lg:w-[100%] gap-4 lg:hidden my-6">
+            {/* Detail Pemesanan  */}
+            <div className="rounded-xl shadow-md pb-4">
+              {" "}
+              {/* Route  */}
+              <p className="flex gap-5 text-xl  p-8">
+                <strong>
+                  {booking?.selectedDeparture?.flight?.arrival?.city}
+                </strong>
+                {tripType === "singletrip" ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="size-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="1em"
+                    height="1em"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M14.293 2.293a1 1 0 0 1 1.414 0l4 4a1 1 0 0 1 0 1.414l-4 4a1 1 0 0 1-1.414-1.414L16.586 8H5a1 1 0 0 1 0-2h11.586l-2.293-2.293a1 1 0 0 1 0-1.414m-4.586 10a1 1 0 0 1 0 1.414L7.414 16H19a1 1 0 1 1 0 2H7.414l2.293 2.293a1 1 0 0 1-1.414 1.414l-4-4a1 1 0 0 1 0-1.414l4-4a1 1 0 0 1 1.414 0"
+                    />
+                  </svg>
+                )}
+
+                <strong>
+                  {booking?.selectedDeparture?.flight?.departure?.city}
+                </strong>
+              </p>
+              <hr className="text-gray" />
+              {/* SingleTrip Pages */}
+              <div>
+                {/* Maskapai  */}
+                <div className="flex p-8">
+                  <div className="p-4 flex border w-1/2 lg:flex-col gap-2 rounded-l-md items-center justify-center">
+                    <img src={airplane?.logoUrl} className="w-[50px]" />
+                    <div className=" text-black ">
+                      <p className="text-lg text-center">
+                        <strong>{airplane?.name}</strong>
+                      </p>
+                      <p className="text-center">
+                        {booking?.selectedDeparture?.airplane?.seatClass?.type}
+                      </p>
                     </div>
-                  </Typography>
-                </AccordionDetails>
-              </Accordion>
-              <Accordion className="mb-3">
-                <AccordionSummary
-                  expandIcon={<ArrowDropDownIcon />}
-                  aria-controls="panel2-content"
-                  id="panel2-header"
-                >
-                  <Typography>Virtual Account</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Typography>
-                    <div className="flex flex-col gap-3">
-                      <button className="flex flex-row gap-2 items-center p-2 rounded-xl w-full text-start border">
-                        <img
-                          src=".\src\assets\briva.png"
-                          className="rounded-full w-[30px]"
-                        />
-                        <p>BRI</p>
-                      </button>{" "}
-                      <button className="flex flex-row gap-2 items-center border p-2 rounded-xl w-full text-start">
-                        <img
-                          src=".\src\assets\livin.png"
-                          className="rounded-full w-[30px]"
-                        />
-                        <p>MANDIRI</p>
-                      </button>{" "}
-                      <button className="flex flex-row gap-2 items-center border p-2 rounded-xl w-full text-start">
-                        <img
-                          src=".\src\assets\bca.png"
-                          className="rounded-full w-[30px]"
-                        />
-                        <p>BCA</p>
-                      </button>{" "}
-                      <button className="flex flex-row gap-2 items-center border p-2 rounded-xl w-full text-start">
-                        <img
-                          src=".\src\assets\bni.png"
-                          className="rounded-full w-[30px]"
-                        />
-                        <p>BNI</p>
-                      </button>
+                  </div>
+                  <div className="p-2  flex flex-col border w-1/2 gap-2 rounded-r-md justify-center items-center">
+                    <p className=" text-black px-4 py-2 bg-slate-200 rounded-lg">
+                      Pergi
+                    </p>
+                    <p className=" text-black">
+                      {formatDate(
+                        booking?.selectedDeparture?.flight?.arrival?.time
+                      )}
+                    </p>
+                  </div>
+                </div>
+                {/* Detail Route  */}
+                <div className="px-8 flex">
+                  <div className="px-4">
+                    <div className="flex gap-2 items-center">
+                      <div className="w-4 h-4 rounded-full bg-neutral"></div>
+                      <strong className="flex gap-2 ">
+                        <p>
+                          {formatTime(
+                            booking?.selectedDeparture?.flight?.arrival?.time
+                          )}
+                        </p>
+                        <p>-</p>
+                        <p className="text-[#00A8D0]">Keberangkatan</p>
+                      </strong>
                     </div>
-                  </Typography>
-                </AccordionDetails>
-              </Accordion>
-              <Accordion className="mb-3">
-                <AccordionSummary
-                  expandIcon={<ArrowDropDownIcon />}
-                  aria-controls="panel2-content"
-                  id="panel2-header"
-                >
-                  <Typography>Credit Card</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Typography>
-                    <div className="flex flex-col justify-center">
-                      <div className="flex gap-4 justify-center">
-                        <button
-                          className="relative"
-                          onClick={handleClickCreditCard}
-                        >
-                          <img
-                            src=".\src\assets\mastercard.png"
-                            className="w-[35px] mb-2"
-                          />
-                          {isUnderline && (
-                            <span className="absolute bottom-0 left-0 w-full h-[2px] bg-[#00A8D0]"></span>
+                    <div className="flex my-2">
+                      <div className="mx-[7px] h-auto w-[1px] bg-neutral"></div>
+                      <div className="py-2 ps-3 text-sm">
+                        <p>
+                          {formatDate(
+                            booking?.selectedDeparture?.flight?.arrival?.time
                           )}
-                        </button>
-                        <button
-                          className="relative"
-                          onClick={handleClickCreditCard}
-                        >
-                          <img
-                            src=".\src\assets\american.png"
-                            className="w-[35px] mb-2"
-                          />
-                          {isUnderline && (
-                            <span className="absolute bottom-0 left-0 w-full h-[2px] bg-[#00A8D0]"></span>
+                        </p>
+                        <p>
+                          {booking?.selectedDeparture?.flight?.arrival?.airport}
+                        </p>
+                        <p>
+                          (
+                          {
+                            booking?.selectedDeparture?.flight?.arrival
+                              ?.airportCode
+                          }
+                          )
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2 items-center">
+                      <div className="w-4 h-4 rounded-full bg-neutral"></div>
+                      <strong className="flex gap-2 ">
+                        <p>
+                          {formatTime(
+                            booking?.selectedDeparture?.flight?.departure?.time
                           )}
-                        </button>
-                        <button
-                          className="relative"
-                          onClick={handleClickCreditCard}
-                        >
-                          <img
-                            src=".\src\assets\visa.png"
-                            className="w-[35px] mb-2"
-                          />
-                          {isUnderline && (
-                            <span className="absolute bottom-0 left-0 w-full h-[2px] bg-[#00A8D0]"></span>
-                          )}
-                        </button>
-                        <button
-                          className="relative"
-                          onClick={handleClickCreditCard}
-                        >
-                          <img
-                            src=".\src\assets\paypal.png"
-                            className="w-[35px] mb-2"
-                          />
-                          {isUnderline && (
-                            <span className="absolute bottom-0 left-0 w-full h-[2px] bg-[#00A8D0]"></span>
-                          )}
-                        </button>
+                        </p>
+                        <p>-</p>
+                        <p className="text-[#00A8D0]">Kedatangan</p>
+                      </strong>
+                    </div>
+                    <div className="py-3 ps-7 text-sm">
+                      <p>
+                        {formatDate(
+                          booking?.selectedDeparture?.flight?.departure?.time
+                        )}
+                      </p>
+                      <p>
+                        {booking?.selectedDeparture?.flight?.departure?.airport}
+                      </p>
+                      <p>
+                        (
+                        {
+                          booking?.selectedDeparture?.flight?.departure
+                            ?.airportCode
+                        }
+                        )
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/* RoundTrip Pages */}
+              {tripType == "roundtrip" && (
+                <div>
+                  {/* Maskapai  */}
+                  <div className="flex p-8">
+                    <div className="p-4 flex border w-1/2 lg:flex-col gap-2 rounded-l-md items-center justify-center">
+                      <img src={airplane?.logoUrl} className="w-[50px]" />
+                      <div className=" text-black ">
+                        <p className="text-lg text-center">
+                          <strong>{airplane?.name}</strong>
+                        </p>
+                        <p className="text-center">
+                          {booking?.selectedReturn?.airplane?.seatClass?.type}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="p-2  flex flex-col border w-1/2 gap-2 rounded-r-md justify-center items-center">
+                      <p className=" text-black px-4 py-2 bg-slate-200 rounded-lg">
+                        Pulang
+                      </p>
+                      <p className=" text-black">
+                        {formatDate(
+                          booking?.selectedReturn?.flight?.arrival?.time
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  {/* Detail Route  */}
+                  <div className="px-8 flex">
+                    <div className="px-4">
+                      <div className="flex gap-2 items-center">
+                        <div className="w-4 h-4 rounded-full bg-neutral"></div>
+                        <strong className="flex gap-2 ">
+                          <p>
+                            {formatTime(
+                              booking?.selectedReturn?.flight?.arrival?.time
+                            )}
+                          </p>
+                          <p>-</p>
+                          <p className="text-[#00A8D0]">Keberangkatan</p>
+                        </strong>
+                      </div>
+                      <div className="flex my-2">
+                        <div className="mx-[7px] h-auto w-[1px] bg-neutral"></div>
+                        <div className="py-2 ps-3 text-sm">
+                          <p>
+                            {formatDate(
+                              booking?.selectedReturn?.flight?.arrival?.time
+                            )}
+                          </p>
+                          <p>
+                            {booking?.selectedReturn?.flight?.arrival?.airport}
+                          </p>
+                          <p>
+                            (
+                            {
+                              booking?.selectedReturn?.flight?.arrival
+                                ?.airportCode
+                            }
+                            )
+                          </p>
+                        </div>
                       </div>
 
-                      <div className="flex flex-col m-4">
-                        <label>Card Number</label>
-                        <input
-                          type="text"
-                          className="p-2 border my-2 border-x-0 border-t-0"
-                          placeholder="4480 0000 0000 0000"
-                        />
-                        <label>Card Holder Name</label>
-                        <input
-                          type="text"
-                          className="p-2 border my-2 border-x-0 border-t-0"
-                          placeholder="Your Name"
-                        />
-                        <div className="flex gap-4">
-                          <div className="flex flex-col w-1/2">
-                            <label>CVV</label>
-                            <input
-                              type="text"
-                              className="p-2 border my-2 border-x-0 border-t-0"
-                              placeholder="000"
-                            />
-                          </div>
-                          <div className="flex flex-col w-1/2">
-                            <label>Expiry Date</label>
-                            <input
-                              type="text"
-                              className="p-2 border my-2 border-x-0 border-t-0"
-                              placeholder="07/24"
-                            />
-                          </div>
-                        </div>
-                        <button
-                          className="bg-[#00A8D0] text-center mt-5 p-2 rounded-full text-white hover:bg-[#FFB423]"
-                          onClick={() => {
-                            navigate("/success");
-                          }}
-                        >
-                          Bayar
-                        </button>
+                      <div className="flex gap-2 items-center">
+                        <div className="w-4 h-4 rounded-full bg-neutral"></div>
+                        <strong className="flex gap-2 ">
+                          <p>
+                            {formatTime(
+                              booking?.selectedReturn?.flight?.departure?.time
+                            )}
+                          </p>
+                          <p>-</p>
+                          <p className="text-[#00A8D0]">Kedatangan</p>
+                        </strong>
+                      </div>
+                      <div className="py-3 ps-7 text-sm">
+                        <p>
+                          {formatDate(
+                            booking?.selectedReturn?.flight?.departure?.time
+                          )}
+                        </p>
+                        <p>
+                          {booking?.selectedReturn?.flight?.departure?.airport}
+                        </p>
+                        <p>
+                          (
+                          {
+                            booking?.selectedReturn?.flight?.departure
+                              ?.airportCode
+                          }
+                          )
+                        </p>
                       </div>
                     </div>
-                  </Typography>
-                </AccordionDetails>
-              </Accordion>
+                  </div>
+                </div>
+              )}
+            </div>
+          </section>
+          {/* Sisi Kiri  */}
+          <section className="lg:w-[1300px] rounded  space-y-5 my-6">
+            <div className="flex ">
+              <iframe
+                src={bookingDetail?.url_payment}
+                title="Midtrans Payment"
+                width="100%"
+                height="960px"
+                className="p-16 md:w-[700px] md:p-20 max-sm:p-2 shadow-md rounded-xl"
+              ></iframe>
             </div>
           </section>
           {/* Sisi Kanan */}
-          <section className="flex flex-col lg:w-1/3 gap-4 lg:mt-[38px] ">
+          <section className="flex flex-col lg:w-[100%] gap-4 max-sm:hidden max-lg:hidden my-6">
             {/* Detail Pemesanan  */}
-            <div className="rounded shadow-md my-3 sm:mt-12 lg:mt-[100px]">
+            <div className="rounded-xl shadow-md pb-4">
+              {" "}
               {/* Route  */}
-              <p className="px-8 pt-5">Order ID : 6723y2GHK</p>
-              <p className="flex gap-5 text-xl px-8 py-3">
-                <strong>Jakarta</strong>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="size-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3"
-                  />
-                </svg>
-                <strong>Sydney</strong>
+              <p className="flex gap-5 text-xl  p-8">
+                <strong>
+                  {booking?.selectedDeparture?.flight?.arrival?.city}
+                </strong>
+                {tripType === "singletrip" ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="size-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="1em"
+                    height="1em"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M14.293 2.293a1 1 0 0 1 1.414 0l4 4a1 1 0 0 1 0 1.414l-4 4a1 1 0 0 1-1.414-1.414L16.586 8H5a1 1 0 0 1 0-2h11.586l-2.293-2.293a1 1 0 0 1 0-1.414m-4.586 10a1 1 0 0 1 0 1.414L7.414 16H19a1 1 0 1 1 0 2H7.414l2.293 2.293a1 1 0 0 1-1.414 1.414l-4-4a1 1 0 0 1 0-1.414l4-4a1 1 0 0 1 1.414 0"
+                    />
+                  </svg>
+                )}
+
+                <strong>
+                  {booking?.selectedDeparture?.flight?.departure?.city}
+                </strong>
               </p>
               <hr className="text-gray" />
-              {/* Maskapai  */}
-              <div className="flex p-8">
-                <div className="p-4 flex border w-1/2 gap-2 rounded-l-md items-center">
-                  <img src=".\src\assets\logoflight.svg" alt="" />
-                  <p>Air Asia</p>
+              {/* SingleTrip Pages */}
+              <div>
+                {/* Maskapai  */}
+                <div className="flex p-8">
+                  <div className="p-4 flex border w-1/2 lg:flex-col gap-2 rounded-l-md items-center justify-center">
+                    <img src={airplane?.logoUrl} className="w-[50px]" />
+                    <div className=" text-black ">
+                      <p className="text-lg text-center">
+                        <strong>{airplane?.name}</strong>
+                      </p>
+                      <p className="text-center">
+                        {booking?.selectedDeparture?.airplane?.seatClass?.type}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="p-2  flex flex-col border w-1/2 gap-2 rounded-r-md justify-center items-center">
+                    <p className=" text-black px-4 py-2 bg-slate-200 rounded-lg">
+                      Pergi
+                    </p>
+                    <p className=" text-black">
+                      {formatDate(
+                        booking?.selectedDeparture?.flight?.arrival?.time
+                      )}
+                    </p>
+                  </div>
                 </div>
-                <div className="p-2 flex border w-1/2 gap-2 rounded-r-md justify-center items-center">
-                  <p>Kamis, 23 Mei 2024 </p>
+                {/* Detail Route  */}
+                <div className="px-8 flex">
+                  <div className="px-4">
+                    <div className="flex gap-2 items-center">
+                      <div className="w-4 h-4 rounded-full bg-neutral"></div>
+                      <strong className="flex gap-2 ">
+                        <p>
+                          {formatTime(
+                            booking?.selectedDeparture?.flight?.arrival?.time
+                          )}
+                        </p>
+                        <p>-</p>
+                        <p className="text-[#00A8D0]">Keberangkatan</p>
+                      </strong>
+                    </div>
+                    <div className="flex my-2">
+                      <div className="mx-[7px] h-auto w-[1px] bg-neutral"></div>
+                      <div className="py-2 ps-3 text-sm">
+                        <p>
+                          {formatDate(
+                            booking?.selectedDeparture?.flight?.arrival?.time
+                          )}
+                        </p>
+                        <p>
+                          {booking?.selectedDeparture?.flight?.arrival?.airport}
+                        </p>
+                        <p>
+                          (
+                          {
+                            booking?.selectedDeparture?.flight?.arrival
+                              ?.airportCode
+                          }
+                          )
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2 items-center">
+                      <div className="w-4 h-4 rounded-full bg-neutral"></div>
+                      <strong className="flex gap-2 ">
+                        <p>
+                          {formatTime(
+                            booking?.selectedDeparture?.flight?.departure?.time
+                          )}
+                        </p>
+                        <p>-</p>
+                        <p className="text-[#00A8D0]">Kedatangan</p>
+                      </strong>
+                    </div>
+                    <div className="py-3 ps-7 text-sm">
+                      <p>
+                        {formatDate(
+                          booking?.selectedDeparture?.flight?.departure?.time
+                        )}
+                      </p>
+                      <p>
+                        {booking?.selectedDeparture?.flight?.departure?.airport}
+                      </p>
+                      <p>
+                        (
+                        {
+                          booking?.selectedDeparture?.flight?.departure
+                            ?.airportCode
+                        }
+                        )
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
-              {/* Rincian Harga */}
-              <div className="px-8 py-4 text-sm">
-                <div className="flex justify-between">
-                  <p>Total Pembayaran</p>
-                  <p className="text-xl">
-                    {" "}
-                    <strong> IDR 300.000</strong>
-                  </p>
+              {/* RoundTrip Pages */}
+              {tripType == "roundtrip" && (
+                <div>
+                  {/* Maskapai  */}
+                  <div className="flex p-8">
+                    <div className="p-4 flex border w-1/2 lg:flex-col gap-2 rounded-l-md items-center justify-center">
+                      <img src={airplane?.logoUrl} className="w-[50px]" />
+                      <div className=" text-black ">
+                        <p className="text-lg text-center">
+                          <strong>{airplane?.name}</strong>
+                        </p>
+                        <p className="text-center">
+                          {booking?.selectedReturn?.airplane?.seatClass?.type}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="p-2  flex flex-col border w-1/2 gap-2 rounded-r-md justify-center items-center">
+                      <p className=" text-black px-4 py-2 bg-slate-200 rounded-lg">
+                        Pulang
+                      </p>
+                      <p className=" text-black">
+                        {formatDate(
+                          booking?.selectedReturn?.flight?.arrival?.time
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  {/* Detail Route  */}
+                  <div className="px-8 flex">
+                    <div className="px-4">
+                      <div className="flex gap-2 items-center">
+                        <div className="w-4 h-4 rounded-full bg-neutral"></div>
+                        <strong className="flex gap-2 ">
+                          <p>
+                            {formatTime(
+                              booking?.selectedReturn?.flight?.arrival?.time
+                            )}
+                          </p>
+                          <p>-</p>
+                          <p className="text-[#00A8D0]">Keberangkatan</p>
+                        </strong>
+                      </div>
+                      <div className="flex my-2">
+                        <div className="mx-[7px] h-auto w-[1px] bg-neutral"></div>
+                        <div className="py-2 ps-3 text-sm">
+                          <p>
+                            {formatDate(
+                              booking?.selectedReturn?.flight?.arrival?.time
+                            )}
+                          </p>
+                          <p>
+                            {booking?.selectedReturn?.flight?.arrival?.airport}
+                          </p>
+                          <p>
+                            (
+                            {
+                              booking?.selectedReturn?.flight?.arrival
+                                ?.airportCode
+                            }
+                            )
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2 items-center">
+                        <div className="w-4 h-4 rounded-full bg-neutral"></div>
+                        <strong className="flex gap-2 ">
+                          <p>
+                            {formatTime(
+                              booking?.selectedReturn?.flight?.departure?.time
+                            )}
+                          </p>
+                          <p>-</p>
+                          <p className="text-[#00A8D0]">Kedatangan</p>
+                        </strong>
+                      </div>
+                      <div className="py-3 ps-7 text-sm">
+                        <p>
+                          {formatDate(
+                            booking?.selectedReturn?.flight?.departure?.time
+                          )}
+                        </p>
+                        <p>
+                          {booking?.selectedReturn?.flight?.departure?.airport}
+                        </p>
+                        <p>
+                          (
+                          {
+                            booking?.selectedReturn?.flight?.departure
+                              ?.airportCode
+                          }
+                          )
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </section>
         </div>
