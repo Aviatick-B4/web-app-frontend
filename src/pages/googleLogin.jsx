@@ -11,7 +11,7 @@ function GoogleLogin({ buttonText }) {
   const dispatch = useDispatch();
 
   const handleOAuth = () => {
-    window.open(`https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/google`, "_self");
+    window.open(`https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/google`);
   };
 
   return (

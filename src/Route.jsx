@@ -21,7 +21,6 @@ import KonfirmasiTiket from "./pages/KonfirmasiTiket.jsx";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import NotFound from "./pages/NotFound.jsx";
 import NoAccessToken from "./components/NoAccessToken.jsx";
-import GoogleCallback from "./pages/googleCallback.jsx";
 
 function App() {
   return (
@@ -30,10 +29,6 @@ function App() {
         <GoogleOAuthProvider clientId="1056659934932-di3nci2kbsr0ouiqjp5fnn0v1asocgg7.apps.googleusercontent.com">
           <BrowserRouter>
             <Routes>
-              <Route
-                path="/auth/google/callback"
-                element={<GoogleCallback />}
-              />
               <Route path="/pemesanan" element={<Pemesanan />} />
               <Route path="/konfirmasi-tiket" element={<KonfirmasiTiket />} />
               <Route path="/pembayaran" element={<Pembayaran />} />
