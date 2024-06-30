@@ -13,12 +13,15 @@ export const getUserBookingHistory = () => async (dispatch, getState) => {
   const token = getState().auth.token;
 
   try {
-    const response = await axios.get(`${url}/bookings/booking-history`, {
-      headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await axios.get(
+      `${url}/bookings/booking-history`,
+      {
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     dispatch(setBookingHistory(response.data.data));
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -94,7 +97,6 @@ export const getHistoryByDate = () => async (dispatch, getState) => {
         },
       }
     );
-    console.log("dateee", response.data.data);
     dispatch(setHistoryByDate(response.data.data || []));
   } catch (error) {
     if (axios.isAxiosError(error)) {

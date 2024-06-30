@@ -31,11 +31,11 @@ export default function HasilPencarian() {
   const [priceRange, setPriceRange] = useState([0, Infinity]);
   const [isAllSelected, setIsAllSelected] = useState(true);
   const [changedFlightKeyword, setChangedFlightKeyword] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(location.state?.loading || false);
   const [selectedDeparture, setSelectedDeparture] = useState(null);
   const [selectedReturn, setSelectedReturn] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
-
+  
   const {
     departureResults = [],
     returnResults = [],
@@ -486,9 +486,7 @@ export default function HasilPencarian() {
                       onClick={() => openModal("date", "departure")}
                     >
                       {formatDateToDayMonthYear(
-                        changedFlightKeyword?.departureDate ||
-                          departureDate ||
-                          new Date().toISOString().split("T")[0]
+                        changedFlightKeyword?.departureDate || departureDate || new Date().toISOString().split("T")[0]
                       )}
                     </span>
                     {returnDate && (
@@ -499,9 +497,7 @@ export default function HasilPencarian() {
                           onClick={() => openModal("date", "return")}
                         >
                           {formatDateToDayMonthYear(
-                            changedFlightKeyword?.returnDate ||
-                              returnDate ||
-                              new Date().toISOString().split("T")[0]
+                            changedFlightKeyword?.returnDate || returnDate || new Date().toISOString().split("T")[0]
                           )}
                         </span>
                       </>
@@ -588,9 +584,7 @@ export default function HasilPencarian() {
                     onClick={() => openModal("date", "departure")}
                   >
                     {formatDateToDayMonthYear(
-                      changedFlightKeyword?.departureDate ||
-                        departureDate ||
-                        new Date().toISOString().split("T")[0]
+                      changedFlightKeyword?.departureDate || departureDate || new Date().toISOString().split("T")[0]
                     )}
                   </span>
                   {returnDate && (
@@ -601,9 +595,7 @@ export default function HasilPencarian() {
                         onClick={() => openModal("date", "return")}
                       >
                         {formatDateToDayMonthYear(
-                          changedFlightKeyword?.returnDate ||
-                            returnDate ||
-                            new Date().toISOString().split("T")[0]
+                          changedFlightKeyword?.returnDate || returnDate || new Date().toISOString().split("T")[0]
                         )}
                       </span>
                     </>
@@ -903,7 +895,7 @@ export default function HasilPencarian() {
       <BackToTopButton />
       <Footer />
     </div>
-  );
+    );
 }
 
 const SwapButton = ({ onClick }) => (

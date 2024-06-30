@@ -1,10 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-// import { GoogleLogin } from "@react-oauth/google";
-import { GoogleLogin as Google } from "@react-oauth/google";
-import { googleLogin } from "../redux/actions/authActions";
-import { useDispatch } from "react-redux";
 import { useGoogleLogin } from "@react-oauth/google";
+import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { setLogin } from "../redux/reducers/authReducers";
@@ -13,33 +10,8 @@ function GoogleLogin({ buttonText }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const handleOAuth = async () => {
-    window.open(
-      `https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/google`,
-      "_self"
-    );
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get("code");
-
-    if (code) {
-      try {
-        const response = await axios.get(
-          `https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/google/callback?code=${code}`
-        );
-        const user = response.data;
-
-        dispatch(setLogin(user));
-
-        navigate("/");
-        toast.success("Login successful!");
-      } catch (error) {
-        toast.error("Login failed!");
-        navigate("/masuk");
-      }
-    } else {
-      toast.error("No code found!");
-      navigate("/masuk");
-    }
+  const handleOAuth = () => {
+    window.open(`https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/google`, "_self");
   };
 
   return (

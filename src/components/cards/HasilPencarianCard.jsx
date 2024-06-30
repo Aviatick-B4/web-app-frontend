@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const HasilPencarianCard = ({
   flight,
@@ -8,10 +9,12 @@ const HasilPencarianCard = ({
   type,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const navigate = useNavigate();
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
   };
+
 
   const convertToTime = (dateString) => {
     const date = new Date(dateString);
@@ -50,7 +53,6 @@ const HasilPencarianCard = ({
   const discountPercentage = (price, afterDiscount) => {
     return ((price - afterDiscount) / price) * 100;
   };
-
   return (
     <>
       {/* Desktop Card */}
@@ -75,7 +77,6 @@ const HasilPencarianCard = ({
             </div>
           </div>
         )}
-
         <div className="flex gap-12 p-8 items-center">
           <div className="flex w-1/4">
             <img
@@ -284,9 +285,9 @@ const HasilPencarianCard = ({
               </div>
             </div>
             <button
-              //               onClick={() => {
-              //                 navigate("/pemesanan");
-              //               }}
+//               onClick={() => {
+//                 navigate("/pemesanan");
+//               }}
               onClick={handleClick}
               className="inline-block bg-primary hover:bg-darkprimary text-white text-xs px-6 py-2 rounded-full"
             >

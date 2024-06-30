@@ -41,7 +41,7 @@ export const login = (data, navigate, setMessage, setLoading) => async (dispatch
   } catch (error) {
     setLoading(false);
     if (axios.isAxiosError(error)) {
-      setMessage(error.response.data.message);
+      throw(error.response.data.message);
       return;
     }
     setMessage(error.message);
@@ -49,17 +49,16 @@ export const login = (data, navigate, setMessage, setLoading) => async (dispatch
 };
 
 export const register =
-  (data, navigate, setMessage, setLoading) => async (dispatch, getState) => {
+  (data, navigate, setMessage) => async (dispatch, getState) => {
     console.log("data", data);
     const { fullName, email, phoneNumber, password } = data;
     console.log("email", email);
-    setLoading(true);
     try {
       const response = await axios.post(
         "https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/register",
         data
       );
-
+      
       if (response.status === 200) {
         setLoading(false);
         toast.success("Berhasil mendaftar akun.");

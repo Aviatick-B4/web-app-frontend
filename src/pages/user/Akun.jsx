@@ -45,7 +45,7 @@ export default function Akun() {
       toast.error("Ups.. tidak dapat mengakses halaman, silakan masuk terlebih dahulu.");
     } else {
       setFullName(user.fullName);
-      setFamilyName(user.familyName);
+      setFamilyName(user.familyName)
       setPhoneNumber(user.phoneNumber);
       setEmail(user.email);
       setIdentityType(user.identityType);

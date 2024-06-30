@@ -3,6 +3,7 @@ import Beranda from "./pages/Beranda.jsx";
 import Pemesanan from "./pages/Pemesanan.jsx";
 import Pembayaran from "./pages/user/Pembayaran.jsx";
 import PaymentSuccess from "./pages/PaymentSuccess.jsx";
+import Error from "./pages/errorPage.jsx";
 import HasilPencarian from "./pages/HasilPencarian.jsx";
 import RiwayatPemesanan from "./pages/user/RiwayatPemesanan.jsx";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
@@ -37,7 +38,7 @@ function App() {
               <Route path="/konfirmasi-tiket" element={<KonfirmasiTiket />} />
               <Route path="/pembayaran" element={<Pembayaran />} />
               <Route path="/success" element={<PaymentSuccess />} />
-              {/* <Route path="/error" element={<Error />} /> */}
+              <Route path="/error" element={<Error />} />
               <Route path="/" element={<Beranda />} />
               <Route path="/daftar" element={<Register />} />
               <Route path="/masuk" element={<Login />} />
