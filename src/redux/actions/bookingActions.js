@@ -27,7 +27,6 @@ export const getPrepareTicket =
   (formData, tripType, navigate, setIsLoading, setShowConfirmModal) =>
   async (dispatch, getState) => {
     setIsLoading(true);
-    console.log("formData", formData);
     const token = getState().auth.token;
     try {
       const response = await axios.post(
@@ -42,7 +41,6 @@ export const getPrepareTicket =
       );
       setIsLoading(false);
       setShowConfirmModal(true);
-      console.log("Response Prepare Tiket:", response.data);
       dispatch(setPrepareBooking(response.data));
     } catch (error) {
       setIsLoading(false);
@@ -97,9 +95,7 @@ export const getBookingTicketCompleted =
         }
       );
       setIsLoading(false);
-      console.log("Response Booking Tiket:", response.data);
       const bookingId = response.data.data.booking.id;
-      console.log("bookingId", bookingId);
       await dispatch(
         getBookingHistoryDetail(bookingId, setIsLoading, setDetailLoading)
       );

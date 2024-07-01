@@ -113,8 +113,6 @@ function Pemesanan() {
     passenger: [],
   });
 
-  console.log("formData", formData);
-
   //isian untuk Form Penumpang
   const penumpangFields = () => [
     {
@@ -297,10 +295,6 @@ function Pemesanan() {
           : booking?.selectedDeparture?.price + booking?.selectedReturn?.price
       );
   }, [booking, tripType]);
-
-  console.log("totalHarga", totalHarga);
-
-  console.log("booking", booking);
 
   //Perhitungan Total Pajak
   const totalPajak = (price) => {

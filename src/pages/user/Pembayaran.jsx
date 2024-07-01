@@ -31,10 +31,6 @@ export default function Pembayaran() {
     }
   }, [token, navigate]);
 
-  console.log("booking", booking);
-  console.log("payment", payment);
-  console.log("bookingDetail", bookingDetail);
-
   useEffect(() => {
     if (booking?.selectedReturn !== null) return settripType("roundtrip");
     if (booking?.selectedReturn === null) return settripType("singletrip");
