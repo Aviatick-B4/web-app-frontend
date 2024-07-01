@@ -4,7 +4,7 @@ const initialState = {
   bookings: [],
   flight: null,
   countries: null,
-  passengers: {
+  passenger: {
     adults: 1,
     children: 0,
     infants: 0,
@@ -23,7 +23,7 @@ const bookingSlicer = createSlice({
       state.flight = action.payload;
     },
     setPassenger: (state, action) => {
-      state.passengers = action.payload;
+      state.passenger = action.payload;
     },
     setCountries: (state, action) => {
       state.countries = action.payload;
