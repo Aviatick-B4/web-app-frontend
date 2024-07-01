@@ -520,7 +520,7 @@ function Pemesanan() {
                     wrapperClass=""
                   />
                 ) : (
-                  "Ya, saya yakin Completed"
+                  "Ya, saya yakin"
                 )}
               </button>
             </div>

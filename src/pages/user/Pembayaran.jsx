@@ -331,7 +331,7 @@ export default function Pembayaran() {
                 src={bookingDetail?.url_payment}
                 title="Midtrans Payment"
                 width="100%"
-                height="960px"
+                height="1000px"
                 className="p-16 md:w-[700px] md:p-20 max-sm:p-2 shadow-md rounded-xl"
               ></iframe>
             </div>
