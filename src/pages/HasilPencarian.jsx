@@ -413,6 +413,7 @@ export default function HasilPencarian() {
       passengers: departureResults.length > 0 ? passengers : (promoResult || favDestinationResults.length > 0 ? passengerFromModal : passengers)
     };
     dispatch(setBooking(data));
+    localStorage.setItem("booking", JSON.stringify(data));
     navigate("/konfirmasi-tiket");
   };
 

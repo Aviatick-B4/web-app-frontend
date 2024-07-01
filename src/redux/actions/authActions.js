@@ -15,7 +15,8 @@ import { cleanDigitSectionValue } from "@mui/x-date-pickers/internals/hooks/useF
 const url = import.meta.env.VITE_BASE_URL;
 
 export const login =
-  (data, navigate, setMessage, setLoading) => async (dispatch) => {
+  (data, navigate, setMessage, setLoading) => async (dispatch, getState) => {
+    const booking = JSON.parse(localStorage.getItem("booking"));
     setLoading(true);
     try {
       const response = await axios.post(`${url}/auth/login`, data, {
@@ -35,9 +36,13 @@ export const login =
         dispatch(setIsLoggedIn(true));
         dispatch(setLogin("login"));
         dispatch(setUser(response.data.data.user));
-        setTimeout(() => {
-          navigate("/");
-        }, 1500);
+        if(booking){
+          navigate("/konfirmasi-tiket")
+        } else {
+          setTimeout(() => {
+            navigate("/");
+          }, 1500);
+        }
       }
     } catch (error) {
       setLoading(false);

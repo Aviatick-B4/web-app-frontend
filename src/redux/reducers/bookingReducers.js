@@ -23,7 +23,7 @@ const bookingSlicer = createSlice({
       state.flight = action.payload;
     },
     setPassenger: (state, action) => {
-      state.passenger = action.payload;
+      state.passengers = action.payload;
     },
     setCountries: (state, action) => {
       state.countries = action.payload;
