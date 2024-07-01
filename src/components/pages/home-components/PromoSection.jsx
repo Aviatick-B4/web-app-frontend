@@ -10,12 +10,22 @@ import { setDepartureResults, setFavDestinationResults, setTripTypeSaved } from 
 import { ThreeDots } from "react-loader-spinner";
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
+import UnifiedModal from "../../modals/Modal";
+import { setPassenger } from "../../../redux/reducers/bookingReducers";
 
 const PromoSection = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [promoLoading, setPromoLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState(null);
+  const [modalData, setModalData] = useState(null);
+   const [passengers, setPassengers] = useState({
+    adults: 1,
+    children: 0,
+    infants: 0,
+  });
   const promos = useSelector((state) => state?.promo.promos);
 
   useEffect(() => {
@@ -51,8 +61,8 @@ const PromoSection = () => {
     });
   };
 
-  const handlePromoClick = (ticketId) => {
-    dispatch(getPromoById(ticketId, navigate, setLoading));
+  const handlePromoClick = (promo) => {
+    openModal("passenger", promo);
     dispatch(setDepartureResults([]));
     dispatch(setFavDestinationResults([]));
   };
@@ -153,6 +163,23 @@ const PromoSection = () => {
     ],
   };
 
+  const handleSave = (data, endDate) => {
+    if (modalType === "passenger") {
+      setPassengers(data);
+      dispatch(setPassenger(data));
+      dispatch(getPromoById(modalData.id, navigate, setLoading));
+    }
+    setIsModalOpen(false);
+  };
+
+  const openModal = (type, data) => {
+    setModalType(type);
+    if (type === "passenger") {
+      setModalData(data);
+    }
+    setIsModalOpen(true);
+  };
+
   return (
     <section id="promo-section">
       {loading && (
@@ -222,7 +249,7 @@ const PromoSection = () => {
                   <div
                     key={id}
                     className="px-2 py-1"
-                    onClick={() => handlePromoClick(promo.id)}
+                    onClick={() => handlePromoClick(promo)}
                   >
                     <div className="relative w-full bg-white rounded-lg shadow-md h-full bg-transparent overflow-visible text-main hover:shadow-lg cursor-pointer">
                       <div className="relative">
@@ -293,6 +320,14 @@ const PromoSection = () => {
           </div>
         </>
       )}
+
+      <UnifiedModal
+        isOpen={isModalOpen}
+        onRequestClose={() => setIsModalOpen(false)}
+        type={modalType}
+        onSave={handleSave}
+        initialData={modalData}
+      />
     </section>
   );
 };

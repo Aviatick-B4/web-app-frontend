@@ -4,7 +4,11 @@ const initialState = {
   bookings: [],
   flight: null,
   countries: null,
-  passenger: [],
+  passengers: {
+    adults: 1,
+    children: 0,
+    infants: 0,
+  },
   detailBooking: null,
   payment: null,
   midtrans: null,

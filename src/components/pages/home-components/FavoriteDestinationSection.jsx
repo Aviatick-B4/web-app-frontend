@@ -14,6 +14,8 @@ import { setDepartureResults, setPromoResult } from "../../../redux/reducers/sea
 import { ThreeDots } from "react-loader-spinner";
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
+import UnifiedModal from "../../modals/Modal";
+import { setPassenger } from "../../../redux/reducers/bookingReducers";
 
 const FavoriteDestinationSection = () => {
   const dispatch = useDispatch();
@@ -21,6 +23,14 @@ const FavoriteDestinationSection = () => {
   const [loading, setLoading] = useState(false);
   const [destinationLoading, setDestinationLoading] = useState(false);
   const [selectedButton, setSelectedButton] = useState("Semua");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState(null);
+  const [modalData, setModalData] = useState(null);
+   const [passengers, setPassengers] = useState({
+    adults: 1,
+    children: 0,
+    infants: 0,
+  });
   const favDestination = useSelector(
     (state) => state?.favDestination.favDestinations
   );
@@ -74,9 +84,26 @@ const FavoriteDestinationSection = () => {
   };
 
   const handleDestinationClick = (ticketId) => {
-    dispatch(getFavDestinationById(ticketId, navigate, setLoading));
+    openModal("passenger", ticketId);
     dispatch(setDepartureResults([]));
     dispatch(setPromoResult([]));
+  };
+
+  const handleSave = (data, endDate) => {
+    if (modalType === "passenger") {
+      setPassengers(data);
+      dispatch(setPassenger(data));
+      dispatch(getFavDestinationById(modalData.ticketId, navigate, setLoading));
+    }
+    setIsModalOpen(false);
+  };
+
+  const openModal = (type, data) => {
+    setModalType(type);
+    if (type === "passenger") {
+      setModalData(data);
+    }
+    setIsModalOpen(true);
   };
 
   function NextArrow(props) {
@@ -259,13 +286,13 @@ const FavoriteDestinationSection = () => {
       ) : (
         <>
           <div className="mt-4 md:mt-10">
-            {favDestination.length > 0 && (
+            {favDestination.length > 0 ? (
               <Slider {...settings}>
                 {favDestination.map((fav, id) => (
                   <div
                     key={id}
                     className="px-2 py-1"
-                    onClick={() => handleDestinationClick(fav.ticketId)}
+                    onClick={() => handleDestinationClick(fav)}
                   >
                     <div className="relative w-full bg-white rounded-lg shadow-md h-full bg-transparent overflow-visible text-main hover:shadow-lg cursor-pointer">
                   {/* Image and span container */}
@@ -306,10 +333,26 @@ const FavoriteDestinationSection = () => {
                   </div>
                 ))}
               </Slider>
+            ) : (
+              <div className="flex flex-col items-center justify-center text-center font-medium text-sm mt-16 text-main">
+                <img
+                  src="/animations/notfound.gif"
+                  alt="Not found"
+                  className="w-[99px]"
+                />
+                <p className="text-main">Maaf, destinasi favorit tidak ditemukan</p>
+              </div>
             )}
           </div>
         </>
       )}
+      <UnifiedModal
+        isOpen={isModalOpen}
+        onRequestClose={() => setIsModalOpen(false)}
+        type={modalType}
+        onSave={handleSave}
+        initialData={modalData}
+      />
     </section>
   );
 };
