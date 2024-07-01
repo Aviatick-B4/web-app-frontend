@@ -117,7 +117,7 @@ const TicketContent = React.forwardRef(
           <div className="flex items-start mt-2">
             <div>
               <img
-                src="src/assets/logo-blue-1.png"
+                src="/logo-blue.png"
                 className="w-16 mb-12 fill-slate-800"
               />
               <h1 className="text-2xl font-bold">Flight E-ticket</h1>

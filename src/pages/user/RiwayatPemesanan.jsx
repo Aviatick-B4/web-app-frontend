@@ -32,6 +32,7 @@ export default function RiwayatPemesanan() {
   const [selectedFlight, setSelectedFlight] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [firstLoading, setFirstLoading] = useState(true);
   const [detailLoading, setDetailLoading] = useState(true);
   const token = useSelector((state) => state.auth.token);
 
@@ -56,12 +57,12 @@ export default function RiwayatPemesanan() {
   useEffect(() => {
     if (token) {
       const fetchData = async () => {
-        setLoading(true);
+        setFirstLoading(true);
         await dispatch(setBookingHistoryDetail([]));
         await dispatch(getUserBookingHistory());
         await dispatch(getHistoryByDate(selectedDate));
         await dispatch(getHistorySearchResults());
-        setLoading(false);
+        setFirstLoading(false);
       };
 
       fetchData();
@@ -90,6 +91,7 @@ export default function RiwayatPemesanan() {
   const handleCardClick = (flight) => {
     setSelectedFlight(selectedFlight === flight ? null : flight);
     dispatch(getBookingHistoryDetail(flight.id, setLoading, setDetailLoading));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const filteredFlightData =
@@ -608,7 +610,7 @@ export default function RiwayatPemesanan() {
               </div>
             )}
 
-            {loading ? (
+            {firstLoading ? (
               <div className="flex flex-col !w-full items-center justify-center text-center font-medium text-sm mt-16">
                 <img
                   src="/animations/loading.gif"

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useFilterButton } from "./FilterButtonContext";
 
 const FilterButton = ({
   label,
@@ -8,40 +9,50 @@ const FilterButton = ({
   selectedOption,
   notif,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const { openButton, setOpenButton } = useFilterButton();
+  const isOpen = openButton === label;
   const [isClosing, setIsClosing] = useState(false);
   const ref = useRef(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (ref.current && !ref.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [ref]);
 
   const closeModal = () => {
     setIsClosing(true);
     setTimeout(() => {
-      setIsOpen(false);
+      setOpenButton(null);
       setIsClosing(false);
     }, 300);
   };
 
   const handleOptionClick = (option) => {
     onOptionSelect(option);
+    setOpenButton(null);
+    setIsClosing(false);
   };
+
+  const handleButtonClick = () => {
+    setOpenButton(label);
+  };
+
+  const handleClickOutside = (event) => {
+    if (ref.current && !ref.current.contains(event.target)) {
+      closeModal();
+    }
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
 
   return (
     <>
       {/* Desktop Filter */}
-      <div className="hidden md:inline-block relative text-left">
+      <div ref={ref} className="hidden md:inline-block relative text-left">
         <div>
           <button
             type="button"
@@ -51,7 +62,7 @@ const FilterButton = ({
             id="options-menu"
             aria-haspopup="true"
             aria-expanded="true"
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={handleButtonClick}
           >
             {iconSrc && <img src={iconSrc} alt="icon" className="mr-2" />}
             {label}
@@ -82,9 +93,9 @@ const FilterButton = ({
                 <label key={index} className="flex items-center px-4 py-2 text-sm text-main hover:bg-primary/20">
                   <input
                     type="checkbox"
-                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                     checked={selectedOption.includes(option)}
-                    onChange={() => handleOptionClick(option)}
+                    onChange={(event) => handleOptionClick(option)}
                   />
                   <span className="ml-2">{option}</span>
                 </label>
@@ -95,13 +106,13 @@ const FilterButton = ({
       </div>
 
       {/* Mobile Filter */}
-      <div className="md:hidden relative inline-block text-left">
+      <div ref={ref} className="md:hidden relative inline-block text-left">
         <div>
           <button
             className={`text-primary text-xs font-medium ${
               notif ? "border border-primary rounded-full px-4 py-1" : ""
             }`}
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={handleButtonClick}
           >
             <div className="flex flex-col items-center gap-1">
               {iconSrc && <img src={iconSrc} alt="icon" />}
@@ -124,7 +135,7 @@ const FilterButton = ({
                   <label key={index} className="flex items-center px-4 py-2 text-sm text-main hover:bg-primary/20">
                     <input
                       type="checkbox"
-                      class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                       checked={selectedOption.includes(option)}
                       onChange={() => handleOptionClick(option)}
                     />

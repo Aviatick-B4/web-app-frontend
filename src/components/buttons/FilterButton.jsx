@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useFilterButton } from "./FilterButtonContext";
 
 const FilterButton = ({
   label,
@@ -8,41 +9,54 @@ const FilterButton = ({
   selectedOption,
   notif,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const { openButton, setOpenButton } = useFilterButton();
+  const isOpen = openButton === label;
   const [isClosing, setIsClosing] = useState(false);
   const ref = useRef(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (ref.current && !ref.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [ref]);
 
   const closeModal = () => {
     setIsClosing(true);
     setTimeout(() => {
-      setIsOpen(false);
+      setOpenButton(null);
       setIsClosing(false);
     }, 300);
   };
 
-  const handleOptionClick = (option) => {
+  const handleOptionClick = (event, option) => {
+    event.stopPropagation();
     onOptionSelect(option);
-    closeModal();
+    setOpenButton(label);
   };
+
+  const handleButtonClick = () => {
+    if (isOpen) {
+      setOpenButton(null);
+    } else {
+      setOpenButton(label);
+    }
+  };
+
+  const handleClickOutside = (event) => {
+    if (ref.current && !ref.current.contains(event.target)) {
+      closeModal();
+    }
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
 
   return (
     <>
       {/* Desktop Filter */}
-      <div className="hidden md:inline-block relative text-left">
+      <div className="hidden md:inline-block relative text-left" ref={ref}>
         <div>
           <button
             type="button"
@@ -52,7 +66,7 @@ const FilterButton = ({
             id="options-menu"
             aria-haspopup="true"
             aria-expanded="true"
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={handleButtonClick}
           >
             {iconSrc && <img src={iconSrc} alt="icon" className="mr-2" />}
             {selectedOption || label}
@@ -83,7 +97,7 @@ const FilterButton = ({
                 <a
                   href="#"
                   key={index}
-                  onClick={() => handleOptionClick(option)}
+                  onClick={(event) => handleOptionClick(event, option)}
                   className="block px-4 py-2 font-medium text-sm text-main hover:bg-primary/20"
                   role="menuitem"
                 >
@@ -96,7 +110,7 @@ const FilterButton = ({
       </div>
 
       {/* Mobile Filter */}
-      <div className="md:hidden relative inline-block text-left">
+      <div className="md:hidden relative inline-block text-left" ref={ref}>
         <div>
           <button
             className={`text-primary text-xs font-medium ${
@@ -104,7 +118,7 @@ const FilterButton = ({
                 ? "border border-primary rounded-full px-4 py-1"
                 : ""
             }`}
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={handleButtonClick}
           >
             <div className="flex flex-col items-center gap-1">
               {iconSrc && <img src={iconSrc} alt="icon" />}
@@ -127,7 +141,7 @@ const FilterButton = ({
                   <a
                     href="#"
                     key={index}
-                    onClick={() => handleOptionClick(option)}
+                    onClick={(event) => handleOptionClick(event, option)}
                     className="block px-4 py-2 font-medium text-sm text-main hover:bg-primary/20"
                     role="menuitem"
                   >

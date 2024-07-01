@@ -21,68 +21,71 @@ import KonfirmasiTiket from "./pages/KonfirmasiTiket.jsx";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import NotFound from "./pages/NotFound.jsx";
 import NoAccessToken from "./components/NoAccessToken.jsx";
+import { FilterButtonProvider } from "./components/buttons/FilterButtonContext.jsx";
 
 function App() {
   return (
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <GoogleOAuthProvider clientId="1056659934932-di3nci2kbsr0ouiqjp5fnn0v1asocgg7.apps.googleusercontent.com">
-          <BrowserRouter>
-            <Routes>
-              <Route path="/pemesanan" element={<Pemesanan />} />
-              <Route path="/konfirmasi-tiket" element={<KonfirmasiTiket />} />
-              <Route path="/pembayaran" element={<Pembayaran />} />
-              <Route path="/success" element={<PaymentSuccess />} />
-              <Route path="/error" element={<Error />} />
-              <Route path="/" element={<Beranda />} />
-              <Route path="/daftar" element={<Register />} />
-              <Route path="/masuk" element={<Login />} />
-              <Route
-                path="/akun-saya"
-                element={
-                  <div>
-                    <Akun />
-                    <NoAccessToken />
-                  </div>
-                }
-              />
-              <Route
-                path="/notifikasi"
-                element={
-                  <div>
-                    <Notifikasi />
-                    <NoAccessToken />
-                  </div>
-                }
-              />
-              <Route path="/lupa-password" element={<ForgotPassword />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/verifikasi-email" element={<EmailVerification />} />
-              <Route path="/hasil-pencarian" element={<HasilPencarian />} />
-              <Route path="*" element={<NotFound />} />
-              <Route
-                path="/hasil-pencarian/promo/:promoId"
-                element={<HasilPencarian />}
-              />
-              <Route
-                path="/hasil-pencarian/destinasi"
-                element={<HasilPencarian />}
-              />
-              <Route
-                path="/riwayat-pemesanan"
-                element={
-                  <div>
-                    <RiwayatPemesanan />
-                    <NoAccessToken />
-                  </div>
-                }
-              />
-            </Routes>
-            <ToastContainer />
-          </BrowserRouter>
-        </GoogleOAuthProvider>
-      </PersistGate>
-    </Provider>
+    <FilterButtonProvider>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <GoogleOAuthProvider clientId="1056659934932-di3nci2kbsr0ouiqjp5fnn0v1asocgg7.apps.googleusercontent.com">
+            <BrowserRouter>
+              <Routes>
+                <Route path="/pemesanan" element={<Pemesanan />} />
+                <Route path="/konfirmasi-tiket" element={<KonfirmasiTiket />} />
+                <Route path="/pembayaran" element={<Pembayaran />} />
+                <Route path="/success" element={<PaymentSuccess />} />
+                <Route path="/error" element={<Error />} />
+                <Route path="/" element={<Beranda />} />
+                <Route path="/daftar" element={<Register />} />
+                <Route path="/masuk" element={<Login />} />
+                <Route
+                  path="/akun-saya"
+                  element={
+                    <div>
+                      <Akun />
+                      <NoAccessToken />
+                    </div>
+                  }
+                />
+                <Route
+                  path="/notifikasi"
+                  element={
+                    <div>
+                      <Notifikasi />
+                      <NoAccessToken />
+                    </div>
+                  }
+                />
+                <Route path="/lupa-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/verifikasi-email" element={<EmailVerification />} />
+                <Route path="/hasil-pencarian" element={<HasilPencarian />} />
+                <Route path="*" element={<NotFound />} />
+                <Route
+                  path="/hasil-pencarian/promo/:promoId"
+                  element={<HasilPencarian />}
+                />
+                <Route
+                  path="/hasil-pencarian/destinasi"
+                  element={<HasilPencarian />}
+                />
+                <Route
+                  path="/riwayat-pemesanan"
+                  element={
+                    <div>
+                      <RiwayatPemesanan />
+                      <NoAccessToken />
+                    </div>
+                  }
+                />
+              </Routes>
+              <ToastContainer />
+            </BrowserRouter>
+          </GoogleOAuthProvider>
+        </PersistGate>
+      </Provider>
+    </FilterButtonProvider>
   );
 }
 

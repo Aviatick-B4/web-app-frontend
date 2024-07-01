@@ -8,16 +8,14 @@ export const getNotifications = () => async (dispatch, getState) => {
   const token = getState().auth.token;
 
   try {
-    const response = await axios.get(
-      `${url}/notifications?limit=100`,
-      {
-        headers: {
-          accept: "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await axios.get(`${url}/notifications?limit=500`, {
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
+    console.log("notif", response.data.data);
     const sortedData = response.data.data.sort((a, b) => b.id - a.id);
     dispatch(setNotifications(sortedData));
   } catch (error) {
@@ -35,7 +33,7 @@ export const getNotifByFilter = (filterType) => async (dispatch, getState) => {
 
   try {
     const response = await axios.get(
-      `${url}/notifications?limit=100&type=${type}`,
+      `${url}/notifications?limit=500&type=${type}`,
       {
         headers: {
           accept: "application/json",
