@@ -1,12 +1,14 @@
-import { useAsyncError } from "react-router-dom";
+import { useAsyncError, useNavigate } from "react-router-dom";
 import Footer from "../../components/navigations/Footer";
 import Navbar from "../../components/navigations/Navbar";
 import * as React from "react";
 import { useSelector } from "react-redux";
 import { useState } from "react";
 import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 export default function Pembayaran() {
+  const navigate = useNavigate();
   const [tripType, settripType] = useState("");
   const booking = useSelector((state) => state?.bookingFlight?.bookings);
   const airplane = useSelector(
@@ -18,6 +20,16 @@ export default function Pembayaran() {
   const bookingDetail = useSelector(
     (state) => state?.history?.bookingHistoryDetail
   );
+  const token = useSelector((state) => state.auth.token);
+  
+  useEffect(() => {
+    if (!token) {
+      navigate("/masuk");
+      toast.error(
+        "Ups.. tidak dapat mengakses halaman, silakan masuk terlebih dahulu."
+      );
+    }
+  }, [token, navigate]);
 
   useEffect(() => {
     if (booking?.selectedReturn !== null) return settripType("roundtrip");
@@ -86,9 +98,9 @@ export default function Pembayaran() {
             <div className="rounded-xl shadow-md pb-4">
               {" "}
               {/* Route  */}
-              <p className="flex gap-5 text-xl  p-8">
+              <p className="flex gap-5 items-center text-xl  p-8">
                 <strong>
-                  {booking?.selectedDeparture?.flight?.arrival?.city}
+                  {booking?.selectedDeparture?.flight?.departure?.city}
                 </strong>
                 {tripType === "singletrip" ? (
                   <svg
@@ -120,7 +132,7 @@ export default function Pembayaran() {
                 )}
 
                 <strong>
-                  {booking?.selectedDeparture?.flight?.departure?.city}
+                  {booking?.selectedDeparture?.flight?.arrival?.city}
                 </strong>
               </p>
               <hr className="text-gray" />
@@ -145,7 +157,7 @@ export default function Pembayaran() {
                     </p>
                     <p className=" text-black">
                       {formatDate(
-                        booking?.selectedDeparture?.flight?.arrival?.time
+                        booking?.selectedDeparture?.flight?.departure?.time
                       )}
                     </p>
                   </div>
@@ -158,7 +170,7 @@ export default function Pembayaran() {
                       <strong className="flex gap-2 ">
                         <p>
                           {formatTime(
-                            booking?.selectedDeparture?.flight?.arrival?.time
+                            booking?.selectedDeparture?.flight?.departure?.time
                           )}
                         </p>
                         <p>-</p>
@@ -170,16 +182,19 @@ export default function Pembayaran() {
                       <div className="py-2 ps-3 text-sm">
                         <p>
                           {formatDate(
-                            booking?.selectedDeparture?.flight?.arrival?.time
+                            booking?.selectedDeparture?.flight?.departure?.time
                           )}
                         </p>
                         <p>
-                          {booking?.selectedDeparture?.flight?.arrival?.airport}
+                          {
+                            booking?.selectedDeparture?.flight?.departure
+                              ?.airport
+                          }
                         </p>
                         <p>
                           (
                           {
-                            booking?.selectedDeparture?.flight?.arrival
+                            booking?.selectedDeparture?.flight?.departure
                               ?.airportCode
                           }
                           )
@@ -192,7 +207,7 @@ export default function Pembayaran() {
                       <strong className="flex gap-2 ">
                         <p>
                           {formatTime(
-                            booking?.selectedDeparture?.flight?.departure?.time
+                            booking?.selectedDeparture?.flight?.arrival?.time
                           )}
                         </p>
                         <p>-</p>
@@ -202,16 +217,16 @@ export default function Pembayaran() {
                     <div className="py-3 ps-7 text-sm">
                       <p>
                         {formatDate(
-                          booking?.selectedDeparture?.flight?.departure?.time
+                          booking?.selectedDeparture?.flight?.arrival?.time
                         )}
                       </p>
                       <p>
-                        {booking?.selectedDeparture?.flight?.departure?.airport}
+                        {booking?.selectedDeparture?.flight?.arrival?.airport}
                       </p>
                       <p>
                         (
                         {
-                          booking?.selectedDeparture?.flight?.departure
+                          booking?.selectedDeparture?.flight?.arrival
                             ?.airportCode
                         }
                         )
@@ -242,7 +257,7 @@ export default function Pembayaran() {
                       </p>
                       <p className=" text-black">
                         {formatDate(
-                          booking?.selectedReturn?.flight?.arrival?.time
+                          booking?.selectedReturn?.flight?.departure?.time
                         )}
                       </p>
                     </div>
@@ -255,7 +270,7 @@ export default function Pembayaran() {
                         <strong className="flex gap-2 ">
                           <p>
                             {formatTime(
-                              booking?.selectedReturn?.flight?.arrival?.time
+                              booking?.selectedReturn?.flight?.departure?.time
                             )}
                           </p>
                           <p>-</p>
@@ -267,16 +282,19 @@ export default function Pembayaran() {
                         <div className="py-2 ps-3 text-sm">
                           <p>
                             {formatDate(
-                              booking?.selectedReturn?.flight?.arrival?.time
+                              booking?.selectedReturn?.flight?.departure?.time
                             )}
                           </p>
                           <p>
-                            {booking?.selectedReturn?.flight?.arrival?.airport}
+                            {
+                              booking?.selectedReturn?.flight?.departure
+                                ?.airport
+                            }
                           </p>
                           <p>
                             (
                             {
-                              booking?.selectedReturn?.flight?.arrival
+                              booking?.selectedReturn?.flight?.departure
                                 ?.airportCode
                             }
                             )
@@ -289,7 +307,7 @@ export default function Pembayaran() {
                         <strong className="flex gap-2 ">
                           <p>
                             {formatTime(
-                              booking?.selectedReturn?.flight?.departure?.time
+                              booking?.selectedReturn?.flight?.arrival?.time
                             )}
                           </p>
                           <p>-</p>
@@ -299,16 +317,16 @@ export default function Pembayaran() {
                       <div className="py-3 ps-7 text-sm">
                         <p>
                           {formatDate(
-                            booking?.selectedReturn?.flight?.departure?.time
+                            booking?.selectedReturn?.flight?.arrival?.time
                           )}
                         </p>
                         <p>
-                          {booking?.selectedReturn?.flight?.departure?.airport}
+                          {booking?.selectedReturn?.flight?.arrival?.airport}
                         </p>
                         <p>
                           (
                           {
-                            booking?.selectedReturn?.flight?.departure
+                            booking?.selectedReturn?.flight?.arrival
                               ?.airportCode
                           }
                           )
@@ -327,7 +345,7 @@ export default function Pembayaran() {
                 src={bookingDetail?.url_payment}
                 title="Midtrans Payment"
                 width="100%"
-                height="960px"
+                height="1000px"
                 className="p-16 md:w-[700px] md:p-20 max-sm:p-2 shadow-md rounded-xl"
               ></iframe>
             </div>
@@ -338,9 +356,9 @@ export default function Pembayaran() {
             <div className="rounded-xl shadow-md pb-4">
               {" "}
               {/* Route  */}
-              <p className="flex gap-5 text-xl  p-8">
+              <p className="flex gap-5 items-center text-xl  p-8">
                 <strong>
-                  {booking?.selectedDeparture?.flight?.arrival?.city}
+                  {booking?.selectedDeparture?.flight?.departure?.city}
                 </strong>
                 {tripType === "singletrip" ? (
                   <svg
@@ -372,7 +390,7 @@ export default function Pembayaran() {
                 )}
 
                 <strong>
-                  {booking?.selectedDeparture?.flight?.departure?.city}
+                  {booking?.selectedDeparture?.flight?.arrival?.city}
                 </strong>
               </p>
               <hr className="text-gray" />
@@ -397,7 +415,7 @@ export default function Pembayaran() {
                     </p>
                     <p className=" text-black">
                       {formatDate(
-                        booking?.selectedDeparture?.flight?.arrival?.time
+                        booking?.selectedDeparture?.flight?.departure?.time
                       )}
                     </p>
                   </div>
@@ -410,7 +428,7 @@ export default function Pembayaran() {
                       <strong className="flex gap-2 ">
                         <p>
                           {formatTime(
-                            booking?.selectedDeparture?.flight?.arrival?.time
+                            booking?.selectedDeparture?.flight?.departure?.time
                           )}
                         </p>
                         <p>-</p>
@@ -422,16 +440,19 @@ export default function Pembayaran() {
                       <div className="py-2 ps-3 text-sm">
                         <p>
                           {formatDate(
-                            booking?.selectedDeparture?.flight?.arrival?.time
+                            booking?.selectedDeparture?.flight?.departure?.time
                           )}
                         </p>
                         <p>
-                          {booking?.selectedDeparture?.flight?.arrival?.airport}
+                          {
+                            booking?.selectedDeparture?.flight?.departure
+                              ?.airport
+                          }
                         </p>
                         <p>
                           (
                           {
-                            booking?.selectedDeparture?.flight?.arrival
+                            booking?.selectedDeparture?.flight?.departure
                               ?.airportCode
                           }
                           )
@@ -444,7 +465,7 @@ export default function Pembayaran() {
                       <strong className="flex gap-2 ">
                         <p>
                           {formatTime(
-                            booking?.selectedDeparture?.flight?.departure?.time
+                            booking?.selectedDeparture?.flight?.arrival?.time
                           )}
                         </p>
                         <p>-</p>
@@ -454,16 +475,16 @@ export default function Pembayaran() {
                     <div className="py-3 ps-7 text-sm">
                       <p>
                         {formatDate(
-                          booking?.selectedDeparture?.flight?.departure?.time
+                          booking?.selectedDeparture?.flight?.arrival?.time
                         )}
                       </p>
                       <p>
-                        {booking?.selectedDeparture?.flight?.departure?.airport}
+                        {booking?.selectedDeparture?.flight?.arrival?.airport}
                       </p>
                       <p>
                         (
                         {
-                          booking?.selectedDeparture?.flight?.departure
+                          booking?.selectedDeparture?.flight?.arrival
                             ?.airportCode
                         }
                         )
@@ -494,7 +515,7 @@ export default function Pembayaran() {
                       </p>
                       <p className=" text-black">
                         {formatDate(
-                          booking?.selectedReturn?.flight?.arrival?.time
+                          booking?.selectedReturn?.flight?.departure?.time
                         )}
                       </p>
                     </div>
@@ -507,7 +528,7 @@ export default function Pembayaran() {
                         <strong className="flex gap-2 ">
                           <p>
                             {formatTime(
-                              booking?.selectedReturn?.flight?.arrival?.time
+                              booking?.selectedReturn?.flight?.departure?.time
                             )}
                           </p>
                           <p>-</p>
@@ -519,16 +540,19 @@ export default function Pembayaran() {
                         <div className="py-2 ps-3 text-sm">
                           <p>
                             {formatDate(
-                              booking?.selectedReturn?.flight?.arrival?.time
+                              booking?.selectedReturn?.flight?.departure?.time
                             )}
                           </p>
                           <p>
-                            {booking?.selectedReturn?.flight?.arrival?.airport}
+                            {
+                              booking?.selectedReturn?.flight?.departure
+                                ?.airport
+                            }
                           </p>
                           <p>
                             (
                             {
-                              booking?.selectedReturn?.flight?.arrival
+                              booking?.selectedReturn?.flight?.departure
                                 ?.airportCode
                             }
                             )
@@ -541,7 +565,7 @@ export default function Pembayaran() {
                         <strong className="flex gap-2 ">
                           <p>
                             {formatTime(
-                              booking?.selectedReturn?.flight?.departure?.time
+                              booking?.selectedReturn?.flight?.arrival?.time
                             )}
                           </p>
                           <p>-</p>
@@ -551,16 +575,16 @@ export default function Pembayaran() {
                       <div className="py-3 ps-7 text-sm">
                         <p>
                           {formatDate(
-                            booking?.selectedReturn?.flight?.departure?.time
+                            booking?.selectedReturn?.flight?.arrival?.time
                           )}
                         </p>
                         <p>
-                          {booking?.selectedReturn?.flight?.departure?.airport}
+                          {booking?.selectedReturn?.flight?.arrival?.airport}
                         </p>
                         <p>
                           (
                           {
-                            booking?.selectedReturn?.flight?.departure
+                            booking?.selectedReturn?.flight?.arrival
                               ?.airportCode
                           }
                           )

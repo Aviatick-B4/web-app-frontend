@@ -40,6 +40,18 @@ function Pemesanan() {
   );
   const booking = useSelector((state) => state?.bookingFlight?.bookings);
   const countries = useSelector((state) => state?.bookingFlight?.countries);
+  const token = useSelector((state) => state.auth.token);
+
+  console.log("booking", booking);
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/masuk");
+      toast.error(
+        "Ups.. tidak dapat mengakses halaman, silakan masuk terlebih dahulu."
+      );
+    }
+  }, [token, navigate]);
 
   useEffect(() => {
     if (booking?.selectedReturn !== null) return settripType("roundtrip");
@@ -104,7 +116,7 @@ function Pemesanan() {
   });
 
   //isian untuk Form Penumpang
-  const penumpangFields = () => [
+  const penumpangFields = (id) => [
     {
       name: `title`,
       type: "radio",
@@ -296,7 +308,7 @@ function Pemesanan() {
   const calculateTotal = (price) => {
     price = price * (penumpangData.length - infantPassengers);
     if (isDonated) return price + totalPajak(price) + 1000;
-    return price + totalPajak(price);
+    return price + (price * 10) / 100;
   };
 
   // Group passengers by type and count
@@ -337,7 +349,7 @@ function Pemesanan() {
               <h2 className="text-2xl pb-4">Detail Harga</h2>
               <p className="flex gap-5 text-lg items-center py-5">
                 <strong>
-                  {booking?.selectedDeparture?.flight?.arrival?.city}
+                  {booking?.selectedDeparture?.flight?.departure?.city}
                 </strong>
 
                 <svg
@@ -356,7 +368,7 @@ function Pemesanan() {
                 </svg>
 
                 <strong>
-                  {booking?.selectedDeparture?.flight?.departure?.city}
+                  {booking?.selectedDeparture?.flight?.arrival?.city}
                 </strong>
               </p>
               <div className="text-sm">
@@ -389,7 +401,7 @@ function Pemesanan() {
                   <hr className="my-8 text-neutral" />
                   <p className="flex gap-5 text-lg items-center pb-5">
                     <strong>
-                      {booking?.selectedReturn?.flight?.arrival?.city}
+                      {booking?.selectedReturn?.flight?.departure?.city}
                     </strong>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -407,7 +419,7 @@ function Pemesanan() {
                     </svg>
 
                     <strong>
-                      {booking?.selectedReturn?.flight?.departure?.city}
+                      {booking?.selectedReturn?.flight?.arrival?.city}
                     </strong>
                   </p>
                   <div className="text-sm">
@@ -489,7 +501,8 @@ function Pemesanan() {
               <strong>Apakah sudah yakin data pribadi anda benar?</strong>
             </p>
             <p className="">
-              Anda tidak dapat mengubah data diri setelah lanjut ke pembayaran
+              Data akan tersimpan dan anda tidak dapat mengubah data diri pada
+              formulir ini setelah lanjut ke pembayaran
             </p>
             <div className="flex flex-col w-full gap-2 mt-6">
               <button
@@ -514,7 +527,7 @@ function Pemesanan() {
                     wrapperClass=""
                   />
                 ) : (
-                  "Ya, saya yakin Completed"
+                  "Ya, saya yakin"
                 )}
               </button>
             </div>
@@ -546,11 +559,10 @@ function Pemesanan() {
             <section className="flex bg-white flex-col lg:w-1/3 gap-4 lg:hidden">
               {/* Detail Pemesanan  */}
               <div className="rounded-xl shadow-md my-3 pb-4 lg:mt-[100px]">
-                {" "}
                 {/* Route  */}
-                <p className="flex gap-5 text-xl  p-8">
+                <p className="flex gap-5 text-xl  items-center p-8">
                   <strong>
-                    {booking?.selectedDeparture?.flight?.arrival?.city}
+                    {booking?.selectedDeparture?.flight?.departure?.city}
                   </strong>
                   {tripType === "singletrip" ? (
                     <svg
@@ -582,7 +594,7 @@ function Pemesanan() {
                   )}
 
                   <strong>
-                    {booking?.selectedDeparture?.flight?.departure?.city}
+                    {booking?.selectedDeparture?.flight?.arrival?.city}
                   </strong>
                 </p>
                 <hr className="text-gray" />
@@ -620,7 +632,7 @@ function Pemesanan() {
                       </p>
                       <p className=" text-black">
                         {formatDate(
-                          booking?.selectedDeparture?.flight?.arrival?.time
+                          booking?.selectedDeparture?.flight?.departure?.time
                         )}
                       </p>
                     </div>
@@ -633,7 +645,8 @@ function Pemesanan() {
                         <strong className="flex gap-2 ">
                           <p>
                             {formatTime(
-                              booking?.selectedDeparture?.flight?.arrival?.time
+                              booking?.selectedDeparture?.flight?.departure
+                                ?.time
                             )}
                           </p>
                           <p>-</p>
@@ -645,19 +658,20 @@ function Pemesanan() {
                         <div className="py-2 ps-3 text-sm">
                           <p>
                             {formatDate(
-                              booking?.selectedDeparture?.flight?.arrival?.time
+                              booking?.selectedDeparture?.flight?.departure
+                                ?.time
                             )}
                           </p>
                           <p>
                             {
-                              booking?.selectedDeparture?.flight?.arrival
+                              booking?.selectedDeparture?.flight?.departure
                                 ?.airport
                             }
                           </p>
                           <p>
                             (
                             {
-                              booking?.selectedDeparture?.flight?.arrival
+                              booking?.selectedDeparture?.flight?.departure
                                 ?.airportCode
                             }
                             )
@@ -670,8 +684,7 @@ function Pemesanan() {
                         <strong className="flex gap-2 ">
                           <p>
                             {formatTime(
-                              booking?.selectedDeparture?.flight?.departure
-                                ?.time
+                              booking?.selectedDeparture?.flight?.arrival?.time
                             )}
                           </p>
                           <p>-</p>
@@ -681,19 +694,16 @@ function Pemesanan() {
                       <div className="py-3 ps-7 text-sm">
                         <p>
                           {formatDate(
-                            booking?.selectedDeparture?.flight?.departure?.time
+                            booking?.selectedDeparture?.flight?.arrival?.time
                           )}
                         </p>
                         <p>
-                          {
-                            booking?.selectedDeparture?.flight?.departure
-                              ?.airport
-                          }
+                          {booking?.selectedDeparture?.flight?.arrival?.airport}
                         </p>
                         <p>
                           (
                           {
-                            booking?.selectedDeparture?.flight?.departure
+                            booking?.selectedDeparture?.flight?.arrival
                               ?.airportCode
                           }
                           )
@@ -731,7 +741,7 @@ function Pemesanan() {
                         </p>
                         <p className=" text-black">
                           {formatDate(
-                            booking?.selectedReturn?.flight?.arrival?.time
+                            booking?.selectedReturn?.flight?.departure?.time
                           )}
                         </p>
                       </div>
@@ -744,7 +754,7 @@ function Pemesanan() {
                           <strong className="flex gap-2 ">
                             <p>
                               {formatTime(
-                                booking?.selectedReturn?.flight?.arrival?.time
+                                booking?.selectedReturn?.flight?.departure?.time
                               )}
                             </p>
                             <p>-</p>
@@ -756,19 +766,19 @@ function Pemesanan() {
                           <div className="py-2 ps-3 text-sm">
                             <p>
                               {formatDate(
-                                booking?.selectedReturn?.flight?.arrival?.time
+                                booking?.selectedReturn?.flight?.departure?.time
                               )}
                             </p>
                             <p>
                               {
-                                booking?.selectedReturn?.flight?.arrival
+                                booking?.selectedReturn?.flight?.departure
                                   ?.airport
                               }
                             </p>
                             <p>
                               (
                               {
-                                booking?.selectedReturn?.flight?.arrival
+                                booking?.selectedReturn?.flight?.departure
                                   ?.airportCode
                               }
                               )
@@ -781,7 +791,7 @@ function Pemesanan() {
                           <strong className="flex gap-2 ">
                             <p>
                               {formatTime(
-                                booking?.selectedReturn?.flight?.departure?.time
+                                booking?.selectedReturn?.flight?.arrival?.time
                               )}
                             </p>
                             <p>-</p>
@@ -791,19 +801,16 @@ function Pemesanan() {
                         <div className="py-3 ps-7 text-sm">
                           <p>
                             {formatDate(
-                              booking?.selectedReturn?.flight?.departure?.time
+                              booking?.selectedReturn?.flight?.arrival?.time
                             )}
                           </p>
                           <p>
-                            {
-                              booking?.selectedReturn?.flight?.departure
-                                ?.airport
-                            }
+                            {booking?.selectedReturn?.flight?.arrival?.airport}
                           </p>
                           <p>
                             (
                             {
-                              booking?.selectedReturn?.flight?.departure
+                              booking?.selectedReturn?.flight?.arrival
                                 ?.airportCode
                             }
                             )
@@ -852,7 +859,7 @@ function Pemesanan() {
                 <input
                   type="text"
                   name="namaLengkap"
-                  value={user.fullName}
+                  value={user?.fullName}
                   className="border rounded-full w-full py-2 my-3 px-4"
                   disabled
                 />
@@ -860,7 +867,7 @@ function Pemesanan() {
                 <input
                   type="text"
                   name="email"
-                  value={user.email}
+                  value={user?.email}
                   className="border rounded-full w-full py-2 my-3 px-4"
                   disabled
                 />
@@ -868,7 +875,7 @@ function Pemesanan() {
                 <input
                   type="text"
                   name="notelp"
-                  value={user.phoneNumber}
+                  value={user?.phoneNumber}
                   className="border rounded-full w-full py-2 my-3 px-4"
                   disabled
                 />
@@ -991,14 +998,13 @@ function Pemesanan() {
             </div>
           </section>
           {/* Sisi Kanan Website */}
-          <section className="flex flex-col lg:w-1/3 gap-4 max-lg:hidden">
+          <section className="flex  flex-col lg:w-1/3 gap-4 max-lg:hidden">
             {/* Detail Pemesanan  */}
             <div className="rounded-xl bg-white shadow-md my-3 pb-4 lg:mt-[100px]">
-              {" "}
               {/* Route  */}
-              <p className="flex gap-5 text-xl  p-8">
+              <p className="flex gap-5 text-xl  items-center p-8">
                 <strong>
-                  {booking?.selectedDeparture?.flight?.arrival?.city}
+                  {booking?.selectedDeparture?.flight?.departure?.city}
                 </strong>
                 {tripType === "singletrip" ? (
                   <svg
@@ -1030,7 +1036,7 @@ function Pemesanan() {
                 )}
 
                 <strong>
-                  {booking?.selectedDeparture?.flight?.departure?.city}
+                  {booking?.selectedDeparture?.flight?.arrival?.city}
                 </strong>
               </p>
               <hr className="text-gray" />
@@ -1062,7 +1068,7 @@ function Pemesanan() {
                     </p>
                     <p className=" text-black">
                       {formatDate(
-                        booking?.selectedDeparture?.flight?.arrival?.time
+                        booking?.selectedDeparture?.flight?.departure?.time
                       )}
                     </p>
                   </div>
@@ -1075,7 +1081,7 @@ function Pemesanan() {
                       <strong className="flex gap-2 ">
                         <p>
                           {formatTime(
-                            booking?.selectedDeparture?.flight?.arrival?.time
+                            booking?.selectedDeparture?.flight?.departure?.time
                           )}
                         </p>
                         <p>-</p>
@@ -1087,16 +1093,19 @@ function Pemesanan() {
                       <div className="py-2 ps-3 text-sm">
                         <p>
                           {formatDate(
-                            booking?.selectedDeparture?.flight?.arrival?.time
+                            booking?.selectedDeparture?.flight?.departure?.time
                           )}
                         </p>
                         <p>
-                          {booking?.selectedDeparture?.flight?.arrival?.airport}
+                          {
+                            booking?.selectedDeparture?.flight?.departure
+                              ?.airport
+                          }
                         </p>
                         <p>
                           (
                           {
-                            booking?.selectedDeparture?.flight?.arrival
+                            booking?.selectedDeparture?.flight?.departure
                               ?.airportCode
                           }
                           )
@@ -1109,7 +1118,7 @@ function Pemesanan() {
                       <strong className="flex gap-2 ">
                         <p>
                           {formatTime(
-                            booking?.selectedDeparture?.flight?.departure?.time
+                            booking?.selectedDeparture?.flight?.arrival?.time
                           )}
                         </p>
                         <p>-</p>
@@ -1119,16 +1128,16 @@ function Pemesanan() {
                     <div className="py-3 ps-7 text-sm">
                       <p>
                         {formatDate(
-                          booking?.selectedDeparture?.flight?.departure?.time
+                          booking?.selectedDeparture?.flight?.arrival?.time
                         )}
                       </p>
                       <p>
-                        {booking?.selectedDeparture?.flight?.departure?.airport}
+                        {booking?.selectedDeparture?.flight?.arrival?.airport}
                       </p>
                       <p>
                         (
                         {
-                          booking?.selectedDeparture?.flight?.departure
+                          booking?.selectedDeparture?.flight?.arrival
                             ?.airportCode
                         }
                         )
@@ -1142,7 +1151,7 @@ function Pemesanan() {
                 <div>
                   {/* Maskapai  */}
                   <div className="flex p-8">
-                    <div className="p-4 flex flex-col border w-1/2 lg:flex-col gap-2 rounded-l-md items-center justify-center">
+                    <div className="p-4 flex flex-col  border w-1/2 lg:flex-col gap-2 rounded-l-md items-center justify-center">
                       <img
                         src={
                           booking?.selectedReturn?.airplane?.airline?.logoUrl
@@ -1166,7 +1175,7 @@ function Pemesanan() {
                       </p>
                       <p className=" text-black">
                         {formatDate(
-                          booking?.selectedReturn?.flight?.arrival?.time
+                          booking?.selectedReturn?.flight?.departure?.time
                         )}
                       </p>
                     </div>
@@ -1179,7 +1188,7 @@ function Pemesanan() {
                         <strong className="flex gap-2 ">
                           <p>
                             {formatTime(
-                              booking?.selectedReturn?.flight?.arrival?.time
+                              booking?.selectedReturn?.flight?.departure?.time
                             )}
                           </p>
                           <p>-</p>
@@ -1191,16 +1200,19 @@ function Pemesanan() {
                         <div className="py-2 ps-3 text-sm">
                           <p>
                             {formatDate(
-                              booking?.selectedReturn?.flight?.arrival?.time
+                              booking?.selectedReturn?.flight?.departure?.time
                             )}
                           </p>
                           <p>
-                            {booking?.selectedReturn?.flight?.arrival?.airport}
+                            {
+                              booking?.selectedReturn?.flight?.departure
+                                ?.airport
+                            }
                           </p>
                           <p>
                             (
                             {
-                              booking?.selectedReturn?.flight?.arrival
+                              booking?.selectedReturn?.flight?.departure
                                 ?.airportCode
                             }
                             )
@@ -1213,7 +1225,7 @@ function Pemesanan() {
                         <strong className="flex gap-2 ">
                           <p>
                             {formatTime(
-                              booking?.selectedReturn?.flight?.departure?.time
+                              booking?.selectedReturn?.flight?.arrival?.time
                             )}
                           </p>
                           <p>-</p>
@@ -1223,16 +1235,16 @@ function Pemesanan() {
                       <div className="py-3 ps-7 text-sm">
                         <p>
                           {formatDate(
-                            booking?.selectedReturn?.flight?.departure?.time
+                            booking?.selectedReturn?.flight?.arrival?.time
                           )}
                         </p>
                         <p>
-                          {booking?.selectedReturn?.flight?.departure?.airport}
+                          {booking?.selectedReturn?.flight?.arrival?.airport}
                         </p>
                         <p>
                           (
                           {
-                            booking?.selectedReturn?.flight?.departure
+                            booking?.selectedReturn?.flight?.arrival
                               ?.airportCode
                           }
                           )
@@ -1243,7 +1255,7 @@ function Pemesanan() {
                 </div>
               )}
               {/* Total Harga*/}
-              <div className="bg-white px-8 py-4 text-sm">
+              <div className="px-8 py-4 text-sm">
                 <hr className="my-4 text-neutral" />
                 <div className="flex text-lg justify-between">
                   <p>Total Pembayaran</p>
