@@ -22,10 +22,10 @@ export const getUserBookingHistory = () => async (dispatch, getState) => {
     dispatch(setBookingHistory(response.data.data));
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(error.message);
+      toast.error(error.message);
       return;
     }
-    console.error(error.message);
+    toast.error(error.message);
   }
 };
 
@@ -45,7 +45,6 @@ export const getBookingHistoryDetail =
           },
         }
       );
-      console.log("response booking history detail", response.data.data);
       dispatch(setBookingHistoryDetail(response.data.data));
       setIsLoading(false);
       setDetailLoading(false);
@@ -53,10 +52,10 @@ export const getBookingHistoryDetail =
       setIsLoading(false);
       setDetailLoading(false);
       if (axios.isAxiosError(error)) {
-        console.error(error.message);
+        toast.error(error.message);
         return;
       }
-      console.error(error.message);
+      toast.error(error.message);
     }
   };
 
@@ -77,10 +76,10 @@ export const getHistorySearchResults = () => async (dispatch, getState) => {
     dispatch(setHistorySearchResults(response.data.data || []));
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(error.message);
+      toast.error(error.message);
       return;
     }
-    console.error(error.message);
+    toast.error(error.message);
   }
 };
 
@@ -101,9 +100,9 @@ export const getHistoryByDate = () => async (dispatch, getState) => {
     dispatch(setHistoryByDate(response.data.data || []));
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(error.message);
+      toast.error(error.message);
       return;
     }
-    console.error(error.message);
+    toast.error(error.message);
   }
 };

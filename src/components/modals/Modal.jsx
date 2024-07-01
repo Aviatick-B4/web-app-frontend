@@ -86,7 +86,7 @@ const UnifiedModal = ({
     setState([ranges.selection]);
   };
 
-  const classes = ["First", "Economy", "Business"];
+  const classes = ["First", "Business", "Economy", ];
 
   const handleSave = () => {
     if (type === "date") {

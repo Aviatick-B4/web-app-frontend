@@ -39,7 +39,6 @@ function ResetPassword() {
 
   useEffect(() => {
     dispatch(setMessage("")); // Clear message when component mounts
-    console.log("ResetPasswordForm component mounted. token: ", token);
   }, [dispatch]);
 
   const toggleShowPassword = () => {
@@ -50,14 +49,12 @@ function ResetPassword() {
     e.preventDefault();
     if (password !== confirmPassword) {
       dispatch(setMessage("Passwords do not match"));
-      console.log("Password validation error: Passwords do not match", message);
       return;
     }
     setIsLoading(true); // Start loading
     dispatch(resetPassword(password, token)).finally(() => {
       setIsLoading(false);
     }); // Stop loading
-    console.log("Reset password request dispatched", resetPassword);
   };
 
   const settings = {

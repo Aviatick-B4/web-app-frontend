@@ -14,17 +14,11 @@ import { toast } from "react-toastify";
 
 function Register() {
   const [showPassword, setShowPassword] = useState(false);
-  console.log("showPassword", showPassword);
   const [email, setEmail] = useState("");
-  console.log("email", email);
   const [password, setPassword] = useState("");
-  console.log("password", password);
   const [fullName, setFullName] = useState("");
-  console.log("fullName", fullName);
   const [phoneNumber, setPhoneNumber] = useState("");
-  console.log("phoneNumber", phoneNumber);
   const [confirmPassword, setConfirmPassword] = useState("");
-  console.log("confirmPassword", confirmPassword);
   const token = useSelector((state) => state?.auth.token);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -70,7 +64,6 @@ function Register() {
     };
 
     dispatch(register(data, navigate, setMessage, setLoading));
-    console.log("Dispatching registration action...");
   };
 
   const toggleShowPassword = () => {
