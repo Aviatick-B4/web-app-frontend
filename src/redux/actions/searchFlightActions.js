@@ -17,10 +17,10 @@ export const getCities = () => async (dispatch) => {
     dispatch(setCities(response.data.data));
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(error.message);
+      toast.error(error.message);
       return;
     }
-    console.error(error.message);
+    toast.error(error.message);
   }
 };
 
@@ -31,16 +31,15 @@ export const getCitySearchResults = () => async (dispatch, getState) => {
     dispatch(setCitySearchResult(response.data.data || []));
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(error.message);
+      toast.error(error.message);
       return;
     }
-    console.error(error.message);
+    toast.error(error.message);
   }
 };
 
 export const getFlightSearchResults =
   (flightData, navigate, setLoading) => async (dispatch, getState) => {
-    console.log("flightDataaaaaaaaa", flightData);
     const tripTypeSaved = getState().search.tripTypeSaved;
     const { from, to, departureDate, returnDate, passengers, flightClass } =
       flightData;
@@ -51,25 +50,23 @@ export const getFlightSearchResults =
     try {
       let url1 = `${url}/tickets/search?limit=10&page=1&from=${from.cityIata}&to=${to.cityIata}&departure=${departureDate}&passengers=${totalPassenger}&seat_class=${flightClass}`;
       const response1 = await axios.get(url1);
-      console.log("response1", response1);
       dispatch(setDepartureResults(response1.data.data.tickets || []));
 
       if (tripTypeSaved === "roundtrip") {
         let url2 = `${url}/tickets/search?limit=10&page=1&from=${to.cityIata}&to=${from.cityIata}&departure=${returnDate}&passengers=${totalPassenger}&seat_class=${flightClass}`;
         const response2 = await axios.get(url2);
-        console.log("response2", response2);
         dispatch(setReturnResults(response2.data.data.tickets || []));
       }
-      setFavDestinationResults([])
-      setPromoResult(null)
+      setFavDestinationResults([]);
+      setPromoResult(null);
       setLoading(false);
       navigate("/hasil-pencarian");
     } catch (error) {
       setLoading(false);
       if (axios.isAxiosError(error)) {
-        console.error(error.message);
+        toast.error(error.message);
         return;
       }
-      console.error(error.message);
+      toast.error(error.message);
     }
   };

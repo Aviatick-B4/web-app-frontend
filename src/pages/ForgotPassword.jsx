@@ -10,17 +10,14 @@ import { useNavigate } from "react-router-dom";
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");
-  console.log("email", email);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { message, error } = useSelector((state) => state.auth);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("ForgotPassword - form submitted"); // Log when form is submitted
     dispatch(forgotPassword(email, navigate));
   };
-  console.log("email", email);
 
   const settings = {
     dots: false,

@@ -233,7 +233,9 @@ const TicketContent = React.forwardRef(
               <tr className="border-b font-bold text-slate-500">
                 <th className="text-left py-3">No</th>
                 <th className="text-left py-3">Penumpang</th>
-                <th className="text-left py-3">No. Penerbangan & Tiket</th>
+                <th className="text-left py-3">
+                  No. Penerbangan & No KTP/SIM/Paspor
+                </th>
                 <th className="text-left py-3">Fasilitas</th>
               </tr>
             </thead>
@@ -264,16 +266,15 @@ const TicketContent = React.forwardRef(
                     </td>
                     <td className="text-left py-3">
                       {
-                        bookingDetail?.flight_detail.departure_flight.airline
-                          .facility
-                      }
+                        bookingDetail.flight_detail.departure_flight
+                          .in_flight_facility
                       {bookingDetail?.flight_detail.return_flight && (
                         <>
                           {" "}
                           /{" "}
                           {
-                            bookingDetail?.flight_detail.return_flight.airline
-                              .facility
+                            bookingDetail.flight_detail.return_flight
+                              .in_flight_facility
                           }
                         </>
                       )}{" "}

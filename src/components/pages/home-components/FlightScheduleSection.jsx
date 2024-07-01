@@ -46,7 +46,6 @@ const FlightSchedule = () => {
   );
 
   useEffect(() => {
-    console.log("search", searchResults);
   }, [searchResults]);
 
   const swapLocations = () => {

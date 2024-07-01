@@ -36,7 +36,7 @@ export default function Notifikasi() {
             await dispatch(getNotifByFilter(filterType));
           }
         } catch (error) {
-          console.error("Error fetching notifications:", error);
+          toast.error("Error fetching notifications:", error);
         } finally {
           setLoading(false);
         }

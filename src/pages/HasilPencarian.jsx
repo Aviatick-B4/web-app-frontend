@@ -73,8 +73,6 @@ export default function HasilPencarian() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    console.log("passengerFromModal", passengerFromModal);
-    console.log("flightKeyword", flightKeyword);
   }, []);
 
   useEffect(() => {
@@ -216,12 +214,6 @@ export default function HasilPencarian() {
   } else {
     resultsToUse = [];
   }
-
-  console.log({
-    selectedDeparture: selectedDeparture,
-    selectedReturn: selectedReturn,
-    resultsToUse: resultsToUse,
-  });
 
   const uniqueFacilities = Array.from(
     new Set(

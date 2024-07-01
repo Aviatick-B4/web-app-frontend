@@ -21,7 +21,7 @@ export default function Pembayaran() {
     (state) => state?.history?.bookingHistoryDetail
   );
   const token = useSelector((state) => state.auth.token);
-
+  
   useEffect(() => {
     if (!token) {
       navigate("/masuk");

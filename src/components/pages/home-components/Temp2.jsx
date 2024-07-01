@@ -61,11 +61,6 @@ export default function HasilPencarian() {
     },
   };
 
-  useEffect(() => {
-    console.log("tripType", tripTypeSaved);
-    console.log("keyword", flightKeyword);
-  }, [tripTypeSaved]);
-
   const openModal = (type, data) => {
     setModalType(type);
     if (type === "date") {

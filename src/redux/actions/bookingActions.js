@@ -16,10 +16,10 @@ export const getCountries = () => async (dispatch) => {
     dispatch(setCountries(response.data));
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(error.message);
+      toast.error(error.message);
       return;
     }
-    console.error(error.message);
+    toast.error(error.message);
   }
 };
 
@@ -100,7 +100,7 @@ export const getBookingTicketCompleted =
         getBookingHistoryDetail(bookingId, setIsLoading, setDetailLoading)
       );
       dispatch(setDataPayment(response.data));
-      navigate("/pembayaran")
+      navigate("/pembayaran");
     } catch (error) {
       setIsLoading(false);
       if (error.response.status == 400) {

@@ -226,7 +226,7 @@ function Pemesanan() {
       );
     } catch (error) {
       toast.error("Terjadi kesalahan saat booking", { autoClose: 5000 });
-      console.error("Error during booking submission:", error);
+      toast.error("Error during booking submission:", error);
     }
   };
 
