@@ -40,6 +40,16 @@ function Pemesanan() {
   );
   const booking = useSelector((state) => state?.bookingFlight?.bookings);
   const countries = useSelector((state) => state?.bookingFlight?.countries);
+  const token = useSelector((state) => state.auth.token);
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/masuk");
+      toast.error(
+        "Ups.. tidak dapat mengakses halaman, silakan masuk terlebih dahulu."
+      );
+    }
+  }, [token, navigate]);
 
   useEffect(() => {
     if (booking?.selectedReturn !== null) return settripType("roundtrip");
@@ -495,7 +505,8 @@ function Pemesanan() {
               <strong>Apakah sudah yakin data pribadi anda benar?</strong>
             </p>
             <p className="">
-              Anda tidak dapat mengubah data diri setelah lanjut ke pembayaran
+              Data akan tersimpan dan anda tidak dapat mengubah data diri pada
+              formulir ini setelah lanjut ke pembayaran
             </p>
             <div className="flex flex-col w-full gap-2 mt-6">
               <button
@@ -858,7 +869,7 @@ function Pemesanan() {
                 <input
                   type="text"
                   name="namaLengkap"
-                  value={user.fullName}
+                  value={user?.fullName}
                   className="border rounded-full w-full py-2 my-3 px-4"
                   disabled
                 />
@@ -866,7 +877,7 @@ function Pemesanan() {
                 <input
                   type="text"
                   name="email"
-                  value={user.email}
+                  value={user?.email}
                   className="border rounded-full w-full py-2 my-3 px-4"
                   disabled
                 />
@@ -874,7 +885,7 @@ function Pemesanan() {
                 <input
                   type="text"
                   name="notelp"
-                  value={user.phoneNumber}
+                  value={user?.phoneNumber}
                   className="border rounded-full w-full py-2 my-3 px-4"
                   disabled
                 />

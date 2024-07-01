@@ -1,12 +1,14 @@
-import { useAsyncError } from "react-router-dom";
+import { useAsyncError, useNavigate } from "react-router-dom";
 import Footer from "../../components/navigations/Footer";
 import Navbar from "../../components/navigations/Navbar";
 import * as React from "react";
 import { useSelector } from "react-redux";
 import { useState } from "react";
 import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 export default function Pembayaran() {
+  const navigate = useNavigate();
   const [tripType, settripType] = useState("");
   const booking = useSelector((state) => state?.bookingFlight?.bookings);
   const airplane = useSelector(
@@ -18,6 +20,16 @@ export default function Pembayaran() {
   const bookingDetail = useSelector(
     (state) => state?.history?.bookingHistoryDetail
   );
+  const token = useSelector((state) => state.auth.token);
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/masuk");
+      toast.error(
+        "Ups.. tidak dapat mengakses halaman, silakan masuk terlebih dahulu."
+      );
+    }
+  }, [token, navigate]);
 
   console.log("booking", booking);
   console.log("payment", payment);
