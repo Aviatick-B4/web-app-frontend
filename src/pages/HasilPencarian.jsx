@@ -703,7 +703,7 @@ export default function HasilPencarian() {
             <button
               onClick={handleAllClick}
               className={`text-xs md:text-sm font-medium rounded-full px-4 py-2 border-2 ${
-                isAllSelected
+                selectedFacilities.length === 0 && priceRange[0] === 0 && priceRange[1] === Infinity && sortOption === null
                   ? "bg-primary text-white"
                   : "bg-white text-primary border-primary"
               }`}
