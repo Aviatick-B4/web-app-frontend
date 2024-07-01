@@ -9,7 +9,7 @@ import { addDays, format, parseISO } from "date-fns";
 import { id } from "date-fns/locale";
 import UnifiedModal from "../components/modals/Modal";
 import { getFlightSearchResults } from "../redux/actions/searchFlightActions";
-import { setFlightKeyword } from "../redux/reducers/searchFlightReducers";
+import { setFavDestinationResults, setFlightKeyword, setPromoResult } from "../redux/reducers/searchFlightReducers";
 import { toast } from "react-toastify";
 import { setBooking } from "../redux/reducers/bookingReducers";
 import SelectedTicketCard from "../components/cards/SelectedTicketCard";
@@ -45,22 +45,25 @@ export default function HasilPencarian() {
     tripTypeSaved = null,
   } = useSelector((state) => state.search);
 
+  const passengerFromModal = useSelector((state) => state?.bookingFlight?.passenger);
+
   const { from, to, departureDate, returnDate, passengers, flightClass } =
     flightKeyword;
 
   const {
-    adults = 1,
-    children = 0,
-    infants = 0,
+    adults,
+    children,
+    infants,
   } = flightKeyword?.passengers || {};
   const totalPassenger = adults + children + infants;
 
-  const changedPassengers = changedFlightKeyword?.passengers || {};
+  const changedPassengers = changedFlightKeyword?.passengers || {adults, children, infants};
   const {
-    adults: changedAdults = 1,
-    children: changedChildren = 0,
-    infants: changedInfants = 0,
+    adults: changedAdults,
+    children: changedChildren,
+    infants: changedInfants
   } = changedPassengers;
+  
   const totalChangedPassengers =
     changedAdults + changedChildren + changedInfants;
 
@@ -70,6 +73,8 @@ export default function HasilPencarian() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    console.log("passengerFromModal", passengerFromModal);
+    console.log("flightKeyword", flightKeyword);
   }, []);
 
   useEffect(() => {
@@ -82,7 +87,7 @@ export default function HasilPencarian() {
     } else if (tripTypeSaved === null && favDestinationResults.length > 0 && selectedDeparture) {
       handleConfirmPage();
     } 
-  }, [selectedDeparture, selectedReturn, tripTypeSaved]);
+  }, [selectedDeparture, selectedReturn, tripTypeSaved, promoResult, favDestinationResults]);
 
   const openModal = (type, data) => {
     setModalType(type);
@@ -90,12 +95,12 @@ export default function HasilPencarian() {
       setModalData(
         data === "departure"
           ? {
-              startDate: parseISO(departureDate),
+              startDate: departureDate ? parseISO(departureDate) : new Date(),
               endDate: null,
             }
           : {
-              startDate: parseISO(departureDate),
-              endDate: parseISO(returnDate),
+              startDate: departureDate ? parseISO(departureDate) : new Date(),
+              endDate: returnDate ? parseISO(returnDate) : null,
             }
       );
     } else {
@@ -106,11 +111,11 @@ export default function HasilPencarian() {
 
   const handleSave = (data, endDate) => {
     if (modalType === "city") {
-      if (modalData === "from" && data.cityIata === to.cityIata) {
+      if (modalData === "from" && data.cityIata === to?.cityIata) {
         toast.error("Kota keberangkatan tidak boleh sama dengan kota tujuan.");
         return;
       }
-      if (modalData === "to" && data.cityIata === from.cityIata) {
+      if (modalData === "to" && data.cityIata === from?.cityIata) {
         toast.error("Kota tujuan tidak boleh sama dengan kota keberangkatan.");
         return;
       }
@@ -158,16 +163,22 @@ export default function HasilPencarian() {
         ),
         "yyyy-MM-dd"
       ),
-      returnDate: changedFlightKeyword?.returnDate
-        ? format(parseISO(changedFlightKeyword.returnDate), "yyyy-MM-dd")
-        : returnDate
-        ? format(parseISO(returnDate), "yyyy-MM-dd")
-        : null,
+      returnDate: tripTypeSaved === "roundtrip" ? (
+        changedFlightKeyword?.returnDate
+          ? format(parseISO(changedFlightKeyword.returnDate), "yyyy-MM-dd")
+          : returnDate
+          ? format(parseISO(returnDate), "yyyy-MM-dd")
+          : null
+      ) : null,
+      passengers: changedFlightKeyword?.passengers || passengers,
+      flightClass: changedFlightKeyword?.flightClass || flightClass
     };
 
     setSelectedDeparture(null);
     setSelectedReturn(null);
     dispatch(getFlightSearchResults(updatedKeyword, navigate, setLoading));
+    dispatch(setPromoResult(null))
+    dispatch(setFavDestinationResults([]))
     dispatch(setFlightKeyword(updatedKeyword));
   };
 
@@ -196,9 +207,11 @@ export default function HasilPencarian() {
     } else {
       resultsToUse = departureResults;
     }
+  } else if (departureResults.length > 0) {
+    resultsToUse = departureResults;
   } else if (favDestinationResults.length > 0) {
     resultsToUse = favDestinationResults;
-  } else if ([promoResult]) {
+  }else if ([promoResult]) {
     resultsToUse = [promoResult];
   } else {
     resultsToUse = [];
@@ -247,6 +260,7 @@ export default function HasilPencarian() {
   };
 
   const sortedAndFilteredResults = resultsToUse
+    .filter((flight) => flight && flight.price !== undefined)
     .filter((flight) => {
       const facilitiesMatch =
         selectedFacilities.length === 0 ||
@@ -393,11 +407,10 @@ export default function HasilPencarian() {
   };
 
   const handleConfirmPage = () => {
-    const defaultPassengers = { adults: 1, children: 0, infants: 0 };
     const data = {
       selectedDeparture,
       selectedReturn,
-      passengers: passengers || defaultPassengers,
+      passengers: departureResults.length > 0 ? passengers : (promoResult || favDestinationResults.length > 0 ? passengerFromModal : passengers)
     };
     dispatch(setBooking(data));
     navigate("/konfirmasi-tiket");
@@ -512,7 +525,7 @@ export default function HasilPencarian() {
                     className="cursor-pointer"
                     onClick={() => openModal("passenger")}
                   >
-                    {totalChangedPassengers || totalPassenger} Penumpang
+                    {totalChangedPassengers || totalPassenger || (passengerFromModal.adults + passengerFromModal.children + passengerFromModal.infants)} Penumpang
                   </span>
 
                   {/* Vertical Line */}
@@ -523,7 +536,9 @@ export default function HasilPencarian() {
                     className="cursor-pointer"
                     onClick={() => openModal("class")}
                   >
-                    {changedFlightKeyword?.flightClass || flightClass || "Economy"}
+                    {changedFlightKeyword?.flightClass || flightClass || (
+                      <div className="text-gray">Pilih kelas</div>
+                    )}
                   </span>
                 </div>
                 {/* Button Change Search */}

@@ -1,8 +1,9 @@
 {
-  "name": "challenge-04",
+  "name": "aviatick",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://aviatick.site/",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
