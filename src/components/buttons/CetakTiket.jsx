@@ -183,42 +183,42 @@ const TicketContent = React.forwardRef(
                 <div className="basis-0 flex-grow gap-4">
                   <img
                     src={
-                      bookingDetail?.flight_detail.return_flight.airline.logo_url
+                      bookingDetail?.flight_detail?.return_flight?.airline?.logo_url
                     }
-                    alt={`${bookingDetail?.flight_detail.return_flight.airline.name} logo`}
+                    alt={`${bookingDetail?.flight_detail?.return_flight?.airline?.name} logo`}
                     className="h-12 w-12 mr-4 object-contain"
                   />
                   <h2 className="font-bold">
-                    {bookingDetail?.flight_detail.return_flight.airline.name}
+                    {bookingDetail?.flight_detail?.return_flight?.airline?.name}
                   </h2>
-                  {bookingDetail?.flight_detail.return_flight.seat_class}
+                  {bookingDetail?.flight_detail?.return_flight?.seat_class}
                 </div>
                 <div className="basis-0 flex-grow">
                   <p>
                     {formatDateToDayMonthYear(
-                      flightDetail.flight_detail.return_flight.date
+                      flightDetail?.flight_detail?.return_flight?.date
                     )}{" "}
                   </p>
                   <p>
                     {
-                      bookingDetail?.flight_detail.return_flight.airport
+                      bookingDetail?.flight_detail?.return_flight?.airport
                         .departure
                     }{" "}
-                    - {bookingDetail?.flight_detail.return_flight.departure_city}{" "}
+                    - {bookingDetail?.flight_detail?.return_flight?.departure_city}{" "}
                   </p>
                   <p>
                     {convertToTime(
-                      bookingDetail?.flight_detail.return_flight.departure_time
+                      bookingDetail?.flight_detail?.return_flight?.departure_time
                     )}{" "}
                   </p>
                   <p className="font-semibold">To</p>
                   <p>
-                    {bookingDetail?.flight_detail.return_flight.airport.arrival}{" "}
-                    - {bookingDetail?.flight_detail.return_flight.arrival_city}{" "}
+                    {bookingDetail?.flight_detail?.return_flight?.airport.arrival}{" "}
+                    - {bookingDetail?.flight_detail?.return_flight?.arrival_city}{" "}
                   </p>
                   <p>
                     {convertToTime(
-                      bookingDetail?.flight_detail.return_flight.arrival_time
+                      bookingDetail?.flight_detail?.return_flight?.arrival_time
                     )}{" "}
                   </p>
                 </div>
@@ -265,9 +265,7 @@ const TicketContent = React.forwardRef(
                       / {passenger.ktp}
                     </td>
                     <td className="text-left py-3">
-                      {
-                        bookingDetail.flight_detail.departure_flight
-                          .in_flight_facility
+                      {bookingDetail.flight_detail.departure_flight.in_flight_facility }
                       {bookingDetail?.flight_detail.return_flight && (
                         <>
                           {" "}

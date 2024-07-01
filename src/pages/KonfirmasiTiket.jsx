@@ -415,7 +415,9 @@ function KonfirmasiTiket() {
                     </p>
                   )}
                 </div>
-                <p className="text-xs">*Sudah termasuk promo</p>
+                {booking?.selectedDeparture?.afterDiscountPrice && (
+                  <p className="text-xs">*Sudah termasuk promo</p>
+                )}
               </div>
 
               <button
