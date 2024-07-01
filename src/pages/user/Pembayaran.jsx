@@ -19,10 +19,6 @@ export default function Pembayaran() {
     (state) => state?.history?.bookingHistoryDetail
   );
 
-  console.log("booking", booking);
-  console.log("payment", payment);
-  console.log("bookingDetail", bookingDetail);
-
   useEffect(() => {
     if (booking?.selectedReturn !== null) return settripType("roundtrip");
     if (booking?.selectedReturn === null) return settripType("singletrip");

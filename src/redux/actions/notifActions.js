@@ -15,15 +15,14 @@ export const getNotifications = () => async (dispatch, getState) => {
       },
     });
 
-    console.log("notif", response.data.data);
     const sortedData = response.data.data.sort((a, b) => b.id - a.id);
     dispatch(setNotifications(sortedData));
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(error.message);
+      toast.error(error.message);
       return;
     }
-    console.error(error.message);
+    toast.error(error.message);
   }
 };
 
@@ -42,15 +41,13 @@ export const getNotifByFilter = (filterType) => async (dispatch, getState) => {
       }
     );
 
-    console.log("notif by filter", response.data.data);
-
     const sortedData = response.data.data.sort((a, b) => b.id - a.id);
     dispatch(setNotifByFilter(sortedData));
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(error.message);
+      toast.error(error.message);
       return;
     }
-    console.error(error.message);
+    toast.error(error.message);
   }
 };

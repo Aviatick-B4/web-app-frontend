@@ -13,7 +13,7 @@ function GoogleLogin({ buttonText }) {
       dispatch(googleAction(responseGoogle.access_token, navigate));
     },
     onError: (error) => {
-      console.error("Gagal masuk dengan google");
+      toast.error("Gagal masuk dengan google");
     },
   });
 

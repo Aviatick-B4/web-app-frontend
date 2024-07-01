@@ -103,8 +103,6 @@ function Pemesanan() {
     passenger: [],
   });
 
-  console.log("formData", formData);
-
   //isian untuk Form Penumpang
   const penumpangFields = () => [
     {
@@ -216,7 +214,7 @@ function Pemesanan() {
       );
     } catch (error) {
       toast.error("Terjadi kesalahan saat booking", { autoClose: 5000 });
-      console.error("Error during booking submission:", error);
+      toast.error("Error during booking submission:", error);
     }
   };
 
@@ -287,10 +285,6 @@ function Pemesanan() {
           : booking?.selectedDeparture?.price + booking?.selectedReturn?.price
       );
   }, [booking, tripType]);
-
-  console.log("totalHarga", totalHarga);
-
-  console.log("booking", booking);
 
   //Perhitungan Total Pajak
   const totalPajak = (price) => {

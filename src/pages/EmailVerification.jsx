@@ -45,7 +45,6 @@ function EmailVerification() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const otp = otpCode.join("");
-    console.log("Submitting OTP:", otp); // Console log the OTP code
     setIsLoading(true); // Start loading
     let data = { email, otp };
     dispatch(verifyEmail(data, navigate)).finally(() => {
@@ -58,8 +57,6 @@ function EmailVerification() {
     setResendTimeout(120); // Extend disable time to 2 minutes
     dispatch(resendOtp(email));
   };
-
-  console.log("Current OTP state:", otpCode); // Console log the current OTP state
 
   return (
     <div className="relative flex min-h-screen flex-col justify-center overflow-hidden bg-gray-50 py-12 ">
