@@ -34,10 +34,11 @@ const RiwayatPemesananCard = ({ flight, onClick }) => {
     if (!dateString || typeof dateString !== "string") {
       return "";
     }
-
     const date = new Date(dateString);
-
-    return date.toLocaleDateString("id-ID", {
+    const adjustedDate = new Date(
+      date.getTime() + date.getTimezoneOffset() * 60000
+    );
+    return adjustedDate.toLocaleDateString("id-ID", {
       weekday: "long",
       day: "numeric",
       month: "long",
@@ -63,7 +64,7 @@ const RiwayatPemesananCard = ({ flight, onClick }) => {
         onClick={onClick}
       >
         <img
-          className="absolute z-10 -ms-1 mt-3 w-[70px] md:w-[90px]"
+          className="absolute z-10 -ms-1 mt-3 w-[90px]"
           src={getStatusImagePath(flight.status)}
           alt={flight.status}
           width={90}
@@ -71,11 +72,6 @@ const RiwayatPemesananCard = ({ flight, onClick }) => {
         <div className="flex flex-col gap-4 p-4">
           <div className="flex-col lg:flex-row flex justify-between mt-8 lg:mt-4">
             <div className="flex items-center">
-              {/* <img
-                src={flight.logo}
-                alt={`${flight.airline} logo`}
-                className="h-8 w-8 md:h-12 md:w-12 mr-2 md:mr-4 object-contain"
-              /> */}
               <div className="text-base md:text-lg font-bold text-main">
                 {flight.flight_detail?.departure_city} →{" "}
                 {flight.flight_detail?.arrival_city}
@@ -97,9 +93,7 @@ const RiwayatPemesananCard = ({ flight, onClick }) => {
                     flight.flight_detail?.arrival_time
                   )}
                 </div>
-                <div className="text-xs font-medium text-darkgray">
-                  {""}
-                </div>
+                <div className="text-xs font-medium text-darkgray">{""}</div>
               </div>
               <div className="text-center">
                 <div className="text-base md:text-lg font-semibold text-main">
@@ -113,13 +107,9 @@ const RiwayatPemesananCard = ({ flight, onClick }) => {
           </div>
           <div className="flex justify-between w-full items-center border-t border-neutral pt-4">
             <div className="flex flex-col text-main gap-1">
-              <p className="text-sm font-semibold">Booking Code:</p>
-              <p className="text-xs font-medium">{flight.booking_code}</p>
-            </div>
-            <div className="flex flex-col text-main gap-1">
-              <p className="text-sm font-semibold">Tanggal Keberangkatan:</p>
+              <p className="text-sm font-semibold">Tanggal Booking:</p>
               <p className="text-xs font-medium">
-                {formatDateToDayMonthYear(flight.date)}
+                {formatDateToDayMonthYear(flight.createdAt)}
               </p>
             </div>
             <span className="text-sm md:text-base font-bold text-primary">

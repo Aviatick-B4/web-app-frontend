@@ -45,7 +45,7 @@ function PaymentSuccess() {
             </span>
           </p>
           <button
-            className="bg-[#00A8D0] text-white rounded-md p-2 w-[200px] hover:bg-[#FFB423]"
+            className="bg-primary text-white rounded-md p-2 w-[200px] hover:bg-darkprimary"
             onClick={() => navigate("/")}
           >
             Kembali Beranda
