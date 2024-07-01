@@ -12,6 +12,7 @@ import { data } from "autoprefixer";
 import { Navigate } from "react-router-dom";
 import { cleanDigitSectionValue } from "@mui/x-date-pickers/internals/hooks/useField/useField.utils";
 import { ThreeDRotationTwoTone } from "@mui/icons-material";
+import { setBooking } from "../reducers/bookingReducers";
 
 const url = import.meta.env.VITE_BASE_URL;
 
@@ -56,6 +57,7 @@ export const login =
 export const register =
   (data, navigate, setMessage, setLoading) => async (dispatch, getState) => {
     const { fullName, email, phoneNumber, password } = data;
+    setLoading(true);
     try {
       const response = await axios.post(
         "https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/register",
@@ -442,6 +444,7 @@ export const logout = (navigate) => (dispatch) => {
     dispatch(setIsLoggedIn(false));
     dispatch(setUser(null));
     dispatch(setLogin(null));
+    localStorage.removeItem("booking");
 
     if (navigate) {
       setTimeout(() => {
