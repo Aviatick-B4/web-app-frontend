@@ -43,7 +43,7 @@ function FormPenumpang({ title, fields, formData, handleInputChange }) {
                 name={field.name}
                 value={formData[field.name]}
                 onChange={(e) => handleChange(e, field.name)}
-                className={`border rounded-full w-full py-2 px-4 text-gray ${
+                className={`border rounded-full w-full py-2 px-4 me-3 text-gray ${
                   errors[field.name] ? "border-red-500" : ""
                 }`}
               >
