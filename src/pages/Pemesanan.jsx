@@ -8,8 +8,8 @@ import FormPenumpang from "../components/cards/FormPenumpang";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getCountries,
-  getBookingTicket,
   getPrepareTicket,
+  getBookingTicketCompleted,
 } from "../redux/actions/bookingActions";
 import { ThreeDots } from "react-loader-spinner";
 import { toast } from "react-toastify";
@@ -40,9 +40,6 @@ function Pemesanan() {
   );
   const booking = useSelector((state) => state?.bookingFlight?.bookings);
   const countries = useSelector((state) => state?.bookingFlight?.countries);
-  const flightKeyword = useSelector(
-    (state) => state?.search?.flightKeyword || {}
-  );
 
   useEffect(() => {
     if (booking?.selectedReturn !== null) return settripType("roundtrip");
@@ -69,21 +66,21 @@ function Pemesanan() {
   //Setting ageGroup by jumlah penumpang
   useEffect(() => {
     const initialPenumpangData = [];
-    for (let i = 0; i < flightKeyword?.passengers?.adults; i++) {
+    for (let i = 0; i < booking?.passengers?.adults; i++) {
       initialPenumpangData.push({
         ageGroup: "ADULT",
         id: `dewasa-${i}`,
         name: "Dewasa",
       });
     }
-    for (let i = 0; i < flightKeyword?.passengers?.children; i++) {
+    for (let i = 0; i < booking?.passengers?.children; i++) {
       initialPenumpangData.push({
         ageGroup: "CHILD",
         id: `anak-${i}`,
         name: "Anak",
       });
     }
-    for (let i = 0; i < flightKeyword?.passengers?.infants; i++) {
+    for (let i = 0; i < booking?.passengers?.infants; i++) {
       initialPenumpangData.push({
         ageGroup: "BABY",
         id: `bayi-${i}`,
@@ -91,25 +88,27 @@ function Pemesanan() {
       });
     }
     setPenumpangData(initialPenumpangData);
-  }, [flightKeyword?.passengers]);
+  }, [booking?.passengers]);
 
   // State untuk menyimpan inputan
   const [formData, setFormData] = useState({
     departureTicketId: booking?.selectedDeparture?.id || null,
     returnTicketId: booking?.selectedReturn?.id || null,
-    adult: flightKeyword?.passengers?.adults || 0,
-    child: flightKeyword?.passengers?.children || 0,
-    baby: flightKeyword?.passengers?.infants || 0,
+    adult: booking?.passengers?.adults || 0,
+    child: booking?.passengers?.children || 0,
+    baby: booking?.passengers?.infants || 0,
     donation: isDonated,
     seatClass:
       booking?.selectedDeparture?.airplane?.seatClass?.type || "Economy",
     passenger: [],
   });
 
+  console.log("formData", formData);
+
   //isian untuk Form Penumpang
-  const penumpangFields = [
+  const penumpangFields = () => [
     {
-      name: "title",
+      name: `title`,
       type: "radio",
       options: titleOptions,
     },
@@ -192,17 +191,28 @@ function Pemesanan() {
   const handleCloseModal = () => setShowModal(false);
   const handleOpenConfirmModal = async () => {
     await dispatch(
-      getPrepareTicket(formData, tripType, navigate, setIsLoading)
+      getPrepareTicket(
+        formData,
+        tripType,
+        navigate,
+        setIsLoading,
+        setShowConfirmModal
+      )
     );
-    setShowConfirmModal(true);
   };
   const handleCloseConfirmModal = () => setShowConfirmModal(false);
 
-  //Lanjut Bayar
-  const handleBookingSubmit = async () => {
+  //Lanjut Konfirmasi
+  const handleBookingSubmitcompleted = async () => {
     try {
       await dispatch(
-        getBookingTicket(dataPrepare, navigate, setIsLoading, setDetailLoading)
+        getBookingTicketCompleted(
+          dataPrepare,
+          navigate,
+          setIsLoading,
+          setDetailLoading,
+          setShowConfirmModal
+        )
       );
     } catch (error) {
       toast.error("Terjadi kesalahan saat booking", { autoClose: 5000 });
@@ -263,21 +273,30 @@ function Pemesanan() {
 
   //Pengecekan tipe penerbangan untuk perhitungan harga
   useEffect(() => {
-    if (tripType === "singletrip") {
-      return setTotalHarga(booking?.selectedDeparture?.price);
-    }
+    if (tripType === "singletrip")
+      return setTotalHarga(
+        booking?.selectedDeparture?.afterDiscountPrice
+          ? booking?.selectedDeparture?.afterDiscountPrice
+          : booking?.selectedDeparture?.price
+      );
     if (tripType === "roundtrip")
       return setTotalHarga(
-        booking?.selectedDeparture?.price + booking?.selectedReturn?.price
+        booking?.selectedDeparture?.afterDiscountPrice
+          ? booking?.selectedDeparture?.afterDiscountPrice +
+              booking?.selectedReturn?.afterDiscountPrice
+          : booking?.selectedDeparture?.price + booking?.selectedReturn?.price
       );
   }, [booking, tripType]);
+
+  console.log("totalHarga", totalHarga);
+
+  console.log("booking", booking);
 
   //Perhitungan Total Pajak
   const totalPajak = (price) => {
     price = price * (penumpangData.length - infantPassengers);
     return (price * 10) / 100;
   };
-  console.log("totalPajak", totalPajak(totalHarga));
 
   //Perhitungan Total Harga
   const calculateTotal = (price) => {
@@ -361,7 +380,10 @@ function Pemesanan() {
                         {ageGroup === "BABY"
                           ? "0"
                           : formatPrice(
-                              booking?.selectedDeparture?.price * count
+                              booking?.selectedDeparture?.afterDiscountPrice
+                                ? booking?.selectedDeparture
+                                    ?.afterDiscountPrice * count
+                                : booking?.selectedDeparture?.price * count
                             )}
                       </p>
                     </div>
@@ -412,7 +434,10 @@ function Pemesanan() {
                             {ageGroup === "BABY"
                               ? "0"
                               : formatPrice(
-                                  booking?.selectedReturn?.price * count
+                                  booking?.selectedReturn?.afterDiscountPrice
+                                    ? booking?.selectedReturn
+                                        ?.afterDiscountPrice * count
+                                    : booking?.selectedReturn?.price * count
                                 )}
                           </p>
                         </div>
@@ -427,7 +452,7 @@ function Pemesanan() {
                   <strong>Biaya Lainnya</strong>
                 </p>
                 <div className="flex justify-between">
-                  <p>Pajak</p>
+                  <p>Pajak (10%)</p>
                   <p>{formatPrice(totalPajak(totalHarga))}</p>
                 </div>
                 {isDonated === true && (
@@ -480,7 +505,7 @@ function Pemesanan() {
                 Periksa Kembali
               </button>
               <button
-                onClick={handleBookingSubmit}
+                onClick={handleBookingSubmitcompleted}
                 className="bg-primary text-white p-3 flex items-center justify-center rounded-xl  hover:bg-darkprimary"
               >
                 {isLoading ? (
@@ -495,7 +520,7 @@ function Pemesanan() {
                     wrapperClass=""
                   />
                 ) : (
-                  "Ya, saya yakin"
+                  "Ya, saya yakin Completed"
                 )}
               </button>
             </div>
@@ -860,7 +885,7 @@ function Pemesanan() {
               <FormPenumpang
                 key={penumpang.id}
                 title={`Data Penumpang (${penumpang.name})`}
-                fields={penumpangFields}
+                fields={penumpangFields(penumpang.id)}
                 formData={penumpang}
                 handleInputChange={(e) => handleInputChange(e, penumpang.id)}
               />

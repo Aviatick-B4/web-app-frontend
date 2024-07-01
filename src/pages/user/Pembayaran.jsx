@@ -14,21 +14,19 @@ export default function Pembayaran() {
       state?.bookingFlight?.bookings?.selectedDeparture?.airplane?.airline || {}
   );
 
-  const payment = useSelector((state) => state?.bookingFlight?.payment?.data);
-  console.log("payment", payment);
-  const midtrans = useSelector((state) => state?.bookingFlight?.midtrans?.data);
-  console.log("midtrans", midtrans);
+  const payment = useSelector((state) => state?.bookingFlight);
   const bookingDetail = useSelector(
     (state) => state?.history?.bookingHistoryDetail
   );
+
+  console.log("booking", booking);
+  console.log("payment", payment);
   console.log("bookingDetail", bookingDetail);
 
   useEffect(() => {
     if (booking?.selectedReturn !== null) return settripType("roundtrip");
     if (booking?.selectedReturn === null) return settripType("singletrip");
   }, []);
-
-  console.log(tripType);
 
   const formatDate = (isoString) => {
     const date = new Date(isoString);
