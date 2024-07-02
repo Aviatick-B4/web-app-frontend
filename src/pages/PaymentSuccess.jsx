@@ -9,12 +9,13 @@ import { BookingContext } from "./user/BookingContext.jsx";
 
 function PaymentSuccess() {
   const navigate = useNavigate();
-  const { bookingDetail } = useContext(BookingContext);
+  const bookingDetail = useSelector((state) => state?.bookingFlight?.bookingHistoryDetail);
 
+  console.log("bookingDetail", bookingDetail);
   return (
     <div>
       <Navbar transparent={false} />
-      <div className="mt-40">
+      <div className="h-screen flex items-center justify-center">
         <div className="flex flex-col justify-center items-center gap-5">
           <img src=".\src\assets\success.gif" alt="" className="w-[100px]" />
           <p className="flex text-lg flex-col text-center">

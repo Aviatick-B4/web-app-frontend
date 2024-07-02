@@ -9,6 +9,7 @@ import {
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getBookingHistoryDetail } from "./historyActions";
+import { setBookingHistoryDetail } from "../reducers/historyReducers";
 
 export const getCountries = () => async (dispatch) => {
   try {
@@ -96,10 +97,22 @@ export const getBookingTicketCompleted =
       );
       setIsLoading(false);
       const bookingId = response.data.data.booking.id;
+
       await dispatch(
         getBookingHistoryDetail(bookingId, setIsLoading, setDetailLoading)
       );
       dispatch(setDataPayment(response.data));
+
+      const response1 = await axios.get(
+        `${url}/bookings/booking-history/${bookingId}`,
+        {
+          headers: {
+            accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      dispatch(setBookingHistoryDetail(response1.data.data));
       navigate("/pembayaran");
     } catch (error) {
       setIsLoading(false);
