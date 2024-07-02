@@ -898,7 +898,7 @@ function Pemesanan() {
             <div className="bg-white rounded-xl p-[32px] shadow-md">
               <div className="text-xl border-neutral gap-2  py-2 rounded-xl">
                 <div className="flex gap-3">
-                  <img src="/icos/charity.svg" className="w-14" />
+                  <img src="/icons/charity.svg" className="w-14" />
                   <div>
                     <p className="text-primary">
                       <strong>Donasi</strong>
