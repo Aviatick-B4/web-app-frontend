@@ -46,10 +46,6 @@ function Register() {
       setMessage("Email tidak valid.");
       return;
     }
-    if (password.length < 6) {
-      setMessage("Password harus lebih dari 6 karakter.");
-      return false;
-    }
 
     if (password !== confirmPassword) {
       setMessage("Password dan konfirmasi password tidak cocok.");

@@ -25,22 +25,22 @@ const CetakTiket = ({ flightDetail, bookingDetail }) => {
     <div>
       <button
         onClick={() => {
-          flightDetail?.status === "UNPAID"
+          flightDetail?.status === "UNPAID" || bookingDetail?.status === "UNPAID"
             ? navigate("/pembayaran")
             : handlePrint();
         }}
         className={`text-white font-medium text-sm py-2.5 px-12 rounded-full w-full mt-4 ${
-          flightDetail?.status === "UNPAID"
+          flightDetail?.status === "UNPAID" || bookingDetail?.status === "UNPAID"
             ? "bg-secondary hover:bg-darksecondary"
             : "bg-primary hover:bg-darkprimary"
         }`}
       >
-        {flightDetail?.status === "UNPAID" ? "Lanjut Bayar" : "Cetak Tiket"}
+        {flightDetail?.status === "UNPAID" || bookingDetail?.status === "UNPAID" ? "Lanjut Bayar" : "Cetak Tiket"}
       </button>
       <div style={{ display: "none" }}>
         <TicketContent
           ref={componentRef}
-          flightDetail={flightDetail}
+          flightDetail={flightDetail || bookingDetail}
           bookingDetail={bookingDetail}
           bookingHistoryDetail={bookingHistoryDetail}
           passengers={passengers}
@@ -117,7 +117,7 @@ const TicketContent = React.forwardRef(
               />
               <h1 className="text-2xl font-bold">Flight E-ticket</h1>
               <p className="text-slate-400 mb-8 pt-1">
-                Order ID {flightDetail?.booking_code}
+                Order ID {flightDetail?.booking_code || bookingDetail?.booking_code}
               </p>
             </div>
             <div className="flex-grow" />
@@ -142,7 +142,7 @@ const TicketContent = React.forwardRef(
                 {bookingDetail?.flight_detail.departure_flight.seat_class}
               </div>
               <div className="basis-0 flex-grow">
-                <p>{formatDateToDayMonthYear(flightDetail.date)} </p>
+                <p>{formatDateToDayMonthYear(bookingDetail?.date || bookingDetail?.createdAt)} </p>
                 <p>
                   {
                     bookingDetail?.flight_detail.departure_flight.airport
@@ -191,7 +191,7 @@ const TicketContent = React.forwardRef(
                 <div className="basis-0 flex-grow">
                   <p>
                     {formatDateToDayMonthYear(
-                      flightDetail?.flight_detail?.return_flight?.date
+                      bookingDetail?.flight_detail?.return_flight?.date
                     )}{" "}
                   </p>
                   <p>

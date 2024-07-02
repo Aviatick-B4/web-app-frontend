@@ -66,11 +66,6 @@ function Login() {
       return false;
     }
 
-    if (password.length < 6) {
-      setMessage("Password harus lebih dari 6 karakter.");
-      return false;
-    }
-
     let data = {
       emailOrPhoneNumber,
       password,
