@@ -345,7 +345,7 @@ export default function RiwayatPemesanan() {
                   {bookingDetail?.status === "UNPAID" && (
                     <p className="text-xs font-semibold text-secondary">
                       Bayar Sebelum:{" "}
-                      <span>{convertDateTime(bookingDetail?.paid_before)}</span>
+                      <span>{bookingDetail?.paid_before}</span>
                     </p>
                   )}
                   <h1 className="flex gap-2 font-bold text-lg my-2">
@@ -660,7 +660,7 @@ export default function RiwayatPemesanan() {
                   {bookingDetail?.status === "UNPAID" && (
                     <p className="text-sm font-semibold text-secondary">
                       Bayar Sebelum:{" "}
-                      <span>{convertDateTime(bookingDetail?.paid_before)}</span>
+                      <span>{bookingDetail?.paid_before}</span>
                     </p>
                   )}
                   <h1 className="flex gap-2 font-bold text-xl my-2">

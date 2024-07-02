@@ -9,7 +9,7 @@ import {
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getBookingHistoryDetail } from "./historyActions";
-import { setBookingHistoryDetail } from "../reducers/historyReducers";
+import { setBookingHistoryDetail, setHistorySuccess } from "../reducers/historyReducers";
 
 export const getCountries = () => async (dispatch) => {
   try {
