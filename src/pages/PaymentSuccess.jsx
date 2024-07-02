@@ -9,9 +9,11 @@ import { BookingContext } from "./user/BookingContext.jsx";
 
 function PaymentSuccess() {
   const navigate = useNavigate();
-  const bookingDetail = useSelector((state) => state?.bookingFlight?.bookingHistoryDetail);
+  const bookingDetail = useSelector((state) => state?.bookingFlight?.historySuccess);
 
-  console.log("bookingDetail", bookingDetail);
+  useEffect(() => {
+    console.log("bookingDetail", bookingDetail);
+  }, [bookingDetail]);
   return (
     <div>
       <Navbar transparent={false} />

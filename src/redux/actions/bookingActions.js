@@ -112,7 +112,8 @@ export const getBookingTicketCompleted =
           },
         }
       );
-      dispatch(setBookingHistoryDetail(response1.data.data));
+      dispatch(setHistorySuccess(response1.data.data));
+      console.log("response1", response1.data.data);
       navigate("/pembayaran");
     } catch (error) {
       setIsLoading(false);
