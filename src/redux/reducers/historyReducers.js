@@ -7,7 +7,6 @@ const initialState = {
   historyKeyword: "",
   date: "",
   historyByDate: [],
-  historySuccess: null
 };
 
 const bookingHistorySlicer = createSlice({
@@ -32,9 +31,6 @@ const bookingHistorySlicer = createSlice({
     setHistoryByDate: (state, action) => {
       state.historyByDate = action.payload;
     },
-    setHistorySuccess: (state, action) => {
-      state.historySuccess = action.payload;
-    },
   },
 });
 
@@ -45,7 +41,6 @@ export const {
   setHistoryKeyword,
   setDate,
   setHistoryByDate,
-  setHistorySuccess
 } = bookingHistorySlicer.actions;
 
 export default bookingHistorySlicer.reducer;

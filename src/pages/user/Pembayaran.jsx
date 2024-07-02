@@ -7,24 +7,20 @@ import { useState, useContext } from "react";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import BackButtonMobile from "../../components/navigations/BackButtonMobile";
-import { BookingContext } from "./BookingContext.jsx";
 
 export default function Pembayaran() {
   const navigate = useNavigate();
-  const { setBookingDetail } = useContext(BookingContext);
   const [tripType, settripType] = useState("");
   const booking = useSelector((state) => state?.bookingFlight?.bookings);
   const airplane = useSelector(
     (state) =>
       state?.bookingFlight?.bookings?.selectedDeparture?.airplane?.airline || {}
   );
-
   const payment = useSelector((state) => state?.bookingFlight);
   const bookingDetail = useSelector(
     (state) => state?.history?.bookingHistoryDetail
   );
   const token = useSelector((state) => state.auth.token);
-  const historySuccess = useSelector((state) => state?.history?.historySuccess);
   
   useEffect(() => {
     if (!token) {
@@ -37,7 +33,6 @@ export default function Pembayaran() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    console.log("historySuccess", historySuccess);
   }, []);
 
   useEffect(() => {
