@@ -15,7 +15,6 @@ export const getNotifications = () => async (dispatch, getState) => {
       },
     });
 
-    console.log("response", response.data.data);
     const sortedData = response.data.data.sort((a, b) => b.id - a.id);
     dispatch(setNotifications(sortedData));
   } catch (error) {

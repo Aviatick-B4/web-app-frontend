@@ -9,7 +9,6 @@ import {
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getBookingHistoryDetail } from "./historyActions";
-import { setBookingHistoryDetail, setHistorySuccess } from "../reducers/historyReducers";
 
 export const getCountries = () => async (dispatch) => {
   try {
@@ -103,17 +102,6 @@ export const getBookingTicketCompleted =
       );
       dispatch(setDataPayment(response.data));
 
-      const response1 = await axios.get(
-        `https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/bookings/booking-history/${bookingId}`,
-        {
-          headers: {
-            accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      dispatch(setHistorySuccess(response1.data.data));
-      console.log("response1", response1.data.data);
       navigate("/pembayaran");
     } catch (error) {
       setIsLoading(false);
