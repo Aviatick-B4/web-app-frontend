@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 function PaymentSuccess() {
   const navigate = useNavigate();
   const bookingDetail = useSelector((state) => state.history.bookingHistoryDetail || null);
+  console.log("Booking Detail:", bookingDetail);
   return (
     <div>
       <Navbar transparent={false} />
