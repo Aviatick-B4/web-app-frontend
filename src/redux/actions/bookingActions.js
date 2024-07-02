@@ -104,7 +104,7 @@ export const getBookingTicketCompleted =
       dispatch(setDataPayment(response.data));
 
       const response1 = await axios.get(
-        `${url}/bookings/booking-history/${bookingId}`,
+        `https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/bookings/booking-history/${bookingId}`,
         {
           headers: {
             accept: "application/json",
