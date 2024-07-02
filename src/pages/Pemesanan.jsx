@@ -312,7 +312,7 @@ function Pemesanan() {
     price = price * (penumpangData.length - infantPassengers);
     if (isDonated) return price + totalPajak(price) + 1000;
     return price + (price * 10) / 100;
-  };
+  };  
 
   // Group passengers by type and count
   const groupPenumpangData = penumpangData.reduce((acc, penumpang) => {

@@ -547,12 +547,6 @@ export default function RiwayatPemesanan() {
                             Rincian Harga
                           </p>
                           <div className="flex items-center justify-between text-xs text-main">
-                            <span className="font-normal">Pajak</span>
-                            <span className="font-medium">
-                              {formatPrice(bookingDetail?.price_detail?.tax)}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between text-xs text-main">
                             <span className="font-normal">Harga</span>
                             <span className="font-medium">
                               {formatPrice(
@@ -822,12 +816,6 @@ export default function RiwayatPemesanan() {
                       <p className="text-xs font-medium text-gray mb-2">
                         Rincian Harga
                       </p>
-                      <div className="flex items-center justify-between text-sm text-main">
-                        <span className="font-normal">Pajak</span>
-                        <span className="font-medium">
-                          {formatPrice(bookingDetail?.price_detail?.tax)}
-                        </span>
-                      </div>
                       <div className="flex items-center justify-between text-sm text-main">
                         <span className="font-normal">Harga</span>
                         <span className="font-medium">
