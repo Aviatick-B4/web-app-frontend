@@ -591,18 +591,10 @@ export default function RiwayatPemesanan() {
                         </div>
                       </div>
                       {bookingDetail?.status !== "CANCELED" && (
-                        <button
-                          className={`text-white font-medium text-sm py-2.5 px-10 rounded-full w-full mt-4 ${
-                            bookingDetail?.status === "UNPAID"
-                              ? "bg-secondary hover:bg-darksecondary"
-                              : "bg-primary hover:bg-darkprimary"
-                          }`}
-                          onClick={() => handleBookingSubmit()}
-                        >
-                          {bookingDetail?.status === "UNPAID"
-                            ? "Lanjut Bayar"
-                            : "Cetak Tiket"}
-                        </button>
+                        <CetakTiket
+                          flightDetail={selectedFlight}
+                          bookingDetail={bookingDetail}
+                        />
                       )}
                     </>
                   )}
@@ -872,24 +864,6 @@ export default function RiwayatPemesanan() {
                     </div>
                   </div>
 
-                  {/* {bookingDetail?.status !== "CANCELED" && (
-                    <button
-                      className={`text-white font-medium text-base py-2.5 px-10 rounded-full w-full mt-4 ${
-                        bookingDetail?.status === "UNPAID"
-                          ? "bg-secondary hover:bg-darksecondary"
-                          : "bg-primary hover:bg-darkprimary"
-                      }`}
-                      // onClick={() => {
-                      //   if (selectedFlight.status !== "UNPAID") {
-                      //     generatePDF(selectedFlight, bookingDetail);
-                      //   }
-                      // }}
-                    >
-                      {bookingDetail?.status === "UNPAID"
-                        ? "Lanjut Bayar"
-                        : "Cetak Tiket"}
-                    </button>
-                  )} */}
                   {bookingDetail?.status !== "CANCELED" && (
                     <CetakTiket
                       flightDetail={selectedFlight}

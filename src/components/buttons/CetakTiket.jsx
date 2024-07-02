@@ -11,36 +11,31 @@ const CetakTiket = ({ flightDetail, bookingDetail }) => {
   const navigate = useNavigate();
   const componentRef = useRef();
 
-  // useEffect(() => {
-  //   dispatch(getBookingHistoryDetail());
-  // }, [dispatch]);
-
   const bookingHistoryDetail = useSelector(
     (state) => state.history.bookingHistoryDetail
   );
-  const passengers = bookingDetail?.passengers || []; // Pastikan passengers didefinisikan sebagai array
+  const passengers = bookingDetail?.passengers || [];
 
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
     documentTitle: "E-tiket.pdf",
-    // documentTitle: `E-tiket_${flightDetail.booking_code}.pdf`,
   });
 
   return (
     <div>
       <button
         onClick={() => {
-          flightDetail.status === "UNPAID"
+          flightDetail?.status === "UNPAID"
             ? navigate("/pembayaran")
             : handlePrint();
         }}
-        className={`text-white font-medium text-sm py-2.5 px-10 rounded-full w-full mt-4 ${
-          flightDetail.status === "UNPAID"
+        className={`text-white font-medium text-sm py-2.5 px-12 rounded-full w-full mt-4 ${
+          flightDetail?.status === "UNPAID"
             ? "bg-secondary hover:bg-darksecondary"
             : "bg-primary hover:bg-darkprimary"
         }`}
       >
-        {flightDetail.status === "UNPAID" ? "Lanjut Bayar" : "Cetak Tiket"}
+        {flightDetail?.status === "UNPAID" ? "Lanjut Bayar" : "Cetak Tiket"}
       </button>
       <div style={{ display: "none" }}>
         <TicketContent

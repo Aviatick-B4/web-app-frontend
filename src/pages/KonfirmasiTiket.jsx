@@ -20,6 +20,10 @@ function KonfirmasiTiket() {
   const totalPassenger =
     booking?.passengers?.adults + booking.passengers?.children;
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const handleConfirmClick = () => {
     if (!user) {
       showSwal();
