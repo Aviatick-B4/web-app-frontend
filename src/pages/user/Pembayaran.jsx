@@ -24,10 +24,6 @@ export default function Pembayaran() {
     (state) => state?.history?.bookingHistoryDetail
   );
   const token = useSelector((state) => state.auth.token);
-
-  useEffect(() => {
-    setBookingDetail(bookingDetail);
-  }, [bookingDetail, setBookingDetail]);
   
   useEffect(() => {
     if (!token) {
