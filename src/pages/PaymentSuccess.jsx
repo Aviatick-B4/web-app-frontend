@@ -1,15 +1,16 @@
-import React, { Component, useEffect, useState } from "react";
+import React, { Component, useEffect, useState, useContext } from "react";
 import Navbar from "../components/navigations/Navbar";
 import Footer from "../components/navigations/Footer";
 import { Navigate, useNavigate } from "react-router-dom";
 import BackToTopButton from "../components/navigations/BackToTop";
 import CetakTiket from "../components/buttons/CetakTiket";
 import { useSelector } from "react-redux";
+import { BookingContext } from "./user/BookingContext.jsx";
 
 function PaymentSuccess() {
   const navigate = useNavigate();
-  const bookingDetail = useSelector((state) => state.history.bookingHistoryDetail || null);
-  console.log("Booking Detail:", bookingDetail);
+  const { bookingDetail } = useContext(BookingContext);
+
   return (
     <div>
       <Navbar transparent={false} />
