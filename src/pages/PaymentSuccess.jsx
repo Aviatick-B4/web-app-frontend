@@ -1,11 +1,10 @@
-import React, { Component, useEffect, useState, useContext } from "react";
+import React, { Component, useEffect, useState } from "react";
 import Navbar from "../components/navigations/Navbar";
 import Footer from "../components/navigations/Footer";
 import { Navigate, useNavigate } from "react-router-dom";
 import BackToTopButton from "../components/navigations/BackToTop";
 import CetakTiket from "../components/buttons/CetakTiket";
 import { useSelector } from "react-redux";
-import { BookingContext } from "./user/BookingContext.jsx";
 
 function PaymentSuccess() {
   const navigate = useNavigate();
@@ -23,12 +22,12 @@ function PaymentSuccess() {
             </span>
           </p>
           <div className="flex flex-col items-center gap-3 justify-center">
-            {bookingDetail?.status !== "CANCELED" && (
-              <CetakTiket
-                flightDetail={bookingDetail}
-                bookingDetail={bookingDetail}
-              />
-            )}
+            <button
+              className="bg-primary text-white rounded-full p-2 w-44 hover:bg-darkprimary"
+              onClick={() => navigate("/riwayat-pemesanan")}
+            >
+              Lihat Riwayat
+            </button>
             <button
               className="bg-secondary text-white rounded-full p-2 w-44 hover:bg-darksecondary"
               onClick={() => navigate("/")}

@@ -3,7 +3,7 @@ import Footer from "../../components/navigations/Footer";
 import Navbar from "../../components/navigations/Navbar";
 import * as React from "react";
 import { useSelector } from "react-redux";
-import { useState, useContext } from "react";
+import { useState} from "react";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import BackButtonMobile from "../../components/navigations/BackButtonMobile";
