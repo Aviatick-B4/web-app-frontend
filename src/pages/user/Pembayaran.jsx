@@ -24,6 +24,7 @@ export default function Pembayaran() {
     (state) => state?.history?.bookingHistoryDetail
   );
   const token = useSelector((state) => state.auth.token);
+  const historySuccess = useSelector((state) => state?.history?.historySuccess);
   
   useEffect(() => {
     if (!token) {
@@ -36,6 +37,7 @@ export default function Pembayaran() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    console.log("historySuccess", historySuccess);
   }, []);
 
   useEffect(() => {
