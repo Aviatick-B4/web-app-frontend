@@ -5,37 +5,20 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Link, useLocation } from "react-router-dom";
-import {
-  resetPassword,
-} from "../redux/actions/authActions";
 import { ThreeDots } from "react-loader-spinner";
+import { resetPassword, setMessage } from "../redux/actions/authActions";
 
 function ResetPassword() {
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const { password, confirmPassword, message } = useSelector(
-    (state) => state.auth
-  );
+  const { message } = useSelector((state) => state.auth);
 
   const location = useLocation();
   const token = new URLSearchParams(location.search).get("token");
-
-  const setPassword = (password) => ({
-    type: "SET_PASSWORD",
-    payload: password,
-  });
-
-  const setConfirmPassword = (confirmPassword) => ({
-    type: "SET_CONFIRM_PASSWORD",
-    payload: confirmPassword,
-  });
-
-  const setMessage = (message) => ({
-    type: "SET_MESSAGE",
-    payload: message,
-  });
 
   useEffect(() => {
     dispatch(setMessage("")); // Clear message when component mounts
@@ -43,6 +26,16 @@ function ResetPassword() {
 
   const toggleShowPassword = () => {
     setShowPassword((prevShowPassword) => !prevShowPassword);
+  };
+
+  const handlePasswordChange = (e) => {
+    console.log("Password changed:", e.target.value); // Debug log
+    setPassword(e.target.value);
+  };
+
+  const handleConfirmPasswordChange = (e) => {
+    console.log("Confirm Password changed:", e.target.value); // Debug log
+    setConfirmPassword(e.target.value);
   };
 
   const handleSubmit = (e) => {
@@ -110,7 +103,7 @@ function ResetPassword() {
                       placeholder="*******"
                       required
                       value={password}
-                      onChange={(e) => dispatch(setPassword(e.target.value))}
+                      onChange={handlePasswordChange}
                       className="appearance-none block w-full px-3 py-2 border-b border-gray placeholder-neutral focus:outline-none focus:ring-primary focus:border-primary text-sm"
                     />
                     <button
@@ -157,9 +150,7 @@ function ResetPassword() {
                       placeholder="*******"
                       required
                       value={confirmPassword}
-                      onChange={(e) =>
-                        dispatch(setConfirmPassword(e.target.value))
-                      }
+                      onChange={handleConfirmPasswordChange}
                       className="appearance-none block w-full px-3 py-2 border-b border-gray placeholder-neutral focus:outline-none focus:ring-primary focus:border-primary text-sm"
                     />
                     <button
