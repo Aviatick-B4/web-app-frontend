@@ -1,27 +1,27 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Beranda from "./pages/Beranda.jsx";
-import Pemesanan from "./pages/Pemesanan.jsx";
-import Pembayaran from "./pages/user/Pembayaran.jsx";
+import { ToastContainer } from "react-toastify";
+import { Provider } from "react-redux";
+import { persistor, store } from "./redux/store.js";
+import { PersistGate } from "redux-persist/integration/react";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { FilterButtonProvider } from "./components/buttons/FilterButtonContext.jsx";
+import Home from "./pages/Home.jsx";
+import Booking from "./pages/Booking.jsx";
+import Payment from "./pages/user/Payment.jsx";
 import PaymentSuccess from "./pages/PaymentSuccess.jsx";
 import Error from "./pages/errorPage.jsx";
-import HasilPencarian from "./pages/HasilPencarian.jsx";
-import RiwayatPemesanan from "./pages/user/RiwayatPemesanan.jsx";
+import SearchPage from "./pages/SearchPage.jsx";
+import BookingHistory from "./pages/user/BookingHistory.jsx";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
 import ResetPassword from "./pages/ResetPassword.jsx";
 import Register from "./pages/Register.jsx";
 import Login from "./pages/Login.jsx";
 import EmailVerification from "./pages/EmailVerification.jsx";
-import Akun from "./pages/user/Akun.jsx";
-import Notifikasi from "./pages/user/Notifikasi.jsx";
-import { ToastContainer } from "react-toastify";
-import { Provider } from "react-redux";
-import { persistor, store } from "./redux/store.js";
-import { PersistGate } from "redux-persist/integration/react";
-import KonfirmasiTiket from "./pages/KonfirmasiTiket.jsx";
-import { GoogleOAuthProvider } from "@react-oauth/google";
+import MyAccount from "./pages/user/MyAccount.jsx";
+import Notification from "./pages/user/Notification.jsx";
 import NotFound from "./pages/NotFound.jsx";
 import NoAccessToken from "./components/NoAccessToken.jsx";
-import { FilterButtonProvider } from "./components/buttons/FilterButtonContext.jsx";
+import TicketConfirmation from "./pages/TicketConfirmation.jsx";
 
 function App() {
   return (
@@ -31,19 +31,19 @@ function App() {
           <GoogleOAuthProvider clientId="1056659934932-di3nci2kbsr0ouiqjp5fnn0v1asocgg7.apps.googleusercontent.com">
             <BrowserRouter>
               <Routes>
-                <Route path="/pemesanan" element={<Pemesanan />} />
-                <Route path="/konfirmasi-tiket" element={<KonfirmasiTiket />} />
-                <Route path="/pembayaran" element={<Pembayaran />} />
+                <Route path="/pemesanan" element={<Booking />} />
+                <Route path="/konfirmasi-tiket" element={<TicketConfirmation />} />
+                <Route path="/pembayaran" element={<Payment />} />
                 <Route path="/success" element={<PaymentSuccess />} />
                 <Route path="/error" element={<Error />} />
-                <Route path="/" element={<Beranda />} />
+                <Route path="/" element={<Home />} />
                 <Route path="/daftar" element={<Register />} />
                 <Route path="/masuk" element={<Login />} />
                 <Route
                   path="/akun-saya"
                   element={
                     <div>
-                      <Akun />
+                      <MyAccount />
                       <NoAccessToken />
                     </div>
                   }
@@ -52,7 +52,7 @@ function App() {
                   path="/notifikasi"
                   element={
                     <div>
-                      <Notifikasi />
+                      <Notification />
                       <NoAccessToken />
                     </div>
                   }
@@ -60,21 +60,21 @@ function App() {
                 <Route path="/lupa-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/verifikasi-email" element={<EmailVerification />} />
-                <Route path="/hasil-pencarian" element={<HasilPencarian />} />
+                <Route path="/hasil-pencarian" element={<SearchPage />} />
                 <Route path="*" element={<NotFound />} />
                 <Route
                   path="/hasil-pencarian/promo/:promoId"
-                  element={<HasilPencarian />}
+                  element={<SearchPage />}
                 />
                 <Route
                   path="/hasil-pencarian/destinasi"
-                  element={<HasilPencarian />}
+                  element={<SearchPage />}
                 />
                 <Route
                   path="/riwayat-pemesanan"
                   element={
                     <div>
-                      <RiwayatPemesanan />
+                      <BookingHistory />
                       <NoAccessToken />
                     </div>
                   }

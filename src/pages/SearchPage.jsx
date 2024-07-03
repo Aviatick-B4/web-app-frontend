@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Footer from "../components/navigations/Footer";
 import Navbar from "../components/navigations/Navbar";
-import FlightCard from "../components/cards/HasilPencarianCard";
+import FlightCard from "../components/cards/SearchResultCard";
 import FilterButton from "../components/buttons/FilterButton";
 import FilterMultipleButton from "../components/buttons/FilterMultipleButton";
 import { useSelector, useDispatch } from "react-redux";

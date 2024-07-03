@@ -3,7 +3,7 @@ import Navbar from "../components/navigations/Navbar";
 import Footer from "../components/navigations/Footer";
 import { Navigate, useNavigate } from "react-router-dom";
 import BackToTopButton from "../components/navigations/BackToTop";
-import CetakTiket from "../components/buttons/CetakTiket";
+import CetakTiket from "../components/buttons/PrintTicket";
 import { useSelector } from "react-redux";
 
 function PaymentSuccess() {

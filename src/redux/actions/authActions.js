@@ -73,7 +73,7 @@ export const register =
     } catch (error) {
       setLoading(false);
       if (axios.isAxiosError(error)) {
-        throw error.response.data.message;
+        setMessage(error.response.data.message)
         return;
       }
       setMessage(error.message);
@@ -172,7 +172,7 @@ export const deleteAccount =
     }
   };
 
-export const updateUserProfile = (user) => async (dispatch, getState) => {
+export const updateUserProfile = (user, setProfileMessage) => async (dispatch, getState) => {
   const state = getState();
 
   const token = state.auth.token;
@@ -196,12 +196,17 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
       toast.success("Berhasil memperbarui profil");
     }
   } catch (error) {
-    toast.error("Error updating user profile:", error);
+    if (axios.isAxiosError(error)) {
+      setProfileMessage(error.response.data.message);
+      return;
+    }
+    setProfileMessage(error.message);
   }
 };
 
-export const changePassword = (data) => async (dispatch, getState) => {
+export const changePassword = (data, setLoading, setMessage) => async (dispatch, getState) => {
   const token = getState().auth.token;
+  setLoading(true);
   try {
     const response = await axios.post(`${url}/auth/change-password`, data, {
       headers: {
@@ -211,15 +216,17 @@ export const changePassword = (data) => async (dispatch, getState) => {
     });
 
     if (response.status === 200) {
+      setLoading(false);
       toast.success("Berhasil mengubah password");
       return true;
     }
   } catch (error) {
+    setLoading(false);
     if (axios.isAxiosError(error)) {
-      toast.error(error.response.data.message);
+      setMessage(error.response.data.message);
       return false;
     }
-    toast.error(error.message);
+    setMessage(error.message);
     return false;
   }
 };

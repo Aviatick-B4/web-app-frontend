@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Footer from "../../components/navigations/Footer";
 import Navbar from "../../components/navigations/Navbar";
-import RiwayatPemesananCard from "../../components/cards/RiwayatPemesananCard";
+import RiwayatPemesananCard from "../../components/cards/BookingHistoryCard";
 import FilterDate from "../../components/buttons/FilterDate";
 import MobileNavbar from "../../components/navigations/MobileNavbar";
 import {
@@ -15,7 +15,7 @@ import { useDebounce } from "../../utils/debounce";
 import { FaCalendarAlt } from "react-icons/fa";
 import ReactToPrint from "react-to-print";
 import { useReactToPrint } from "react-to-print";
-import CetakTiket from "../../components/buttons/CetakTiket";
+import CetakTiket from "../../components/buttons/PrintTicket";
 import {
   setBookingHistoryDetail,
   setHistoryKeyword,
@@ -91,7 +91,7 @@ export default function RiwayatPemesanan() {
   const handleCardClick = (flight) => {
     setSelectedFlight(selectedFlight === flight ? null : flight);
     dispatch(getBookingHistoryDetail(flight.id, setLoading, setDetailLoading));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const filteredFlightData =
@@ -344,8 +344,7 @@ export default function RiwayatPemesanan() {
                   </p>
                   {bookingDetail?.status === "UNPAID" && (
                     <p className="text-xs font-semibold text-secondary">
-                      Bayar Sebelum:{" "}
-                      <span>{bookingDetail?.paid_before}</span>
+                      Bayar Sebelum: <span>{bookingDetail?.paid_before}</span>
                     </p>
                   )}
                   <h1 className="flex gap-2 font-bold text-lg my-2">
@@ -659,8 +658,7 @@ export default function RiwayatPemesanan() {
                   </p>
                   {bookingDetail?.status === "UNPAID" && (
                     <p className="text-sm font-semibold text-secondary">
-                      Bayar Sebelum:{" "}
-                      <span>{bookingDetail?.paid_before}</span>
+                      Bayar Sebelum: <span>{bookingDetail?.paid_before}</span>
                     </p>
                   )}
                   <h1 className="flex gap-2 font-bold text-xl my-2">
