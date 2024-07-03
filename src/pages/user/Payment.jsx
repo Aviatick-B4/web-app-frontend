@@ -83,11 +83,13 @@ export default function Pembayaran() {
           <div className="container hidden md:flex gap-1.5 text-main text-xs font-medium -mt-4 md:-mt-0 md:-mb-4">
             <a href="/">Beranda</a>
             <img src="/icons/right-chev.svg" alt="chevron" />
-            <span>Cari Penerbangan</span>
+            <p className="cursor-pointer" onClick={(e) => { e.preventDefault(); navigate(-3); }}>Hasil Pencarian</p>
             <img src="/icons/right-chev.svg" alt="chevron" />
-            <span>Isi Data Diri</span>
+            <p>Konfirmasi Tiket</p>
             <img src="/icons/right-chev.svg" alt="chevron" />
-            <span>Pembayaran</span>
+            <p>Isi Data Diri</p>
+            <img src="/icons/right-chev.svg" alt="chevron" />
+            <a>Pembayaran</a>
           </div>
 
           <h1 className="container block md:hidden text-2xl font-bold text-main mb-3">

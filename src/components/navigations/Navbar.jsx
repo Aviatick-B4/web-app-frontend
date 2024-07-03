@@ -81,11 +81,11 @@ function Navbar({ transparent }) {
     }
   };
 
-  function getInitials(fullName) {
+  function getInitials(fullName, familyName) {
     if (!fullName) return "";
-    const names = fullName.split(" ");
-    const initials = names.map((name) => name[0]).join("");
-    return initials.toUpperCase();
+    const firstInitial = fullName[0];
+    const lastInitial = familyName ? familyName[0] : "";
+    return (firstInitial + lastInitial).toUpperCase();
   }
 
   const handleMobileMenuToggle = () => {
@@ -177,7 +177,7 @@ function Navbar({ transparent }) {
               </Link>
 
               <div className="rounded-full bg-gray/70 w-9 h-9 text-center text-white font-medium text-base flex items-center justify-center">
-                {getInitials(user?.fullName)}
+                {getInitials(user?.fullName, user?.familyName)}
               </div>
             </div>
             {showDropdown && (

@@ -127,7 +127,7 @@ export default function Notifikasi() {
         <div className="container">
           {/* Breadcrumb */}
           <div className="hidden md:flex gap-1.5 text-main text-sm font-medium -mt-4 md:-mt-0 mb-10 md:mb-5">
-            <span>Beranda</span>
+            <a href="/">Beranda</a>
             <img src="/icons/right-chev.svg" alt="chevron" />
             <span>Notifikasi</span>
           </div>

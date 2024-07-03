@@ -112,7 +112,7 @@ function KonfirmasiTiket() {
           <div className="container hidden md:flex gap-1.5 text-main text-xs font-medium -mt-4 md:-mt-0 mb-10 md:mb-5">
             <a href="/">Beranda</a>
             <img src="/icons/right-chev.svg" alt="chevron" />
-            <a href="/hasil-pencarian">Hasil Pencarian</a>
+            <p className="cursor-pointer" onClick={(e) => { e.preventDefault(); navigate(-1); }}>Hasil Pencarian</p>
             <img src="/icons/right-chev.svg" alt="chevron" />
             <a>Konfirmasi Tiket</a>
           </div>

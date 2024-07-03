@@ -4,7 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   resetPassword,
 } from "../redux/actions/authActions";
@@ -12,6 +12,7 @@ import { ThreeDots } from "react-loader-spinner";
 
 function ResetPassword() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -52,7 +53,7 @@ function ResetPassword() {
       return;
     }
     setIsLoading(true); // Start loading
-    dispatch(resetPassword(password, token)).finally(() => {
+    dispatch(resetPassword(password, token, navigate)).finally(() => {
       setIsLoading(false);
     }); // Stop loading
   };

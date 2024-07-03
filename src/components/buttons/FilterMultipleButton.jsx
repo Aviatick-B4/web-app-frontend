@@ -9,7 +9,7 @@ const FilterButton = ({
   selectedOption,
   notif,
 }) => {
-  const { openButton, setOpenButton } = useFilterButton();
+  const [openButton, setOpenButton] = useState(null);
   const isOpen = openButton === label;
   const [isClosing, setIsClosing] = useState(false);
   const ref = useRef(null);
@@ -24,30 +24,11 @@ const FilterButton = ({
 
   const handleOptionClick = (option) => {
     onOptionSelect(option);
-    setOpenButton(null);
-    setIsClosing(false);
   };
 
   const handleButtonClick = () => {
-    setOpenButton(label);
-  };
-
-  const handleClickOutside = (event) => {
-    if (ref.current && !ref.current.contains(event.target)) {
-      closeModal();
-    }
-  };
-
-  useEffect(() => {
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isOpen]);
+  setOpenButton(isOpen ? null : label);
+};
 
   return (
     <>

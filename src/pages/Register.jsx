@@ -37,7 +37,7 @@ function Register() {
 
     // Basic validation
     if (!email || !password || !fullName || !phoneNumber || !confirmPassword) {
-      setMessage("Semua bidang wajib diisi.");
+      setMessage("Semua field wajib diisi.");
       return;
     }
 
@@ -49,6 +49,21 @@ function Register() {
 
     if (password !== confirmPassword) {
       setMessage("Password dan konfirmasi password tidak cocok.");
+      return;
+    }
+
+    if (phoneNumber.length < 11) {
+      setMessage("Nomor telepon minimal 11 karakter");
+      return;
+    }
+
+    if (phoneNumber.length > 12) {
+      setMessage("Nomor telepon tidak boleh lebih dari 13 karakter");
+      return;
+    }
+
+    if (password.length < 6) {
+      setMessage("Password minimal 6 karakter");
       return;
     }
 
@@ -160,23 +175,17 @@ function Register() {
                       Nomor Telepon
                     </label>
                     <div className="mt-1">
-                      <div className="flex items-center p-2 px-3">
-                        <span className="text-sm text-primary font-medium">
-                          +62
-                        </span>
-
-                        <input
-                          id="phoneNumber"
-                          name="phoneNumber"
-                          type="text"
-                          autoComplete="phoneNumber"
-                          placeholder="87846737738"
-                          required
-                          value={phoneNumber} // value diatur menjadi nilai dari state email
-                          onChange={(e) => setPhoneNumber(e.target.value)} // setiap kali nilai input berubah, state email akan diupdate
-                          className="appearance-none block w-full px-3 py-2 border-b border-gray placeholder-neutral focus:outline-none focus:ring-primary focus:border-primary text-sm"
-                        />
-                      </div>
+                      <input
+                        id="phoneNumber"
+                        name="phoneNumber"
+                        type="text"
+                        autoComplete="phoneNumber"
+                        placeholder="87846737738"
+                        required
+                        value={phoneNumber} // value diatur menjadi nilai dari state email
+                        onChange={(e) => setPhoneNumber(e.target.value)} // setiap kali nilai input berubah, state email akan diupdate
+                        className="appearance-none block w-full px-3 py-2 border-b border-gray placeholder-neutral focus:outline-none focus:ring-primary focus:border-primary text-sm"
+                      />
                     </div>
                   </div>
                   <div className="space-y-1 relative">

@@ -1,12 +1,11 @@
 import React, { useState } from "react";
-import "react-toastify/dist/ReactToastify.css";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { forgotPassword } from "../redux/actions/authActions";
-import { useNavigate } from "react-router-dom";
+import Slider from "react-slick";
+import "react-toastify/dist/ReactToastify.css";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -19,7 +18,7 @@ function ForgotPassword() {
     dispatch(forgotPassword(email, navigate));
   };
 
-  const settings = {
+  const sliderSettings = {
     dots: false,
     infinite: true,
     speed: 500,
@@ -54,43 +53,40 @@ function ForgotPassword() {
           </div>
 
           <div className="mt-8">
-            <div className="mt-6">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-xs md:text-sm font-medium text-gray"
-                  >
-                    Email
-                  </label>
-                  <div className="mt-1">
-                    <input
-                      id="email"
-                      name="email"
-                      type="email"
-                      autoComplete="email"
-                      placeholder="Masukkan email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="appearance-none block w-full px-3 py-2 border-b border-gray placeholder-neutral focus:outline-none focus:ring-primary focus:border-primary text-sm"
-                    />
-                  </div>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-xs md:text-sm font-medium text-gray"
+                >
+                  Email
+                </label>
+                <div className="mt-1">
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder="Masukkan email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="appearance-none block w-full px-3 py-2 border-b border-gray placeholder-neutral focus:outline-none focus:ring-primary focus:border-primary text-sm"
+                  />
                 </div>
+              </div>
 
-                <div>
-                  <button
-                    type="button"
-                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-full shadow-sm text-sm md:text-base font-medium text-white bg-primary hover:bg-darkprimary focus:outline-none"
-                    onClick={handleSubmit}
-                  >
-                    Kirim Tautan
-                  </button>
-                </div>
-              </form>
-              {/* {message && <p className="mt-4 text-green-500">{message}</p>}
-              {error && <p className="mt-4 text-red-500">{error}</p>} */}
-            </div>
+              <div>
+                <button
+                  type="submit"
+                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-full shadow-sm text-sm md:text-base font-medium text-white bg-primary hover:bg-darkprimary focus:outline-none"
+                >
+                  Kirim Tautan
+                </button>
+              </div>
+            </form>
+            {/* {message && <p className="mt-4 text-green-500">{message}</p>}
+            {error && <p className="mt-4 text-red-500">{error}</p>} */}
           </div>
         </div>
       </div>
@@ -102,7 +98,7 @@ function ForgotPassword() {
         />
         <div className="absolute inset-0 bg-black opacity-20"></div>
         <div className="absolute inset-0 top-[50%] items-center text-center tracking-[2px] justify-center text-white font-thin text-base px-4 overflow-x-hidden">
-          <Slider {...settings}>
+          <Slider {...sliderSettings}>
             <h3>Nikmati kemudahan memesan tiket pesawat di Aviatick.</h3>
             <h3>
               Temukan penawaran eksklusif dengan opsi pembayaran fleksibel.

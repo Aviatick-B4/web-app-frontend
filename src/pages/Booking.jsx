@@ -4,7 +4,7 @@ import Footer from "../components/navigations/Footer";
 import modalCss from "../components/navigations/Navbar";
 import { useNavigate } from "react-router-dom";
 import BackToTopButton from "../components/navigations/BackToTop";
-import FormPenumpang from "../components/cards/FormPenumpang";
+import FormPenumpang from "../components/cards/PassengerForm";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getCountries,
