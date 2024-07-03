@@ -363,15 +363,33 @@ export const forgotPassword = (email, navigate) => async (dispatch) => {
 };
 
 // Action creators for reset password
+export const setPassword = (password) => ({
+  type: "SET PASSWORD",
+  payload: password,
+});
+
+export const setConfirmPassword = (confirmPassword) => ({
+  type: "SET CONFIRM PASSWORD",
+  payload: confirmPassword,
+});
+
+export const setMessage = (message) => ({
+  type: "SET MESSAGE",
+  payload: message,
+});
+
 export const resetPassword =
   (password, token, navigate) => async (dispatch) => {
     try {
+      console.log("Token being sent:", token); // Log token for debugging
+
       const response = await axios.post(
         `https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/reset-password?token=${token}`,
         { password },
         {
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Include token in headers if required by API
           },
         }
       );
@@ -382,7 +400,7 @@ export const resetPassword =
       }
 
       toast.success("Password reset successful");
-      localStorage.removeItem("userEmail"); // Remove userEmail from localStorage
+      localStorage.removeItem("userEmail"); // Remove userEmail from localStorage
       navigate("/masuk");
     } catch (error) {
       toast.error("Error occurred during password reset:", error.message);
