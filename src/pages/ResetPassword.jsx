@@ -5,9 +5,6 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import {
-  resetPassword,
-} from "../redux/actions/authActions";
 import { ThreeDots } from "react-loader-spinner";
 import { resetPassword, setMessage } from "../redux/actions/authActions";
 
