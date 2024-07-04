@@ -6,21 +6,23 @@ import MobileNavbar from "../components/navigations/MobileNavbar";
 import Footer from "../components/navigations/Footer";
 import BackButtonMobile from "../components/navigations/BackButtonMobile";
 import { toast } from "react-toastify";
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
 function KonfirmasiTiket() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const booking = useSelector((state) => state?.bookingFlight?.bookings || null);
+  const booking = useSelector(
+    (state) => state?.bookingFlight?.bookings || null
+  );
   const user = useSelector((state) => state?.auth?.user || null);
   const totalPassenger =
     booking?.passengers?.adults + booking.passengers?.children;
 
-    useEffect(() => {
-      console.log("booking",booking);
-    }, [booking]);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleConfirmClick = () => {
     if (!user) {
@@ -73,22 +75,25 @@ function KonfirmasiTiket() {
   };
 
   const showSwal = () => {
-    withReactContent(Swal).fire({
-      title: "<b>Kamu belum masuk nih!</b>",
-      html: `
+    withReactContent(Swal)
+      .fire({
+        title: "<b>Kamu belum masuk nih!</b>",
+        html: `
         Silakan masuk terlebih dahulu untuk memesan tiket.
       `,
-      showCloseButton: true,
-      focusConfirm: false,
-      confirmButtonText: 'Masuk',
-      customClass: {
-          confirmButton: 'inline-block bg-[#00A8D0] hover:bg-darkprimary text-white px-12 py-2 rounded-full'
-      }
-    }).then((result) => {
-      if (result.isConfirmed) {
-        navigate("/masuk");
-      }
-    });
+        showCloseButton: true,
+        focusConfirm: false,
+        confirmButtonText: "Masuk",
+        customClass: {
+          confirmButton:
+            "inline-block bg-[#00A8D0] hover:bg-darkprimary text-white px-12 py-2 rounded-full",
+        },
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          navigate("/masuk");
+        }
+      });
   };
 
   return (
@@ -107,7 +112,7 @@ function KonfirmasiTiket() {
           <div className="container hidden md:flex gap-1.5 text-main text-xs font-medium -mt-4 md:-mt-0 mb-10 md:mb-5">
             <a href="/">Beranda</a>
             <img src="/icons/right-chev.svg" alt="chevron" />
-            <a href="/hasil-pencarian">Hasil Pencarian</a>
+            <p className="cursor-pointer" onClick={(e) => { e.preventDefault(); navigate(-1); }}>Hasil Pencarian</p>
             <img src="/icons/right-chev.svg" alt="chevron" />
             <a>Konfirmasi Tiket</a>
           </div>
@@ -118,16 +123,20 @@ function KonfirmasiTiket() {
                 {booking.selectedDeparture.flight.departure.city}
               </h1>
               {booking.selectedReturn ? (
-              <svg
-                className="w-3 md:w-4 fill-main"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 448 512"
-              >
-                <path d="M438.6 150.6c12.5-12.5 12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.7 96 32 96C14.3 96 0 110.3 0 128s14.3 32 32 32l306.7 0-41.4 41.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l96-96zm-333.3 352c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 416 416 416c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0 41.4-41.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3l96 96z" />
-              </svg>
+                <svg
+                  className="w-3 md:w-4 fill-main"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 448 512"
+                >
+                  <path d="M438.6 150.6c12.5-12.5 12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.7 96 32 96C14.3 96 0 110.3 0 128s14.3 32 32 32l306.7 0-41.4 41.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l96-96zm-333.3 352c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 416 416 416c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0 41.4-41.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3l96 96z" />
+                </svg>
               ) : (
-                <svg className="w-3 md:w-4 fill-main" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-                  <path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/>
+                <svg
+                  className="w-3 md:w-4 fill-main"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 448 512"
+                >
+                  <path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z" />
                 </svg>
               )}
               <h1 className="font-semibold text-main text-xl md:text-2xl">
@@ -410,7 +419,9 @@ function KonfirmasiTiket() {
                     </p>
                   )}
                 </div>
-                <p className="text-xs">*Sudah termasuk promo</p>
+                {booking?.selectedDeparture?.afterDiscountPrice && (
+                  <p className="text-xs">*Sudah termasuk promo</p>
+                )}
               </div>
 
               <button

@@ -46,7 +46,6 @@ const HasilPencarianCard = ({
   };
 
   const handleClick = () => {
-    console.log("Card clicked, flight data:", flight);
     onSelect(flight, type);
   };
 

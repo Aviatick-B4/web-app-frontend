@@ -17,14 +17,13 @@ export const getFavDestinations = () => async (dispatch) => {
   try {
     const response = await axios.get(`${url}/flights/favorite?page=1&limit=10`);
 
-    console.log("fav", response.data.data);
     dispatch(setFavDestinations(response.data.data));
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(error.message);
+      toast.error(error.message);
       return;
     }
-    console.error(error.message);
+    toast.error(error.message);
   }
 };
 
@@ -33,15 +32,14 @@ export const getFavDestinationsByFilter = (continent) => async (dispatch) => {
     const response = await axios.get(
       `${url}/flights/favorite?arrivalContinent=${continent}&page=1&limit=5`
     );
-
-    console.log("continent", response.data.data);
+    
     dispatch(setFavDestinationsByFilter(response.data.data));
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(error.message);
+      toast.error(error.message);
       return;
     }
-    console.error(error.message);
+    toast.error(error.message);
   }
 };
 
@@ -63,9 +61,9 @@ export const getFavDestinationById =
     } catch (error) {
       setLoading(false);
       if (axios.isAxiosError(error)) {
-        console.error(error.message);
+        toast.error(error.message);
         return;
       }
-      console.error(error.message);
+      toast.error(error.message);
     }
   };

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Footer from "../../components/navigations/Footer";
 import Navbar from "../../components/navigations/Navbar";
-import RiwayatPemesananCard from "../../components/cards/RiwayatPemesananCard";
+import RiwayatPemesananCard from "../../components/cards/BookingHistoryCard";
 import FilterDate from "../../components/buttons/FilterDate";
 import MobileNavbar from "../../components/navigations/MobileNavbar";
 import {
@@ -15,7 +15,7 @@ import { useDebounce } from "../../utils/debounce";
 import { FaCalendarAlt } from "react-icons/fa";
 import ReactToPrint from "react-to-print";
 import { useReactToPrint } from "react-to-print";
-import CetakTiket from "../../components/buttons/CetakTiket";
+import CetakTiket from "../../components/buttons/PrintTicket";
 import {
   setBookingHistoryDetail,
   setHistoryKeyword,
@@ -91,7 +91,7 @@ export default function RiwayatPemesanan() {
   const handleCardClick = (flight) => {
     setSelectedFlight(selectedFlight === flight ? null : flight);
     dispatch(getBookingHistoryDetail(flight.id, setLoading, setDetailLoading));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const filteredFlightData =
@@ -344,8 +344,7 @@ export default function RiwayatPemesanan() {
                   </p>
                   {bookingDetail?.status === "UNPAID" && (
                     <p className="text-xs font-semibold text-secondary">
-                      Bayar Sebelum:{" "}
-                      <span>{convertDateTime(bookingDetail?.paid_before)}</span>
+                      Bayar Sebelum: <span>{bookingDetail?.paid_before}</span>
                     </p>
                   )}
                   <h1 className="flex gap-2 font-bold text-lg my-2">
@@ -547,12 +546,6 @@ export default function RiwayatPemesanan() {
                             Rincian Harga
                           </p>
                           <div className="flex items-center justify-between text-xs text-main">
-                            <span className="font-normal">Pajak</span>
-                            <span className="font-medium">
-                              {formatPrice(bookingDetail?.price_detail?.tax)}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between text-xs text-main">
                             <span className="font-normal">Harga</span>
                             <span className="font-medium">
                               {formatPrice(
@@ -591,18 +584,10 @@ export default function RiwayatPemesanan() {
                         </div>
                       </div>
                       {bookingDetail?.status !== "CANCELED" && (
-                        <button
-                          className={`text-white font-medium text-sm py-2.5 px-10 rounded-full w-full mt-4 ${
-                            bookingDetail?.status === "UNPAID"
-                              ? "bg-secondary hover:bg-darksecondary"
-                              : "bg-primary hover:bg-darkprimary"
-                          }`}
-                          onClick={() => handleBookingSubmit()}
-                        >
-                          {bookingDetail?.status === "UNPAID"
-                            ? "Lanjut Bayar"
-                            : "Cetak Tiket"}
-                        </button>
+                        <CetakTiket
+                          flightDetail={selectedFlight}
+                          bookingDetail={bookingDetail}
+                        />
                       )}
                     </>
                   )}
@@ -673,8 +658,7 @@ export default function RiwayatPemesanan() {
                   </p>
                   {bookingDetail?.status === "UNPAID" && (
                     <p className="text-sm font-semibold text-secondary">
-                      Bayar Sebelum:{" "}
-                      <span>{convertDateTime(bookingDetail?.paid_before)}</span>
+                      Bayar Sebelum: <span>{bookingDetail?.paid_before}</span>
                     </p>
                   )}
                   <h1 className="flex gap-2 font-bold text-xl my-2">
@@ -831,12 +815,6 @@ export default function RiwayatPemesanan() {
                         Rincian Harga
                       </p>
                       <div className="flex items-center justify-between text-sm text-main">
-                        <span className="font-normal">Pajak</span>
-                        <span className="font-medium">
-                          {formatPrice(bookingDetail?.price_detail?.tax)}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm text-main">
                         <span className="font-normal">Harga</span>
                         <span className="font-medium">
                           {formatPrice(
@@ -872,24 +850,6 @@ export default function RiwayatPemesanan() {
                     </div>
                   </div>
 
-                  {/* {bookingDetail?.status !== "CANCELED" && (
-                    <button
-                      className={`text-white font-medium text-base py-2.5 px-10 rounded-full w-full mt-4 ${
-                        bookingDetail?.status === "UNPAID"
-                          ? "bg-secondary hover:bg-darksecondary"
-                          : "bg-primary hover:bg-darkprimary"
-                      }`}
-                      // onClick={() => {
-                      //   if (selectedFlight.status !== "UNPAID") {
-                      //     generatePDF(selectedFlight, bookingDetail);
-                      //   }
-                      // }}
-                    >
-                      {bookingDetail?.status === "UNPAID"
-                        ? "Lanjut Bayar"
-                        : "Cetak Tiket"}
-                    </button>
-                  )} */}
                   {bookingDetail?.status !== "CANCELED" && (
                     <CetakTiket
                       flightDetail={selectedFlight}

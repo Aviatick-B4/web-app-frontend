@@ -14,11 +14,12 @@ import { updateUserProfile } from "../../redux/actions/authActions";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { ThreeDots } from "react-loader-spinner";
+import { getCountries } from "../../redux/actions/bookingActions";
 
 export default function Akun() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  // const [loading, setLoading] = useState(true); 
+  // const [loading, setLoading] = useState(true);
   const [fullName, setFullName] = useState("");
   const [familyName, setFamilyName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -38,38 +39,41 @@ export default function Akun() {
   const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
   const [activeMenuItem, setActiveMenuItem] = useState("ubahProfil");
   const [loading, setLoading] = useState(false);
-
-  const user = useSelector((state) => state.auth.user);
+  const [message, setMessage] = useState("");
+  const [profileMessage, setProfileMessage] = useState("");
+  const countries = useSelector((state) => state?.bookingFlight?.countries);
+  const user = useSelector((state) => state?.auth?.user);
+  const login = useSelector((state) => state?.auth?.login);
 
   useEffect(() => {
     if (!user) {
       navigate("/masuk");
-      toast.error("Ups.. tidak dapat mengakses halaman, silakan masuk terlebih dahulu.");
+      toast.error(
+        "Ups.. tidak dapat mengakses halaman, silakan masuk terlebih dahulu."
+      );
     } else {
       setFullName(user.fullName);
-      setFamilyName(user.familyName)
+      setFamilyName(user.familyName);
       setPhoneNumber(user.phoneNumber);
       setEmail(user.email);
       setIdentityType(user.identityType);
       setIdentityNumber(user.identityNumber);
       setNationality(user.nationality);
     }
-    // setLoading(false);
   }, [user, dispatch, navigate]);
 
-  if (!user) {
-    return null; // Return null to prevent rendering if user is not logged in
-  }
+  useEffect(() => {
+    dispatch(getCountries());
+  }, []);
 
-  // if (loading) {
-  //   return <div>Loading...</div>; // Show a loading indicator while fetching user data
-  // }
+  if (!user) {
+    return null;
+  }
 
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     const updatedUser = {
       fullName,
-      familyName,
       phoneNumber,
       email,
       identityType,
@@ -77,21 +81,40 @@ export default function Akun() {
       nationality,
     };
 
+    const requiredFields = ["identityNumber", "nationality"];
+    for (const key of requiredFields) {
+      if (!updatedUser[key]) {
+        setProfileMessage(`${key} tidak boleh kosong`);
+        return;
+      }
+    }
+
     try {
-      const success = await dispatch(updateUserProfile(updatedUser));
+      const success = await dispatch(updateUserProfile(updatedUser, setProfileMessage));
       if (success) {
         dispatch(loadUserProfile());
+        setProfileMessage("")
       }
     } catch (error) {
-      toast.error(error.message);
+      setProfileMessage(error.message);
     }
   };
 
   const handleChangePassword = async (e) => {
     e.preventDefault();
 
+    if (!oldPassword || !newPassword || !confirmNewPassword) {
+      setMessage("Field Harus Diisi");
+      return;
+    }
+
     if (newPassword !== confirmNewPassword) {
-      toast.error("Password tidak sesuai");
+      setMessage("Password tidak sesuai");
+      return;
+    }
+
+    if (newPassword.length < 6 || confirmNewPassword.length < 6) {
+      setMessage("Password harus minimal 6 karakter");
       return;
     }
 
@@ -101,13 +124,15 @@ export default function Akun() {
       confirmNewPassword,
     };
 
-    const success = await dispatch(changePassword(data));
+    const success = await dispatch(changePassword(data, setLoading, setMessage));
 
     if (success) {
       setOldPassword("");
       setNewPassword("");
       setConfirmNewPassword("");
       setShowPasswordFields(false);
+      handleEditProfileToggle();
+      setActiveMenuItem("ubahProfil");
     }
   };
 
@@ -128,7 +153,7 @@ export default function Akun() {
     setShowEditFields(false);
     setShowPasswordFields(true);
   };
-
+  
   const handleMenuItemClick = (menuItem) => {
     setActiveMenuItem(menuItem);
   };
@@ -167,13 +192,6 @@ export default function Akun() {
         </div>
 
         <div className="container">
-          {/* Breadcrumb */}
-          <div className="hidden md:flex gap-1.5 text-main text-sm font-medium -mt-4 md:-mt-0 mb-10 md:mb-5">
-            <span>Beranda</span>
-            <img src="/icons/right-chev.svg" alt="chevron" />
-            <span>Akun</span>
-          </div>
-
           {/* Card Section */}
           <div className="flex flex-col md:flex-row gap-4 mt-5">
             {/* Akun Menu */}
@@ -198,46 +216,51 @@ export default function Akun() {
                   Ubah Profil
                 </span>
               </div>
-              <div
-                onClick={() => {
-                  handlePasswordChangeToggle();
-                  handleMenuItemClick("gantiPassword");
-                }}
-                className={`px-4 py-4 flex gap-3 items-center cursor-pointer ${
-                  activeMenuItem === "gantiPassword" ? "bg-primary/15" : ""
-                }`}
-              >
-                <svg
-                  className="w-4 h-4 fill-secondary"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 512 512"
-                >
-                  <path d="M471.6 21.7c-21.9-21.9-57.3-21.9-79.2 0L362.3 51.7l97.9 97.9 30.1-30.1c21.9-21.9 21.9-57.3 0-79.2L471.6 21.7zm-299.2 220c-6.1 6.1-10.8 13.6-13.5 21.9l-29.6 88.8c-2.9 8.6-.6 18.1 5.8 24.6s15.9 8.7 24.6 5.8l88.8-29.6c8.2-2.7 15.7-7.4 21.9-13.5L437.7 172.3 339.7 74.3 172.4 241.7zM96 64C43 64 0 107 0 160V416c0 53 43 96 96 96H352c53 0 96-43 96-96V320c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V160c0-17.7 14.3-32 32-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H96z" />
-                </svg>
-                <span className="text-main font-medium text-sm">
-                  Ganti Password
-                </span>
-              </div>
-              <div
-                onClick={() => {
-                  handleConfirmModalToggle();
-                  handleMenuItemClick("hapusAkun");
-                }}
-                className={`px-4 py-4 flex gap-3 items-center cursor-pointer ${
-                  activeMenuItem === "hapusAkun" ? "bg-primary/15" : ""
-                }`}
-              >
-                <svg
-                  className="w-4 h-4 fill-danger"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 640 512"
-                >
-                  <path d="M96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM0 482.3C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3zM471 143c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z" />
-                </svg>
-                <span className="text-danger font-medium text-sm">
-                  Hapus Akun
-                </span>
-              </div>
+              {login !== "google" && (
+                <>
+                  <div
+                    onClick={() => {
+                      handlePasswordChangeToggle();
+                      handleMenuItemClick("gantiPassword");
+                    }}
+                    className={`px-4 py-4 flex gap-3 items-center cursor-pointer ${
+                      activeMenuItem === "gantiPassword" ? "bg-primary/15" : ""
+                    }`}
+                  >
+                    <svg
+                      className="w-4 h-4 fill-secondary"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 512 512"
+                    >
+                      <path d="M471.6 21.7c-21.9-21.9-57.3-21.9-79.2 0L362.3 51.7l97.9 97.9 30.1-30.1c21.9-21.9 21.9-57.3 0-79.2L471.6 21.7zm-299.2 220c-6.1 6.1-10.8 13.6-13.5 21.9l-29.6 88.8c-2.9 8.6-.6 18.1 5.8 24.6s15.9 8.7 24.6 5.8l88.8-29.6c8.2-2.7 15.7-7.4 21.9-13.5L437.7 172.3 339.7 74.3 172.4 241.7zM96 64C43 64 0 107 0 160V416c0 53 43 96 96 96H352c53 0 96-43 96-96V320c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V160c0-17.7 14.3-32 32-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H96z" />
+                    </svg>
+                    <span className="text-main font-medium text-sm">
+                      Ganti Password
+                    </span>
+                  </div>
+
+                  <div
+                    onClick={() => {
+                      handleConfirmModalToggle();
+                      handleMenuItemClick("hapusAkun");
+                    }}
+                    className={`px-4 py-4 flex gap-3 items-center cursor-pointer ${
+                      activeMenuItem === "hapusAkun" ? "bg-primary/15" : ""
+                    }`}
+                  >
+                    <svg
+                      className="w-4 h-4 fill-danger"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 640 512"
+                    >
+                      <path d="M96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM0 482.3C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3zM471 143c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z" />
+                    </svg>
+                    <span className="text-danger font-medium text-sm">
+                      Hapus Akun
+                    </span>
+                  </div>
+                </>
+              )}
               <div
                 onClick={() => {
                   handleConfirmLogoutModalToggle();
@@ -282,12 +305,6 @@ export default function Akun() {
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
                       />
-                      <TextInput
-                        label="Nama Keluarga"
-                        name="familyName"
-                        value={familyName}
-                        onChange={(e) => setFamilyName(e.target.value)}
-                      />
                     </div>
                     <div className="flex flex-col md:flex-row gap-6">
                       <TextInput
@@ -319,17 +336,20 @@ export default function Akun() {
                       />
                     </div>
                     <div className="flex flex-col md:flex-row gap-6">
-                      <TextInput
+                      <SelectInput
                         label="Kewarganegaraan"
                         name="nationality"
+                        options={countries.map(country => country.name.common)}
                         value={nationality}
                         onChange={(e) => setNationality(e.target.value)}
                       />
                     </div>
                     {/* Submit Button */}
-                    <div className="flex justify-end">
+                    <p className="text-sm text-red-500 font-medium">{profileMessage}</p>
+                    <div className={`flex justify-end ${!profileMessage ? '-mt-4' : ''}`}>
                       <button
                         type="submit"
+                        onSubmit={handleUpdateProfile}
                         className="w-full flex justify-center py-2 px-4 border border-transparent rounded-full shadow-sm text-sm md:text-base font-medium text-white bg-primary hover:bg-darkprimary focus:outline-none"
                       >
                         Simpan
@@ -467,7 +487,8 @@ export default function Akun() {
                       </div>
                     </div>
                     {/* Submit Button */}
-                    <div className="flex justify-end">
+                    <p className="text-sm text-red-500 font-medium">{message}</p>
+                    <div className={`flex justify-end ${!message ? '-mt-4' : ''}`}>
                       <button
                         type="submit"
                         className="w-full flex justify-center py-2 px-4 border border-transparent rounded-full shadow-sm text-sm md:text-base font-medium text-white bg-primary hover:bg-darkprimary focus:outline-none"
@@ -719,7 +740,7 @@ const TextInput = ({ label, name, value, onChange, disabled, type }) => (
       value={value}
       onChange={onChange}
       disabled={disabled}
-      className={`mt-1 block w-full px-3 py-2 border border-gray rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm ${
+      className={`mt-1 block w-full px-3 py-2 border border-gray rounded-full shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm ${
         disabled ? "bg-neutral/40" : ""
       }`}
     />
@@ -733,7 +754,7 @@ const SelectInput = ({ label, name, options, value, onChange }) => (
       name={name}
       value={value}
       onChange={onChange}
-      className="mt-1 block w-full px-3 py-2 border border-gray rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary text-sm"
+      className="mt-1 block w-full px-3 py-2 border border-gray rounded-full shadow-sm focus:outline-none focus:ring-primary focus:border-primary text-sm"
     >
       {options.map((option, index) => (
         <option key={index} value={option} className="text-sm">

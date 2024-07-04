@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Footer from "../components/navigations/Footer";
 import Navbar from "../components/navigations/Navbar";
-import FlightCard from "../components/cards/HasilPencarianCard";
+import FlightCard from "../components/cards/SearchResultCard";
 import FilterButton from "../components/buttons/FilterButton";
 import FilterMultipleButton from "../components/buttons/FilterMultipleButton";
 import { useSelector, useDispatch } from "react-redux";
@@ -73,8 +73,6 @@ export default function HasilPencarian() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    console.log("passengerFromModal", passengerFromModal);
-    console.log("flightKeyword", flightKeyword);
   }, []);
 
   useEffect(() => {
@@ -216,12 +214,6 @@ export default function HasilPencarian() {
   } else {
     resultsToUse = [];
   }
-
-  console.log({
-    selectedDeparture: selectedDeparture,
-    selectedReturn: selectedReturn,
-    resultsToUse: resultsToUse,
-  });
 
   const uniqueFacilities = Array.from(
     new Set(
@@ -626,7 +618,7 @@ export default function HasilPencarian() {
                       className="cursor-pointer border border-neutral rounded-lg py-2 px-4 "
                       onClick={() => openModal("passenger")}
                     >
-                      {totalChangedPassengers || totalPassenger} Penumpang
+                      {totalChangedPassengers || totalPassenger || (passengerFromModal.adults + passengerFromModal.children + passengerFromModal.infants)} Penumpang
                     </span>
 
                     {/* Class */}
@@ -634,7 +626,9 @@ export default function HasilPencarian() {
                       className="cursor-pointer border border-neutral rounded-lg py-2 px-4"
                       onClick={() => openModal("class")}
                     >
-                      {changedFlightKeyword?.flightClass || flightClass}
+                      {changedFlightKeyword?.flightClass || flightClass || (
+                        <div className="text-gray">Pilih kelas</div>
+                      )}
                     </span>
                   </div>
                   {/* Button Change Search */}
