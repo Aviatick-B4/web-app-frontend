@@ -228,6 +228,7 @@ function Pemesanan() {
   const handleOpenConfirmModal = async () => {
     // Validasi data tidak boleh null atau ""
     const invalidFields = {};
+    let allFieldsEmpty = true;
     formData.passenger.forEach((data, index) => {
       Object.entries(data).forEach(([key, value]) => {
         if (
@@ -238,6 +239,9 @@ function Pemesanan() {
             key === "expiredDate")
         ) {
           return; // Skip validation for these fields for BABY and CHILD
+        }
+        if (value !== null && value !== "") {
+          allFieldsEmpty = false;
         }
         if (value === null || value === "") {
           if (!invalidFields[index]) {
@@ -283,6 +287,11 @@ function Pemesanan() {
         </div>
       );
       toast.error(errorMessage, { autoClose: 5000 });
+      return;
+    }
+
+    if (allFieldsEmpty) {
+      toast.error("Semua input tidak boleh kosong.", { autoClose: 5000 });
       return;
     }
 

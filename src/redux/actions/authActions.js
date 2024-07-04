@@ -193,6 +193,7 @@ export const updateUserProfile = (user, setProfileMessage) => async (dispatch, g
 
     if (response.status === 200) {
       dispatch(setUser(user));
+      setProfileMessage("");
       toast.success("Berhasil memperbarui profil");
     }
   } catch (error) {
@@ -217,6 +218,7 @@ export const changePassword = (data, setLoading, setMessage) => async (dispatch,
 
     if (response.status === 200) {
       setLoading(false);
+      setMessage("")
       toast.success("Berhasil mengubah password");
       return true;
     }
