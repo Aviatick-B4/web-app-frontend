@@ -52,21 +52,6 @@ function Register() {
       return;
     }
 
-    if (phoneNumber.length < 11) {
-      setMessage("Nomor telepon minimal 11 karakter");
-      return;
-    }
-
-    if (phoneNumber.length > 12) {
-      setMessage("Nomor telepon tidak boleh lebih dari 13 karakter");
-      return;
-    }
-
-    if (password.length < 6) {
-      setMessage("Password minimal 6 karakter");
-      return;
-    }
-
     let data = {
       fullName,
       email,
