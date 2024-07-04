@@ -45,7 +45,6 @@ export const getPrepareTicket =
     } catch (error) {
       setIsLoading(false);
       setShowConfirmModal(false);
-      toast.log("error", error.response.data.message);
       if (error.response.status == 400) {
         toast.error(error.response.data.message);
       } else if (error.response.status == 401) {
