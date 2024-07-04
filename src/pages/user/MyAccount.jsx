@@ -52,7 +52,7 @@ export default function Akun() {
         "Ups.. tidak dapat mengakses halaman, silakan masuk terlebih dahulu."
       );
     } else {
-      setFullName(user.fullName);
+      setFullName(user?.familyName ? user.fullName + " " + user.familyName : user.fullName);
       setFamilyName(user.familyName);
       setPhoneNumber(user.phoneNumber);
       setEmail(user.email);
@@ -81,7 +81,7 @@ export default function Akun() {
       nationality,
     };
 
-    const requiredFields = ["phoneNumber", "identityNumber", "nationality"];
+    const requiredFields = ["phoneNumber", "identityType", "identityNumber", "nationality"];
     for (const key of requiredFields) {
       if (!updatedUser[key]) {
         if (key === "identityNumber") {
@@ -90,6 +90,8 @@ export default function Akun() {
           setProfileMessage("Nationality tidak boleh kosong");
         } else if (key === "phoneNumber") {
           setProfileMessage("Nomor Telepon tidak boleh kosong");
+        } else if (key === "identityType") {
+          setProfileMessage("Dokumen Identitas tidak boleh kosong");
         }
         return;
       }
@@ -330,7 +332,7 @@ export default function Akun() {
                       <SelectInput
                         label="Dokumen Identitas"
                         name="identityType"
-                        options={["KTP", "SIM", "Paspor"]}
+                        options={["", "KTP", "SIM", "Paspor"]}
                         value={identityType}
                         onChange={(e) => setIdentityType(e.target.value)}
                       />

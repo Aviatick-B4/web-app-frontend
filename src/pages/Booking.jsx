@@ -145,7 +145,7 @@ function Pemesanan() {
       options: [
         { label: "", value: "" },
         { label: "KTP", value: "KTP" },
-        { label: "Paspor", value: "Passport" },
+        { label: "Paspor", value: "Paspor" },
         { label: "SIM", value: "SIM" },
       ],
     },

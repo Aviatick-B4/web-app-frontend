@@ -219,7 +219,7 @@ const PassengerInput = ({ passengers, setPassengers }) => (
   <>
     <PassengerCounter
       label="Dewasa"
-      description="(12 tahun keatas)"
+      description="(17 tahun keatas)"
       count={passengers.adults}
       onDecrease={() =>
         setPassengers({
@@ -236,7 +236,7 @@ const PassengerInput = ({ passengers, setPassengers }) => (
     />
     <PassengerCounter
       label="Anak"
-      description="(2 - 11 tahun)"
+      description="(2 - 17 tahun)"
       count={passengers.children}
       onDecrease={() =>
         setPassengers({
