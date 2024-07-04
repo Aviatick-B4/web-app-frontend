@@ -60,7 +60,9 @@ function FormPenumpang({ title, fields, formData, handleInputChange }) {
 
   const validateInput = (name, value, ageGroup) => {
     let error = "";
-    if (name.includes("birthDate")) {
+    if (!value) {
+      error = "Data kosong, silahkan isi data diri anda!";
+    } else if (name.includes("birthDate")) {
       const age = calculateAge(value);
       if (ageGroup === "ADULT" && age < 17) {
         error = "Usia dewasa harus lebih dari 17 tahun.";
