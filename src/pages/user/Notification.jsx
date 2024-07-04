@@ -43,7 +43,7 @@ export default function Notifikasi() {
             await dispatch(getNotifByFilter(filterType));
           }
         } catch (error) {
-          console.error("Error fetching notifications:", error);
+          toast.error("Error fetching notifications");
         } finally {
           setLoading(false);
         }
@@ -51,13 +51,6 @@ export default function Notifikasi() {
       fetchData();
     }
   }, [dispatch, filterType, token]);
-
-  const handleClick = async (notif) => {
-    await dispatch(
-      getBookingHistoryDetail(notif.bookingId, setLoading, setDetailLoading)
-    );
-    if (notif.title === "New Booking") return navigate("/pembayaran");
-  };
 
   const handleFilterSelect = (option) => {
     const typeMap = {
@@ -193,8 +186,7 @@ export default function Notifikasi() {
                 {displayedNotif.map((notif) => (
                   <div
                     key={notif.id}
-                    className="flex items-start pt-4 p-0 md:p-4 hover:bg-primary/10 cursor-pointer"
-                    onClick={() => handleClick(notif)}
+                    className="flex items-start pt-4 p-0 md:p-4 hover:bg-primary/10"
                   >
                     <div className="flex-shrink-0 rounded-full bg-primary p-1 md:p-1.5">
                       {getSvgIcon(notif.type)}

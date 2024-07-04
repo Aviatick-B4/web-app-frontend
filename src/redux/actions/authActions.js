@@ -381,7 +381,6 @@ export const setMessage = (message) => ({
 export const resetPassword =
   (password, token, navigate) => async (dispatch) => {
     try {
-      console.log("Token being sent:", token); // Log token for debugging
 
       const response = await axios.post(
         `https://aviatick-backend-git-development-aviaticks-projects.vercel.app/api/v1/auth/reset-password?token=${token}`,

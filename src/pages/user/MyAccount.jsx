@@ -81,10 +81,16 @@ export default function Akun() {
       nationality,
     };
 
-    const requiredFields = ["identityNumber", "nationality"];
+    const requiredFields = ["phoneNumber", "identityNumber", "nationality"];
     for (const key of requiredFields) {
       if (!updatedUser[key]) {
-        setProfileMessage(`${key} tidak boleh kosong`);
+        if (key === "identityNumber") {
+          setProfileMessage("Nomor identitas tidak boleh kosong");
+        } else if (key === "nationality") {
+          setProfileMessage("Nationality tidak boleh kosong");
+        } else if (key === "phoneNumber") {
+          setProfileMessage("Nomor Telepon tidak boleh kosong");
+        }
         return;
       }
     }
@@ -322,9 +328,9 @@ export default function Akun() {
                     </div>
                     <div className="flex flex-col md:flex-row gap-6">
                       <SelectInput
-                        label="Tipe Identitas"
+                        label="Dokumen Identitas"
                         name="identityType"
-                        options={["KTP", "SIM", "Passport"]}
+                        options={["KTP", "SIM", "Paspor"]}
                         value={identityType}
                         onChange={(e) => setIdentityType(e.target.value)}
                       />
@@ -339,7 +345,7 @@ export default function Akun() {
                       <SelectInput
                         label="Kewarganegaraan"
                         name="nationality"
-                        options={countries.map(country => country.name.common)}
+                        options={countries ? ["", ...countries.map(country => country.name.common)] : []}
                         value={nationality}
                         onChange={(e) => setNationality(e.target.value)}
                       />

@@ -30,12 +30,10 @@ function ResetPassword() {
   };
 
   const handlePasswordChange = (e) => {
-    console.log("Password changed:", e.target.value); // Debug log
     setPassword(e.target.value);
   };
 
   const handleConfirmPasswordChange = (e) => {
-    console.log("Confirm Password changed:", e.target.value); // Debug log
     setConfirmPassword(e.target.value);
   };
 

@@ -320,7 +320,7 @@ function Navbar({ transparent }) {
             </a>
             {!user && (
               <Link
-              to="/login"
+              to="/masuk"
               className="px-4 py-2 text-sm font-medium text-main hover:bg-primary/15 w-full text-left"
               >
                 Masuk

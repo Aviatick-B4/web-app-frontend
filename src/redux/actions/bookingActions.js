@@ -16,10 +16,10 @@ export const getCountries = () => async (dispatch) => {
     dispatch(setCountries(response.data));
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(error.message);
+      toast.error(error.message);
       return;
     }
-    console.error(error.message);
+    toast.error(error.message);
   }
 };
 
@@ -45,12 +45,12 @@ export const getPrepareTicket =
     } catch (error) {
       setIsLoading(false);
       setShowConfirmModal(false);
-      console.log("error", error.response.data.message);
+      toast.log("error", error.response.data.message);
       if (error.response.status == 400) {
         toast.error(error.response.data.message);
       } else if (error.response.status == 401) {
         toast.error("Anda belum login!");
-        navigate("/login");
+        navigate("/masuk");
       } else if (error.response.status == 403) {
         toast.error(
           "Akses Ditolak! Anda tidak memiliki izin untuk melakukan aksi ini."
@@ -108,7 +108,7 @@ export const getBookingTicketCompleted =
         toast.error("Pemesanan gagal! Silakan periksa kembali data Anda.");
       } else if (error.response.status == 401) {
         toast.error("Anda belum login!");
-        navigate("/login");
+        navigate("/masuk");
       } else if (error.response.status == 403) {
         toast.error(
           "Akses Ditolak! Anda tidak memiliki izin untuk melakukan aksi ini."

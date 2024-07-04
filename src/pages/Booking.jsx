@@ -115,8 +115,6 @@ function Pemesanan() {
     passenger: [],
   });
 
-  console.log("formData", formData);
-
   //isian untuk Form Penumpang
   const penumpangFields = (id) => [
     {
@@ -314,7 +312,6 @@ function Pemesanan() {
       );
     } catch (error) {
       toast.error("Terjadi kesalahan saat booking", { autoClose: 5000 });
-      console.error("Error during booking submission:", error);
     }
   };
 
