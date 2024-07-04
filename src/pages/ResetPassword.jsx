@@ -193,9 +193,9 @@ function ResetPassword() {
                     <div className="flex justify-center mt-4">
                       <ThreeDots
                         visible={true}
-                        height="80"
-                        width="80"
-                        color="#F93939"
+                        height="60"
+                        width="60"
+                        color="#00A8D0"
                         radius="9"
                         ariaLabel="three-dots-loading"
                         wrapperStyle={{}}

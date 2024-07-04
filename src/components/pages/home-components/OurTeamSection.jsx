@@ -1,134 +1,39 @@
 import React from "react";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+import { FaLinkedin, FaGithub } from "react-icons/fa";
 
-const TeamCard = ({ imageSrc, name, role, additionalRole }) => {
+
+const TeamCard = ({ imageSrc, name, role, linkedInUrl, githubUrl }) => {
   return (
-    <div className="px-2">
+    <div className="md:px-8 py-4">
       <div className="relative w-full bg-white rounded-lg border border-neutral/30 shadow-md h-full bg-transparent overflow-visible text-main hover:shadow-lg">
         {/* Card hold */}
         <div className="flex justify-center items-center mt-4">
           <img src="/icons/card-hold.svg" alt="Card Hold" className="opacity-50" />
         </div>
-        <div className="relative mt-2">
+        <div className="relative mt-2 md:px-14">
           <img
-            className="object-cover w-full h-96 md:h-[198px] 2xl:h-[260px]"
+            className="object-cover w-full h-96 md:h-[240px] 2xl:h-[280px]"
             src={imageSrc}
             alt={name}
           />
         </div>
 
-        <div className="p-4 md:p-2.5">
-          <h3 className="text-lg md:text-[15px] font-bold text-main mb-2 leading-5 md:min-h-10">{name}</h3>
+        <div className="p-4 md:p-2.5 mt-4">
+          <h3 className="text-lg md:base font-bold text-main mb-2 leading-5">{name}</h3>
           <p className="text-darkgray font-medium text-sm">{role}</p>
+          <div className="flex items-center mt-4 justify-end">
+            <a href={linkedInUrl} target="_blank" rel="noopener noreferrer">
+              <FaLinkedin size={28} className="mr-2 text-darkgray cursor-pointer hover:text-secondary" />
+            </a>
+            <a href={githubUrl} target="_blank" rel="noopener noreferrer">
+              <FaGithub size={28} className="mr-2 text-darkgray cursor-pointer hover:text-secondary" />
+            </a>
+          </div>
         </div>
       </div>
     </div>
   );
 };
-
-function NextArrow(props) {
-    const { className, style, onClick } = props;
-    return (
-      <div
-        className={className}
-        style={{
-          ...style,
-          display: "block",
-          background: "transparent",
-          width: "22px",
-          height: "22px",
-          cursor: "pointer",
-          borderRadius: "50%",
-        }}
-        onClick={onClick}
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 320 512"
-          style={{ width: "100%", height: "100%", fill: "#00A8D0" }} // Adjust fill color as needed
-        >
-          <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z" />
-        </svg>
-      </div>
-    );
-  }
-
-  function PrevArrow(props) {
-    const { className, style, onClick } = props;
-    return (
-      <div
-        className={className}
-        style={{
-          ...style,
-          display: "block",
-          background: "transparent",
-          width: "22px",
-          height: "22px",
-          cursor: "pointer",
-        }}
-        onClick={onClick}
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 320 512"
-          style={{
-            width: "100%",
-            height: "100%",
-            fill: "#00A8D0",
-            transform: "scaleX(-1)",
-          }}
-        >
-          <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z" />
-        </svg>
-      </div>
-    );
-  }
-
-  const settings = {
-    dots: true,
-    infinite: false,
-    speed: 500,
-    slidesToShow: 6,
-    slidesToScroll: 6,
-    initialSlide: 0,
-    dots: false,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 4,
-          slidesToScroll: 4,
-          infinite: true,
-          dots: true,
-          nextArrow: <NextArrow />,
-          prevArrow: <PrevArrow />,
-        },
-      },
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 2,
-          initialSlide: 2,
-          dots: false,    
-          nextArrow: <NextArrow />,
-          prevArrow: <PrevArrow />,
-        },
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-          dots: false,
-          nextArrow: <NextArrow />,
-          prevArrow: <PrevArrow />,
-        },
-      },
-    ],
-  };
 
 const OurTeamSection = () => {
   return (
@@ -153,38 +58,50 @@ const OurTeamSection = () => {
         </div>
       </div>
       <div className="mt-10">
-        <Slider {...settings}>
+        <div className="grid grid-cols-1 md:grid-cols-3">
           <TeamCard
             imageSrc="/team/abiyyi.png"
             name="Muhammad Faiq Al Abiyyi"
             role="Back-end Developer"
+            linkedInUrl="https://www.linkedin.com/in/faiqabiyyi/"
+            githubUrl="https://github.com/FaiqAbiyyi666"
           />
           <TeamCard
             imageSrc="/team/rama.png"
             name="I Putu Rama Astra Arimbawa"
             role="Back-end Developer"
+            linkedInUrl="https://www.linkedin.com/in/rama-astra"
+            githubUrl="https://github.com/ramaastra"
           />
           <TeamCard
             imageSrc="/team/rizki.png"
             name="Rizki Setyo Putro Robawa"
             role="Back-end Developer"
+            linkedInUrl="https://www.linkedin.com/in/rizkirobawa"
+            githubUrl="https://github.com/rizkirobawa"
           />
           <TeamCard
             imageSrc="/team/adit.png"
             name="Aditya Herdiansyah Putra"
             role="Front-end Developer"
+            linkedInUrl="https://www.linkedin.com/in/adityaherdiansyahputra"
+            githubUrl="https://github.com/dittttttt"
           />
           <TeamCard
             imageSrc="/team/amal.png"
             name="Amalia Rodhya Ulfa"
             role="Front-end Developer"
+            linkedInUrl="https://www.linkedin.com/in/amaliarodhyaulfa35/"
+            githubUrl="https://github.com/Amalia212"
           />
           <TeamCard
             imageSrc="/team/talitha.png"
             name="Talitha Syafiyah"
             role="Front-end Developer"
+            linkedInUrl="https://www.linkedin.com/in/talithasyafiyah/"
+            githubUrl="https://github.com/talithasyafiyah"
           />
-        </Slider>
+        </div>
       </div>
     </div>
   );
