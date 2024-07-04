@@ -31,7 +31,7 @@ export const login =
 
       if (response.status === 200) {
         setLoading(false);
-        toast.success("Login successful");
+        toast.success("Berhasil Login");
         dispatch(setToken(token));
         dispatch(setIsLoggedIn(true));
         dispatch(setLogin("login"));
@@ -87,7 +87,7 @@ export const googleAction = (accessToken, navigate) => async (dispatch) => {
       { access_token: accessToken },
       { headers: { "Content-Type": "application/json" } }
     );
-    toast.success("Login successful");
+    toast.success("Berhasil Login");
     dispatch(setToken(response.data.data.token));
     dispatch(setIsLoggedIn(true));
     dispatch(setLogin("google"));
@@ -295,7 +295,7 @@ export const googleLogin = async (accessToken, navigate, dispatch) => {
     dispatch(setToken(token));
     dispatch(setIsLoggedIn(true));
     dispatch(setLogin("google"));
-    toast.success("Login successful.");
+    toast.success("Berhasil Login.");
     setTimeout(() => {
       navigate("/", { state: { token: token } });
     }, 1500);
