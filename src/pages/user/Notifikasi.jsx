@@ -11,11 +11,13 @@ import BackToTopButton from "../../components/navigations/BackToTop";
 import BackButtonMobile from "../../components/navigations/BackButtonMobile";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { getBookingHistoryDetail } from "../../redux/actions/historyActions";
 
 export default function Notifikasi() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [detailLoading, setDetailLoading] = useState(true);
   const [filterType, setFilterType] = useState("All");
   const notifications = useSelector((state) => state?.notif?.notifications);
   const notifByFilter = useSelector((state) => state?.notif?.notifByFilter);
@@ -49,6 +51,13 @@ export default function Notifikasi() {
       fetchData();
     }
   }, [dispatch, filterType, token]);
+
+  const handleClick = async (notif) => {
+    await dispatch(
+      getBookingHistoryDetail(notif.bookingId, setLoading, setDetailLoading)
+    );
+    if (notif.title === "New Booking") return navigate("/pembayaran");
+  };
 
   const handleFilterSelect = (option) => {
     const typeMap = {
@@ -185,6 +194,7 @@ export default function Notifikasi() {
                   <div
                     key={notif.id}
                     className="flex items-start pt-4 p-0 md:p-4 hover:bg-primary/10 cursor-pointer"
+                    onClick={() => handleClick(notif)}
                   >
                     <div className="flex-shrink-0 rounded-full bg-primary p-1 md:p-1.5">
                       {getSvgIcon(notif.type)}
