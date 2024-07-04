@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../components/navigations/Navbar";
 import Footer from "../components/navigations/Footer";
-import modalCss from "../components/navigations/Navbar";
 import { useNavigate } from "react-router-dom";
 import BackToTopButton from "../components/navigations/BackToTop";
 import FormPenumpang from "../components/cards/FormPenumpang";
@@ -41,8 +40,6 @@ function Pemesanan() {
   const booking = useSelector((state) => state?.bookingFlight?.bookings);
   const countries = useSelector((state) => state?.bookingFlight?.countries);
   const token = useSelector((state) => state.auth.token);
-
-  console.log("booking", booking);
 
   useEffect(() => {
     if (!token) {
@@ -110,27 +107,26 @@ function Pemesanan() {
     child: booking?.passengers?.children || 0,
     baby: booking?.passengers?.infants || 0,
     donation: isDonated,
-    seatClass:
-      booking?.selectedDeparture?.airplane?.seatClass?.type || "Economy",
     passenger: [],
   });
+
+  console.log("formData", formData);
 
   //isian untuk Form Penumpang
   const penumpangFields = (id) => [
     {
-      name: `title`,
+      name: `title-${id}`,
       type: "radio",
       options: titleOptions,
     },
-    { label: "Nama Lengkap", name: "fullName", type: "text" },
-    { label: "Nama Keluarga", name: "familyName", type: "text" },
-    { label: "Tanggal Lahir", name: "birthDate", type: "date" },
+    { label: "Nama Lengkap", name: `fullName-${id}`, type: "text" },
+    { label: "Tanggal Lahir", name: `birthDate-${id}`, type: "date" },
     {
       label: "Kewarganegaraan",
-      name: "nationality",
+      name: `nationality-${id}`,
       type: "select",
       options: [
-        { label: "", value: "null" },
+        { label: "", value: "" },
         ...(Array.isArray(countries) ? countries.slice() : []) // Check if countries is an array
           .sort((a, b) => a.name.common.localeCompare(b.name.common)) // Sort by country name
           .map((country) => ({
@@ -140,22 +136,22 @@ function Pemesanan() {
       ],
     },
     {
-      label: "KTP/Paspor",
-      name: "identityType",
+      label: "Dokumen Indentitas",
+      name: `identityType-${id}`,
       type: "select",
       options: [
-        { label: "", value: "null" },
+        { label: "", value: "" },
         { label: "KTP", value: "KTP" },
-        { label: "Paspor", value: "Paspor" },
+        { label: "Paspor", value: "Passport" },
         { label: "SIM", value: "SIM" },
       ],
     },
     {
       label: "Negara Penerbit",
-      name: "issuingCountry",
+      name: `issuingCountry-${id}`,
       type: "select",
       options: [
-        { label: "", value: "null" },
+        { label: "", value: "" },
         ...(Array.isArray(countries) ? countries.slice() : []) // Check if countries is an array
           .sort((a, b) => a.name.common.localeCompare(b.name.common)) // Sort by country name
           .map((country) => ({
@@ -164,21 +160,34 @@ function Pemesanan() {
           })),
       ],
     },
-    { label: "Nomor Identitas", name: "identityNumber", type: "text" },
-    { label: "Berlaku Sampai", name: "expiredDate", type: "date" },
+    { label: "Nomor Identitas", name: `identityNumber-${id}`, type: "text" },
+    { label: "Berlaku Hingga", name: `expiredDate-${id}`, type: "date" },
   ];
 
-  //Untuk mengisikan data ke variable PenumpangData
+  // Pemetaan nama field ke nama yang diinginkan
+  const fieldNames = {
+    title: "Titel",
+    fullName: "Nama Lengkap",
+    birthDate: "Tanggal Lahir",
+    nationality: "Kewarganegaraan",
+    identityType: "Dokumen Identitas",
+    issuingCountry: "Negara Penerbit",
+    identityNumber: "Nomor Identitas",
+    expiredDate: "Berlaku Hingga",
+  };
+
+  // Untuk mengisikan data ke variable PenumpangData
   const handleInputChange = (e, id) => {
     const { name, value } = e.target;
+    const fieldName = name.split("-")[0];
 
     // Update penumpangData
     const updatedPenumpangData = penumpangData.map((data) =>
       data.id === id
         ? {
             ...data,
-            [name]:
-              name === "birthDate" || name === "expiredDate"
+            [fieldName]:
+              fieldName === "birthDate" || fieldName === "expiredDate"
                 ? `${value}T00:00:00.000Z`
                 : value,
           }
@@ -186,10 +195,24 @@ function Pemesanan() {
     );
     setPenumpangData(updatedPenumpangData);
 
+    // Pisahkan data inputan berdasarkan name
+    const separatedData = updatedPenumpangData.reduce((acc, data) => {
+      acc[data.id] = {
+        title: data.title || "",
+        fullName: data.fullName || "",
+        birthDate: data.birthDate || "",
+        nationality: data.nationality || "",
+        identityType: data.identityType || "",
+        issuingCountry: data.issuingCountry || "",
+        identityNumber: data.identityNumber || "",
+        expiredDate: data.expiredDate || "",
+        ageGroup: data.ageGroup || "",
+      };
+      return acc;
+    }, {});
+
     // Update formData
-    const updatedPassenger = updatedPenumpangData.map(
-      ({ id, ...rest }) => rest
-    );
+    const updatedPassenger = Object.values(separatedData);
     setFormData((prevFormData) => ({
       ...prevFormData,
       passenger: updatedPassenger,
@@ -200,6 +223,66 @@ function Pemesanan() {
   const handleOpenModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
   const handleOpenConfirmModal = async () => {
+    // Validasi data tidak boleh null atau ""
+    const invalidFields = {};
+    formData.passenger.forEach((data, index) => {
+      Object.entries(data).forEach(([key, value]) => {
+        if (
+          (data.ageGroup === "BABY" || data.ageGroup === "CHILD") &&
+          (key === "identityType" ||
+            key === "issuingCountry" ||
+            key === "identityNumber" ||
+            key === "expiredDate")
+        ) {
+          return; // Skip validation for these fields for BABY and CHILD
+        }
+        if (value === null || value === "") {
+          if (!invalidFields[index]) {
+            invalidFields[index] = { fields: [], ageGroup: data.ageGroup };
+          }
+          invalidFields[index].fields.push(`${fieldNames[key] || key}`);
+        }
+      });
+    });
+
+    if (Object.keys(invalidFields).length > 0) {
+      const ageGroupMapping = {
+        ADULT: "Dewasa",
+        CHILD: "Anak",
+        BABY: "Bayi",
+      };
+      const errorMessage = (
+        <div className="flex flex-col gap-2">
+          <p className="text-danger ">
+            {" "}
+            <strong>Data berikut wajib diisi:</strong>
+          </p>
+          <hr className="text-neutral" />
+          {Object.entries(invalidFields).map(
+            ([index, { fields, ageGroup }]) => (
+              <div key={index}>
+                <p>
+                  <strong>
+                    Penumpang {parseInt(index) + 1} (
+                    {ageGroupMapping[ageGroup] || ageGroup})
+                  </strong>
+                </p>
+                <ul>
+                  {fields.map((field, idx) => (
+                    <li key={idx}>
+                      {idx + 1}. {field}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )
+          )}
+        </div>
+      );
+      toast.error(errorMessage, { autoClose: 5000 });
+      return;
+    }
+
     await dispatch(
       getPrepareTicket(
         formData,
@@ -307,7 +390,7 @@ function Pemesanan() {
   //Perhitungan Total Harga
   const calculateTotal = (price) => {
     price = price * (penumpangData.length - infantPassengers);
-    if (isDonated) return price + totalPajak(price) + 1000;
+    if (isDonated) return price + (price * 10) / 100 + 1000;
     return price + (price * 10) / 100;
   };
 
@@ -540,25 +623,35 @@ function Pemesanan() {
         <div className="container px-3 mx-auto lg:flex mt-24 text-sm ">
           <section className="flex flex-col gap-4 lg:w-2/3 lg:me-6">
             {/* Navigasi  */}
-            <div className="py-8 w-2/3">
-              <div className="flex gap-4">
-                <p>Beranda</p>
-                <p className="text-blue-300">
-                  {" "}
-                  <strong>{`>`} </strong>
-                </p>
-                <p>Cari Penerbangan</p>
-                <p className="text-blue-300">
-                  {" "}
-                  <strong>{`>`} </strong>
-                </p>
-                <p>Isi Data Diri</p>
-              </div>
+            <div className="container hidden md:flex gap-1.5 text-main text-xs font-medium -mt-4 md:-mt-0 mb-10 md:mb-2">
+              <a href="/">Beranda</a>
+              <img src="/icons/right-chev.svg" alt="chevron" />
+              <p
+                className="cursor-pointer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate(-1);
+                }}
+              >
+                Hasil Pencarian
+              </p>
+              <img src="/icons/right-chev.svg" alt="chevron" />
+              <p
+                className="cursor-pointer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate(-1);
+                }}
+              >
+                Konfirmasi Tiket
+              </p>
+              <img src="/icons/right-chev.svg" alt="chevron" />
+              <a>Isi Data Diri</a>
             </div>
             {/* Sisi Atas Mobile */}
-            <section className="flex bg-white flex-col lg:w-1/3 gap-4 lg:hidden">
+            <section className="flex flex-col lg:w-1/3 gap-4 lg:hidden">
               {/* Detail Pemesanan  */}
-              <div className="rounded-xl shadow-md my-3 pb-4 lg:mt-[100px]">
+              <div className="rounded-xl bg-white shadow-md pb-4 lg:mt-[100px]">
                 {/* Route  */}
                 <p className="flex gap-5 text-xl  items-center p-8">
                   <strong>
@@ -908,7 +1001,8 @@ function Pemesanan() {
                 <div className="flex justify-between items-center p-3 mt-4 rounded-xl bg-slate-200">
                   {" "}
                   <p className="text-xs text-slate-500">
-                    Bantuan <strong>Rp. 1000</strong> bagi Rakyat Palestina
+                    Bantuan <strong>Rp. 1000</strong> bagi saudara kita yang
+                    membutuhkan
                   </p>
                   <button onClick={handleDonasiClick}>
                     {isDonated ? (
@@ -1000,7 +1094,7 @@ function Pemesanan() {
           {/* Sisi Kanan Website */}
           <section className="flex  flex-col lg:w-1/3 gap-4 max-lg:hidden">
             {/* Detail Pemesanan  */}
-            <div className="rounded-xl bg-white shadow-md my-3 pb-4 lg:mt-[100px]">
+            <div className="rounded-xl bg-white shadow-md my-3 pb-4 lg:mt-[40px]">
               {/* Route  */}
               <p className="flex gap-5 text-xl  items-center p-8">
                 <strong>

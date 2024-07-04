@@ -69,33 +69,35 @@ export default function Pembayaran() {
   return (
     <>
       <Navbar />
-      {/* Navigasi  */}
-      <div className="container mt-36 bg-whitepx-3">
-        <div className="flex gap-4 text-sm">
-          <p>Beranda</p>
-          <p className="text-blue-300">
-            {" "}
-            <strong>{`>`} </strong>
-          </p>
-          <p>Cari Penerbangan</p>
-          <p className="text-blue-300">
-            {" "}
-            <strong>{`>`} </strong>
-          </p>
-          <p>Isi Data Diri</p>
-          <p className="text-blue-300">
-            {" "}
-            <strong>{`>`} </strong>
-          </p>
-          <p>Pembayaran</p>
+
+      <div className="flex flex-col justify-center bg-background ">
+        {/* Navigasi  */}
+        <div className="container mt-36 bg-whitepx-3">
+          <div className="flex gap-4 text-sm">
+            <p>Beranda</p>
+            <p className="text-blue-300">
+              {" "}
+              <strong>{`>`} </strong>
+            </p>
+            <p>Cari Penerbangan</p>
+            <p className="text-blue-300">
+              {" "}
+              <strong>{`>`} </strong>
+            </p>
+            <p>Isi Data Diri</p>
+            <p className="text-blue-300">
+              {" "}
+              <strong>{`>`} </strong>
+            </p>
+            <p>Pembayaran</p>
+          </div>
         </div>
-      </div>
-      <div className="flex justify-center ">
+
         <div className="container lg:flex lg:gap-5 lg:my-5  ">
           {/* Sisi Kanan */}
-          <section className="flex flex-col lg:w-[100%] gap-4 lg:hidden my-6">
-            {/* Detail Pemesanan  */}
-            <div className="rounded-xl shadow-md pb-4">
+          <section className="flex  flex-col lg:w-[100%] gap-4 lg:hidden my-6">
+            {/* Detail Pemesanan Mobile */}
+            <div className="rounded-xl bg-white shadow-md pb-4">
               {" "}
               {/* Route  */}
               <p className="flex gap-5 items-center text-xl  p-8">
@@ -339,7 +341,7 @@ export default function Pembayaran() {
             </div>
           </section>
           {/* Sisi Kiri  */}
-          <section className="lg:w-[1300px] rounded  space-y-5 my-6">
+          <section className="lg:w-[1300px] bg-white rounded  space-y-5 my-6">
             <div className="flex ">
               <iframe
                 src={bookingDetail?.url_payment}
@@ -350,10 +352,10 @@ export default function Pembayaran() {
               ></iframe>
             </div>
           </section>
-          {/* Sisi Kanan */}
+          {/* Sisi Kanan desktop*/}
           <section className="flex flex-col lg:w-[100%] gap-4 max-sm:hidden max-lg:hidden my-6">
             {/* Detail Pemesanan  */}
-            <div className="rounded-xl shadow-md pb-4">
+            <div className="rounded-xl bg-white  shadow-md pb-4">
               {" "}
               {/* Route  */}
               <p className="flex gap-5 items-center text-xl  p-8">

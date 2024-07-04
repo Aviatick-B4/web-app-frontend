@@ -45,8 +45,9 @@ export const getPrepareTicket =
     } catch (error) {
       setIsLoading(false);
       setShowConfirmModal(false);
+      console.log("error", error.response.data.message);
       if (error.response.status == 400) {
-        toast.error("Pemesanan gagal! Silakan periksa kembali data Anda.");
+        toast.error(error.response.data.message);
       } else if (error.response.status == 401) {
         toast.error("Anda belum login!");
         navigate("/login");
@@ -100,7 +101,7 @@ export const getBookingTicketCompleted =
         getBookingHistoryDetail(bookingId, setIsLoading, setDetailLoading)
       );
       dispatch(setDataPayment(response.data));
-      navigate("/pembayaran")
+      navigate("/pembayaran");
     } catch (error) {
       setIsLoading(false);
       if (error.response.status == 400) {
