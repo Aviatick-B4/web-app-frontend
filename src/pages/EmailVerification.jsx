@@ -28,6 +28,20 @@ function EmailVerification() {
     }
   }, [resendTimeout]);
 
+  const handlePaste = (e) => {
+    const pasteData = e.clipboardData.getData('text').trim();
+    if (pasteData.length === otpCode.length) {
+        const newOtpCode = pasteData.split('');
+        setOtpCode(newOtpCode);
+        newOtpCode.forEach((value, index) => {
+            if (inputRefs.current[index]) {
+                inputRefs.current[index].value = value;
+            }
+        });
+    }
+    e.preventDefault();
+  };
+
   const handleChange = (element, index) => {
     if (isNaN(element.value)) return;
     const newOtpCode = [...otpCode];
@@ -65,6 +79,18 @@ function EmailVerification() {
       <div className="hidden lg:block absolute inset-0 bg-black opacity-20"></div>
       <div className="relative bg-white px-6 py-16 lg:shadow-xl mx-auto w-full lg:max-w-3xl rounded-2xl">
         <div className="mx-auto flex w-full max-w-md flex-col space-y-12 md:space-y-14">
+          <button
+            onClick={() => navigate(-1)}
+            className="bg-none inline-block mb-4 -mb-12"
+          >
+            <svg
+              className="fill-main md:fill-primary w-4 h-4 md:w-6 h-6"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 448 512"
+            >
+              <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
+            </svg>
+          </button>
           <div className="flex flex-col items-center justify-center text-center space-y-2">
             <div className="font-semibold text-3xl">
               <p>Verifikasi Email</p>
@@ -89,6 +115,7 @@ function EmailVerification() {
                       onChange={(e) => handleChange(e.target, index)}
                       onFocus={(e) => e.target.select()}
                       ref={(el) => (inputRefs.current[index] = el)}
+                      onPaste={index === 0 ? handlePaste : null}
                     />
                   </div>
                 ))}

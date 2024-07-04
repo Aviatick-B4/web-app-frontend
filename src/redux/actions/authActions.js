@@ -473,7 +473,7 @@ export const logout = (navigate) => (dispatch) => {
 
     if (navigate) {
       setTimeout(() => {
-        navigate("/");
+        navigate("/masuk");
       }, 1500);
     }
     toast.success("Berhasil log out.");

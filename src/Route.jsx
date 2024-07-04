@@ -80,7 +80,16 @@ function App() {
                   }
                 />
               </Routes>
-              <ToastContainer />
+              <ToastContainer
+                position="top-right"
+                autoClose={1700}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnHover={false}
+                draggable
+              />
             </BrowserRouter>
           </GoogleOAuthProvider>
         </PersistGate>

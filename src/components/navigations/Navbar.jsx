@@ -83,9 +83,15 @@ function Navbar({ transparent }) {
 
   function getInitials(fullName, familyName) {
     if (!fullName) return "";
-    const firstInitial = fullName[0];
-    const lastInitial = familyName ? familyName[0] : "";
-    return (firstInitial + lastInitial).toUpperCase();
+    if (familyName) {
+      const firstInitial = fullName[0];
+      const lastInitial = familyName[0];
+      return (firstInitial + lastInitial).toUpperCase();
+    } else {
+      const nameParts = fullName.split(" ");
+      const initials = nameParts.map(part => part[0]).join("");
+      return initials.toUpperCase();
+    }
   }
 
   const handleMobileMenuToggle = () => {

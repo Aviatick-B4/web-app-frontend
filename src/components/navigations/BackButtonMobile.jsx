@@ -7,10 +7,10 @@ function BackButtonMobile({ link }) {
     <div className="container flex justify-between items-center pt-3">
       <button
         onClick={() => navigate(-1)}
-        className="md:hidden p-3 bg-white shadow rounded-full inline-block"
+        className="md:hidden p-3 bg-white md:bg-none shadow md:shadow-none rounded-full md:rounded-none inline-block"
       >
         <svg
-          className="fill-main w-4 h-4"
+          className="fill-main md:fill-primary w-4 h-4 md:w-6 h-6"
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 448 512"
         >

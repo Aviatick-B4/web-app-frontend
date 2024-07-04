@@ -153,7 +153,7 @@ export default function Pembayaran() {
               <div>
                 {/* Maskapai  */}
                 <div className="flex p-8">
-                  <div className="p-4 flex border w-1/2 lg:flex-col gap-2 rounded-l-md items-center justify-center">
+                  <div className="p-4 flex flex-col md:flex-row border w-1/2 lg:flex-col gap-2 rounded-l-md items-center justify-center">
                     <img src={airplane?.logoUrl} className="w-[50px]" />
                     <div className=" text-black ">
                       <p className="text-lg text-center">

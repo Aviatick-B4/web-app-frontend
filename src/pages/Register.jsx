@@ -180,7 +180,7 @@ function Register() {
                         name="phoneNumber"
                         type="text"
                         autoComplete="phoneNumber"
-                        placeholder="87846737738"
+                        placeholder="Masukkan nomor telepon"
                         required
                         value={phoneNumber} // value diatur menjadi nilai dari state email
                         onChange={(e) => setPhoneNumber(e.target.value)} // setiap kali nilai input berubah, state email akan diupdate

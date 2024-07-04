@@ -633,7 +633,7 @@ function Pemesanan() {
         <div className="container px-3 mx-auto lg:flex mt-24 text-sm ">
           <section className="flex flex-col gap-4 lg:w-2/3 lg:me-6">
             {/* Navigasi  */}
-            <div className="container bg-background hidden md:flex gap-1.5 text-main text-xs font-medium -mt-4 md:-mt-0 md:mt-8 mb-10 md:mb-2">
+            <div className="container bg-background hidden md:flex gap-1.5 text-main text-xs font-medium -mt-4 md:-mt-0 md:mt-0 mb-10 md:mb-0">
               <a href="/">Beranda</a>
               <img src="/icons/right-chev.svg" alt="chevron" />
               <p
@@ -1002,7 +1002,7 @@ function Pemesanan() {
             <div className="bg-white rounded-xl p-[32px] shadow-md">
               <div className="text-xl border-neutral gap-2  py-2 rounded-xl">
                 <div className="flex gap-3">
-                  <img src=".\src\assets\charity.svg" className="w-14" />
+                  <img src="/icons/charity.svg" className="w-14" />
                   <div>
                     <p className="text-primary">
                       <strong>Donasi</strong>
@@ -1106,7 +1106,7 @@ function Pemesanan() {
             </div>
           </section>
           {/* Sisi Kanan Website */}
-          <section className="flex  flex-col lg:w-1/3 gap-4 max-lg:hidden">
+          <section className="flex flex-col lg:w-1/3 gap-4 max-lg:hidden -mt-2">
             {/* Detail Pemesanan  */}
             <div className="rounded-xl bg-white shadow-md my-3 pb-4 lg:mt-[40px]">
               {/* Route  */}
@@ -1152,7 +1152,7 @@ function Pemesanan() {
               <div>
                 {/* Maskapai  */}
                 <div className="flex p-8">
-                  <div className="p-4 flex flex-col  border w-1/2 lg:flex-col gap-2 rounded-l-md items-center justify-center">
+                  <div className="p-4 flex flex-col border w-1/2 lg:flex-col gap-2 rounded-l-md items-center justify-center">
                     <img
                       src={
                         booking?.selectedDeparture?.airplane?.airline?.logoUrl
