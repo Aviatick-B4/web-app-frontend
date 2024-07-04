@@ -253,7 +253,7 @@ const PromoSection = () => {
                   >
                     <div className="relative w-full bg-white rounded-lg shadow-md h-full bg-transparent overflow-visible text-main hover:shadow-lg cursor-pointer">
                       <div className="relative">
-                        <div className="absolute z-10 top-2 -right-1 w-[70px] md:w-[80px]">
+                        <div className="absolute z-10 top-2 -right-1 w-[80px]">
                           {/* Discount tag */}
                           <img
                             className="relative z-10 w-full"
