@@ -3,10 +3,9 @@ import Footer from "../../components/navigations/Footer";
 import Navbar from "../../components/navigations/Navbar";
 import * as React from "react";
 import { useSelector } from "react-redux";
-import { useState} from "react";
+import { useState } from "react";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
-import BackButtonMobile from "../../components/navigations/BackButtonMobile";
 
 export default function Pembayaran() {
   const navigate = useNavigate();
@@ -16,12 +15,13 @@ export default function Pembayaran() {
     (state) =>
       state?.bookingFlight?.bookings?.selectedDeparture?.airplane?.airline || {}
   );
+
   const payment = useSelector((state) => state?.bookingFlight);
   const bookingDetail = useSelector(
     (state) => state?.history?.bookingHistoryDetail
   );
   const token = useSelector((state) => state.auth.token);
-  
+
   useEffect(() => {
     if (!token) {
       navigate("/masuk");
@@ -30,10 +30,6 @@ export default function Pembayaran() {
       );
     }
   }, [token, navigate]);
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   useEffect(() => {
     if (booking?.selectedReturn !== null) return settripType("roundtrip");
@@ -71,36 +67,36 @@ export default function Pembayaran() {
   };
 
   return (
-    <div className="bg-background">
-      <div className="hidden md:block">
-        <Navbar transparent={false} />
-      </div>
+    <>
+      <Navbar />
 
-      <BackButtonMobile />
-      {/* Navigasi  */}
-      <div className="container mt-3 md:mt-20 px-3">
-        {/* Breadcrumb */}
-          <div className="container hidden md:flex gap-1.5 text-main text-xs font-medium -mt-4 md:-mt-0 md:-mb-4">
-            <a href="/">Beranda</a>
-            <img src="/icons/right-chev.svg" alt="chevron" />
-            <p className="cursor-pointer" onClick={(e) => { e.preventDefault(); navigate(-3); }}>Hasil Pencarian</p>
-            <img src="/icons/right-chev.svg" alt="chevron" />
-            <p>Konfirmasi Tiket</p>
-            <img src="/icons/right-chev.svg" alt="chevron" />
+      <div className="flex flex-col justify-center bg-background ">
+        {/* Navigasi  */}
+        <div className="container mt-36 bg-whitepx-3">
+          <div className="flex gap-4 text-sm">
+            <p>Beranda</p>
+            <p className="text-blue-300">
+              {" "}
+              <strong>{`>`} </strong>
+            </p>
+            <p>Cari Penerbangan</p>
+            <p className="text-blue-300">
+              {" "}
+              <strong>{`>`} </strong>
+            </p>
             <p>Isi Data Diri</p>
-            <img src="/icons/right-chev.svg" alt="chevron" />
-            <a>Pembayaran</a>
+            <p className="text-blue-300">
+              {" "}
+              <strong>{`>`} </strong>
+            </p>
+            <p>Pembayaran</p>
           </div>
+        </div>
 
-          <h1 className="container block md:hidden text-2xl font-bold text-main mb-3">
-            Pembayaran
-          </h1>
-      </div>
-      <div className="flex justify-center">
-        <div className="container lg:flex lg:gap-5 lg:my-5">
+        <div className="container lg:flex lg:gap-5 lg:my-5  ">
           {/* Sisi Kanan */}
-          <section className="flex flex-col lg:w-[100%] gap-4 lg:hidden my-6">
-            {/* Detail Pemesanan  */}
+          <section className="flex  flex-col lg:w-[100%] gap-4 lg:hidden my-6">
+            {/* Detail Pemesanan Mobile */}
             <div className="rounded-xl bg-white shadow-md pb-4">
               {" "}
               {/* Route  */}
@@ -345,7 +341,7 @@ export default function Pembayaran() {
             </div>
           </section>
           {/* Sisi Kiri  */}
-          <section className="lg:w-[1300px] rounded bg-white space-y-5 my-6">
+          <section className="lg:w-[1300px] bg-white rounded  space-y-5 my-6">
             <div className="flex ">
               <iframe
                 src={bookingDetail?.url_payment}
@@ -356,10 +352,10 @@ export default function Pembayaran() {
               ></iframe>
             </div>
           </section>
-          {/* Sisi Kanan */}
+          {/* Sisi Kanan desktop*/}
           <section className="flex flex-col lg:w-[100%] gap-4 max-sm:hidden max-lg:hidden my-6">
             {/* Detail Pemesanan  */}
-            <div className="rounded-xl bg-white shadow-md pb-4">
+            <div className="rounded-xl bg-white  shadow-md pb-4">
               {" "}
               {/* Route  */}
               <p className="flex gap-5 items-center text-xl  p-8">
@@ -605,6 +601,6 @@ export default function Pembayaran() {
         </div>
       </div>
       <Footer />
-    </div>
+    </>
   );
 }

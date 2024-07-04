@@ -16,10 +16,10 @@ export const getCountries = () => async (dispatch) => {
     dispatch(setCountries(response.data));
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      toast.error(error.message);
+      console.error(error.message);
       return;
     }
-    toast.error(error.message);
+    console.error(error.message);
   }
 };
 
@@ -45,8 +45,9 @@ export const getPrepareTicket =
     } catch (error) {
       setIsLoading(false);
       setShowConfirmModal(false);
+      console.log("error", error.response.data.message);
       if (error.response.status == 400) {
-        toast.error("Pemesanan gagal! Silakan periksa kembali data Anda.");
+        toast.error(error.response.data.message);
       } else if (error.response.status == 401) {
         toast.error("Anda belum login!");
         navigate("/login");
@@ -96,12 +97,10 @@ export const getBookingTicketCompleted =
       );
       setIsLoading(false);
       const bookingId = response.data.data.booking.id;
-
       await dispatch(
         getBookingHistoryDetail(bookingId, setIsLoading, setDetailLoading)
       );
       dispatch(setDataPayment(response.data));
-
       navigate("/pembayaran");
     } catch (error) {
       setIsLoading(false);

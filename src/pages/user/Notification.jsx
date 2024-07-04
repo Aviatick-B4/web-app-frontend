@@ -3,16 +3,21 @@ import Footer from "../../components/navigations/Footer";
 import Navbar from "../../components/navigations/Navbar";
 import FilterButton from "../../components/buttons/FilterButton";
 import { useDispatch, useSelector } from "react-redux";
-import { getNotifByFilter, getNotifications } from "../../redux/actions/notifActions";
+import {
+  getNotifByFilter,
+  getNotifications,
+} from "../../redux/actions/notifActions";
 import BackToTopButton from "../../components/navigations/BackToTop";
 import BackButtonMobile from "../../components/navigations/BackButtonMobile";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { getBookingHistoryDetail } from "../../redux/actions/historyActions";
 
 export default function Notifikasi() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [detailLoading, setDetailLoading] = useState(true);
   const [filterType, setFilterType] = useState("All");
   const notifications = useSelector((state) => state?.notif?.notifications);
   const notifByFilter = useSelector((state) => state?.notif?.notifByFilter);
@@ -21,7 +26,9 @@ export default function Notifikasi() {
   useEffect(() => {
     if (!token) {
       navigate("/masuk");
-      toast.error("Ups.. tidak dapat mengakses halaman, silakan masuk terlebih dahulu.");
+      toast.error(
+        "Ups.. tidak dapat mengakses halaman, silakan masuk terlebih dahulu."
+      );
     }
   }, [token, navigate]);
 
@@ -36,15 +43,21 @@ export default function Notifikasi() {
             await dispatch(getNotifByFilter(filterType));
           }
         } catch (error) {
-          toast.error("Error fetching notifications:", error);
+          console.error("Error fetching notifications:", error);
         } finally {
           setLoading(false);
         }
       };
       fetchData();
     }
-    
   }, [dispatch, filterType, token]);
+
+  const handleClick = async (notif) => {
+    await dispatch(
+      getBookingHistoryDetail(notif.bookingId, setLoading, setDetailLoading)
+    );
+    if (notif.title === "New Booking") return navigate("/pembayaran");
+  };
 
   const handleFilterSelect = (option) => {
     const typeMap = {
@@ -56,7 +69,7 @@ export default function Notifikasi() {
     setFilterType(typeMap[option] || "All");
   };
 
-   const displayedNotif = filterType === "All" ? notifications : notifByFilter;
+  const displayedNotif = filterType === "All" ? notifications : notifByFilter;
 
   const formatDateToDayMonthYear = (dateString) => {
     if (!dateString || typeof dateString !== "string") {
@@ -127,7 +140,7 @@ export default function Notifikasi() {
         <div className="container">
           {/* Breadcrumb */}
           <div className="hidden md:flex gap-1.5 text-main text-sm font-medium -mt-4 md:-mt-0 mb-10 md:mb-5">
-            <a href="/">Beranda</a>
+            <span>Beranda</span>
             <img src="/icons/right-chev.svg" alt="chevron" />
             <span>Notifikasi</span>
           </div>
@@ -143,9 +156,7 @@ export default function Notifikasi() {
               className="hidden md:block w-full"
             >
               <div className="flex justify-between items-center pt-4 pb-10 px-6">
-                <h1 className="text-2xl font-bold text-white ">
-                  Notifikasi
-                </h1>
+                <h1 className="text-2xl font-bold text-white ">Notifikasi</h1>
                 <FilterButton
                   label="Filter"
                   options={["All", "General", "Transaksi", "Promo"]}
@@ -183,6 +194,7 @@ export default function Notifikasi() {
                   <div
                     key={notif.id}
                     className="flex items-start pt-4 p-0 md:p-4 hover:bg-primary/10 cursor-pointer"
+                    onClick={() => handleClick(notif)}
                   >
                     <div className="flex-shrink-0 rounded-full bg-primary p-1 md:p-1.5">
                       {getSvgIcon(notif.type)}
