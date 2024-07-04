@@ -3,7 +3,7 @@ import Navbar from "../components/navigations/Navbar";
 import Footer from "../components/navigations/Footer";
 import { useNavigate } from "react-router-dom";
 import BackToTopButton from "../components/navigations/BackToTop";
-import FormPenumpang from "../components/cards/FormPenumpang";
+import FormPenumpang from "../components/cards/PassengerForm";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getCountries,
@@ -13,6 +13,7 @@ import {
 import { ThreeDots } from "react-loader-spinner";
 import { toast } from "react-toastify";
 import "animate.css";
+import BackButtonMobile from "../components/navigations/BackButtonMobile";
 
 function Pemesanan() {
   const navigate = useNavigate();
@@ -49,6 +50,10 @@ function Pemesanan() {
       );
     }
   }, [token, navigate]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   useEffect(() => {
     if (booking?.selectedReturn !== null) return settripType("roundtrip");
@@ -406,8 +411,8 @@ function Pemesanan() {
   return (
     <div className={`bg-background`}>
       {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30">
-          <div className="flex flex-col bg-white w-1/2 max-sm:w-3/4 justify-center items-center bg-gray-900 p-8 rounded-lg shadow-md border animate__animated animate__pulse">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" style={{zIndex: 9999}}>
+          <div className="flex flex-col bg-white w-1/2 max-sm:w-3/4 justify-center items-center bg-gray-900 p-8 rounded-lg shadow-md animate__animated animate__pulse">
             <div className="flex flex-col bg-white w-full">
               <button
                 className="px-4 rounded flex justify-end"
@@ -429,7 +434,7 @@ function Pemesanan() {
                   />
                 </svg>
               </button>
-              <h2 className="text-2xl pb-4">Detail Harga</h2>
+              <h2 className="text-2xl pb-4 font-semibold">Detail Harga</h2>
               <p className="flex gap-5 text-lg items-center py-5">
                 <strong>
                   {booking?.selectedDeparture?.flight?.departure?.city}
@@ -561,7 +566,7 @@ function Pemesanan() {
                     <p>
                       <strong>{formatPrice(calculateTotal(totalHarga))}</strong>
                     </p>
-                    {promo === "true" ? (
+                    {booking?.selectedDeparture?.afterDiscountPrice ? (
                       <>
                         <p className="text-primary text-xs">
                           *Harga sudah termasuk promo
@@ -578,7 +583,7 @@ function Pemesanan() {
         </div>
       )}
       {confirmModal && (
-        <div className="fixed  inset-0 flex items-center justify-center bg-black bg-opacity-30">
+        <div className="fixed  inset-0 flex items-center justify-center bg-black bg-opacity-30" style={{zIndex: 100}}>
           <div className="flex flex-col px-8 gap-2 w-[400px] max-sm:w-[300px] text-center justify-center bg-white items-center bg-gray-900 py-8 rounded-lg shadow-md animate__animated animate__pulse">
             <p className="text-xl text-primary py-2">
               <strong>Apakah sudah yakin data pribadi anda benar?</strong>
@@ -590,13 +595,13 @@ function Pemesanan() {
             <div className="flex flex-col w-full gap-2 mt-6">
               <button
                 onClick={handleCloseConfirmModal}
-                className=" text-primary border bg-transparent p-3 rounded-xl hover:bg-slate-100"
+                className=" text-primary border bg-transparent p-3 rounded-full hover:bg-slate-100"
               >
                 Periksa Kembali
               </button>
               <button
                 onClick={handleBookingSubmitcompleted}
-                className="bg-primary text-white p-3 flex items-center justify-center rounded-xl  hover:bg-darkprimary"
+                className="bg-primary text-white p-3 flex items-center justify-center rounded-full  hover:bg-darkprimary"
               >
                 {isLoading ? (
                   <ThreeDots
@@ -617,13 +622,18 @@ function Pemesanan() {
           </div>
         </div>
       )}
-      <Navbar transparent={false} />
 
-      <div className="container">
+      <div className="hidden md:block">
+        <Navbar transparent={false} />
+      </div>
+
+      <BackButtonMobile />
+
+      <div className="container md:-mt-4">
         <div className="container px-3 mx-auto lg:flex mt-24 text-sm ">
           <section className="flex flex-col gap-4 lg:w-2/3 lg:me-6">
             {/* Navigasi  */}
-            <div className="container hidden md:flex gap-1.5 text-main text-xs font-medium -mt-4 md:-mt-0 mb-10 md:mb-2">
+            <div className="container bg-background hidden md:flex gap-1.5 text-main text-xs font-medium -mt-4 md:-mt-0 md:mt-8 mb-10 md:mb-2">
               <a href="/">Beranda</a>
               <img src="/icons/right-chev.svg" alt="chevron" />
               <p
@@ -648,6 +658,10 @@ function Pemesanan() {
               <img src="/icons/right-chev.svg" alt="chevron" />
               <a>Isi Data Diri</a>
             </div>
+
+            <h1 className="container block md:hidden text-2xl font-bold text-main mb-4 -mt-20">
+              Isi Data Diri
+            </h1>
             {/* Sisi Atas Mobile */}
             <section className="flex flex-col lg:w-1/3 gap-4 lg:hidden">
               {/* Detail Pemesanan  */}
@@ -1047,7 +1061,7 @@ function Pemesanan() {
             <div className="bg-white rounded-xl p-[32px] shadow-md ">
               <div className="py-4 text-sm">
                 <div className="flex text-lg justify-between">
-                  <p>Total Pembayaran</p>
+                  <p className="text-base md:text-lg text-darkgray font-medium">Total Pembayaran</p>
                   <div className="flex items-center gap-3">
                     <p>
                       <strong>{formatPrice(calculateTotal(totalHarga))}</strong>
@@ -1070,7 +1084,7 @@ function Pemesanan() {
                 <hr className="my-4 text-neutral" />
                 <button
                   onClick={handleOpenConfirmModal}
-                  className="bg-primary w-full p-4 rounded-xl text-center flex justify-center items-center text-white hover:bg-darkprimary"
+                  className="bg-primary w-full p-4 rounded-full text-center flex justify-center items-center text-white hover:bg-darkprimary"
                   disabled={isLoading} // Nonaktifkan tombol saat loading
                 >
                   {isLoading ? (

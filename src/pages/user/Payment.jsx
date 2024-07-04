@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import { useState } from "react";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
+import BackButtonMobile from "../../components/navigations/BackButtonMobile";
 
 export default function Pembayaran() {
   const navigate = useNavigate();
@@ -30,6 +31,10 @@ export default function Pembayaran() {
       );
     }
   }, [token, navigate]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   useEffect(() => {
     if (booking?.selectedReturn !== null) return settripType("roundtrip");
@@ -67,32 +72,38 @@ export default function Pembayaran() {
   };
 
   return (
-    <>
-      <Navbar />
+    <div className="bg-background">
+      <div className="hidden md:block">
+        <Navbar transparent={false} />
+      </div>
 
-      <div className="flex flex-col justify-center bg-background ">
+      <BackButtonMobile />
+
+      <div className="flex flex-col justify-center bg-background -mt-6">
         {/* Navigasi  */}
-        <div className="container mt-36 bg-whitepx-3">
-          <div className="flex gap-4 text-sm">
-            <p>Beranda</p>
-            <p className="text-blue-300">
-              {" "}
-              <strong>{`>`} </strong>
-            </p>
-            <p>Cari Penerbangan</p>
-            <p className="text-blue-300">
-              {" "}
-              <strong>{`>`} </strong>
-            </p>
-            <p>Isi Data Diri</p>
-            <p className="text-blue-300">
-              {" "}
-              <strong>{`>`} </strong>
-            </p>
-            <p>Pembayaran</p>
-          </div>
+        <div className="container bg-background hidden md:flex gap-1.5 text-main text-xs font-medium -mt-4 md:-mt-0 md:mt-28 mb-10 md:mb-0">
+          <a href="/">Beranda</a>
+          <img src="/icons/right-chev.svg" alt="chevron" />
+          <p
+            className="cursor-pointer"
+            onClick={(e) => {
+              e.preventDefault();
+              navigate(-3);
+            }}
+          >
+            Hasil Pencarian
+          </p>
+          <img src="/icons/right-chev.svg" alt="chevron" />
+          <p>Konfirmasi Tiket</p>
+          <img src="/icons/right-chev.svg" alt="chevron" />
+          <a>Isi Data Diri</a>
+          <img src="/icons/right-chev.svg" alt="chevron" />
+          <a>Pembayaran</a>
         </div>
 
+        <h1 className="container block md:hidden text-2xl font-bold text-main mt-8">
+          Pembayaran
+        </h1>
         <div className="container lg:flex lg:gap-5 lg:my-5  ">
           {/* Sisi Kanan */}
           <section className="flex  flex-col lg:w-[100%] gap-4 lg:hidden my-6">
@@ -341,7 +352,7 @@ export default function Pembayaran() {
             </div>
           </section>
           {/* Sisi Kiri  */}
-          <section className="lg:w-[1300px] bg-white rounded  space-y-5 my-6">
+          <section className="lg:w-[1300px] bg-white rounded  space-y-5 mb-6 -mt-0">
             <div className="flex ">
               <iframe
                 src={bookingDetail?.url_payment}
@@ -353,7 +364,7 @@ export default function Pembayaran() {
             </div>
           </section>
           {/* Sisi Kanan desktop*/}
-          <section className="flex flex-col lg:w-[100%] gap-4 max-sm:hidden max-lg:hidden my-6">
+          <section className="flex flex-col lg:w-[100%] gap-4 max-sm:hidden max-lg:hidden mb-6 -mt-0">
             {/* Detail Pemesanan  */}
             <div className="rounded-xl bg-white  shadow-md pb-4">
               {" "}
@@ -601,6 +612,6 @@ export default function Pembayaran() {
         </div>
       </div>
       <Footer />
-    </>
+    </div>
   );
 }

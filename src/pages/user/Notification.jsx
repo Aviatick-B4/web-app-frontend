@@ -127,7 +127,7 @@ export default function Notifikasi() {
   }
 
   return (
-    <div>
+    <div className="bg-background">
       {/* Desktop Navbar */}
       <div className="hidden md:block">
         <Navbar transparent={false} />
@@ -139,8 +139,8 @@ export default function Notifikasi() {
       <section className="pt-0 md:pt-28 pb-80 md:pb-96">
         <div className="container">
           {/* Breadcrumb */}
-          <div className="hidden md:flex gap-1.5 text-main text-sm font-medium -mt-4 md:-mt-0 mb-10 md:mb-5">
-            <span>Beranda</span>
+          <div className="hidden md:flex gap-1.5 text-main text-xs font-medium -mt-4 md:-mt-3 mb-10 md:mb-5">
+            <a href="/">Beranda</a>
             <img src="/icons/right-chev.svg" alt="chevron" />
             <span>Notifikasi</span>
           </div>
