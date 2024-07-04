@@ -33,7 +33,7 @@ export default function Footer() {
             <ul className="mt-4 space-y-2 text-xs md:text-sm">
               <li className="flex gap-2 justify-start items-center">
                 <FaEnvelope size={24} className="mr-2 text-primary" />
-                <a href="#" className="hover:border-b hover:border-primary hover:text-primary">
+                <a href="mailto:aviatick2024@gmail.com" className="hover:border-b hover:border-primary hover:text-primary">
                   aviatick2024@gmail.com
                 </a>
               </li>
