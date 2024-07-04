@@ -4,15 +4,15 @@ import { FaLinkedin, FaGithub } from "react-icons/fa";
 
 const TeamCard = ({ imageSrc, name, role, linkedInUrl, githubUrl }) => {
   return (
-    <div className="md:px-8 py-4">
+    <div className="md:px-2 lg:px-8 py-4">
       <div className="relative w-full bg-white rounded-lg border border-neutral/30 shadow-md h-full bg-transparent overflow-visible text-main hover:shadow-lg">
         {/* Card hold */}
         <div className="flex justify-center items-center mt-4">
           <img src="/icons/card-hold.svg" alt="Card Hold" className="opacity-50" />
         </div>
-        <div className="relative mt-2 md:px-14">
+        <div className="relative mt-2 sm:px-0 md:px-0 lg:px-14">
           <img
-            className="object-cover w-full h-96 md:h-[240px] 2xl:h-[280px]"
+            className="object-cover w-full h-100 md:h-[240px] 2xl:h-[340px]"
             src={imageSrc}
             alt={name}
           />
