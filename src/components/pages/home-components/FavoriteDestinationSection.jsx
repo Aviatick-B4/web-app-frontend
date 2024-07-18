@@ -286,7 +286,7 @@ const FavoriteDestinationSection = () => {
       ) : (
         <>
           <div className="mt-4 md:mt-10">
-            {favDestination.length > 0 ? (
+            {favDestination.length > 5 ? (
               <Slider {...settings}>
                 {favDestination.map((fav, id) => (
                   <div
@@ -295,53 +295,96 @@ const FavoriteDestinationSection = () => {
                     onClick={() => handleDestinationClick(fav)}
                   >
                     <div className="relative w-full bg-white rounded-lg shadow-md h-full bg-transparent overflow-visible text-main hover:shadow-lg cursor-pointer">
-                  {/* Image and span container */}
-                  <div className="relative">
-                    <img
-                      className="w-full cursor-pointer object-cover h-[136px] rounded-t-lg"
-                      src={fav.arrivalCityImageUrl}
-                      alt="Miami"
-                    />
-                  </div>
-
-                  {/* Text content */}
-                  <div className="p-3">
-                    <h3 className="text-sm font-semibold text-main mb-2">
-                      {fav.departureCity} → {fav.arrivalCity}
-                    </h3>
-                    <div className="flex items-center gap-1 mb-1">
-                      <img src="/icons/calendar.svg" alt="Calendar" />
-                      <p className="text-darkgray font-medium text-xs">
-                        {formatDateToDayMonthYear(fav.departureTime)}
-                      </p>
+                      <div className="relative">
+                        <img
+                          className="w-full cursor-pointer object-cover h-[136px] rounded-t-lg"
+                          src={fav.arrivalCityImageUrl}
+                          alt="Miami"
+                        />
+                      </div>
+                      <div className="p-3">
+                        <h3 className="text-sm font-semibold text-main mb-2">
+                          {fav.departureCity} → {fav.arrivalCity}
+                        </h3>
+                        <div className="flex items-center gap-1 mb-1">
+                          <img src="/icons/calendar.svg" alt="Calendar" />
+                          <p className="text-darkgray font-medium text-xs">
+                            {formatDateToDayMonthYear(fav.departureTime)}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-1 mb-4">
+                          <img
+                            src={fav.airlineLogo}
+                            alt={`${fav.airline} image`}
+                            className="w-4 h-4"
+                          />
+                          <p className="text-darkgray font-medium text-xs">
+                            {fav.airline}
+                          </p>
+                        </div>
+                        <p className="text-danger text-base font-bold mt-2 text-right">
+                          {formatPrice(fav.price)}
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1 mb-4">
-                      <img
-                        src={fav.airlineLogo}
-                        alt={`${fav.airline} image`}
-                        className="w-4 h-4"
-                      />
-                      <p className="text-darkgray font-medium text-xs">
-                        {fav.airline}
-                      </p>
-                    </div>
-                    <p className="text-danger text-base font-bold mt-2 text-right">
-                      {formatPrice(fav.price)}
-                    </p>
-                  </div>
-                </div>
                   </div>
                 ))}
               </Slider>
             ) : (
-              <div className="flex flex-col items-center justify-center text-center font-medium text-sm mt-16 text-main">
-                <img
-                  src="/animations/notfound.gif"
-                  alt="Not found"
-                  className="w-[99px]"
-                />
-                <p className="text-main">Maaf, destinasi favorit tidak ditemukan</p>
-              </div>
+              favDestination.length <= 5 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5">
+                  {favDestination.map((fav, id) => (
+                    <div
+                      key={id}
+                      className="px-2 py-1"
+                      onClick={() => handleDestinationClick(fav)}
+                    >
+                      <div className="relative w-full bg-white rounded-lg shadow-md h-full bg-transparent overflow-visible text-main hover:shadow-lg cursor-pointer">
+                        <div className="relative">
+                          <img
+                            className="w-full cursor-pointer object-cover h-[136px] rounded-t-lg"
+                            src={fav.arrivalCityImageUrl}
+                            alt="Miami"
+                          />
+                        </div>
+                        <div className="p-3">
+                          <h3 className="text-sm font-semibold text-main mb-2">
+                            {fav.departureCity} → {fav.arrivalCity}
+                          </h3>
+                          <div className="flex items-center gap-1 mb-1">
+                            <img src="/icons/calendar.svg" alt="Calendar" />
+                            <p className="text-darkgray font-medium text-xs">
+                              {formatDateToDayMonthYear(fav.departureTime)}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-1 mb-4">
+                            <img
+                              src={fav.airlineLogo}
+                              alt={`${fav.airline} image`}
+                              className="w-4 h-4"
+                            />
+                            <p className="text-darkgray font-medium text-xs">
+                              {fav.airline}
+                            </p>
+                          </div>
+                          <p className="text-danger text-base font-bold mt-2 text-right">
+                            {formatPrice(fav.price)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center text-center font-medium text-sm mt-16 text-main">
+                  <img
+                    src="/animations/notfound.gif"
+                    alt="Not found"
+                    className="w-[99px]"
+                  />
+                  <p className="text-main">Maaf, destinasi favorit tidak ditemukan</p>
+                </div>
+              )
             )}
           </div>
         </>

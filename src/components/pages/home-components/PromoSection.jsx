@@ -243,7 +243,7 @@ const PromoSection = () => {
       ) : (
         <>
           <div className="mt-4 md:mt-10">
-            {promos.length > 0 && (
+            {promos.length > 5 ? (
               <Slider {...settings}>
                 {promos.map((promo, id) => (
                   <div
@@ -261,12 +261,7 @@ const PromoSection = () => {
                             alt="Diskon"
                           />
                           <p className="absolute z-20 top-2 left-2 text-xs text-white font-medium">
-                            Diskon{" "}
-                            {discountPercentage(
-                              promo.price,
-                              promo.afterDiscountPrice
-                            )}
-                            %
+                            Diskon {discountPercentage(promo.price, promo.afterDiscountPrice)}%
                           </p>
                         </div>
                       </div>
@@ -283,8 +278,7 @@ const PromoSection = () => {
                       {/* Text content */}
                       <div className="p-3">
                         <h3 className="text-sm font-semibold text-main mb-2">
-                          {promo.flight.departure.city} →{" "}
-                          {promo.flight.arrival.city}
+                          {promo.flight.departure.city} → {promo.flight.arrival.city}
                         </h3>
                         <div className="flex items-center gap-1 mb-1">
                           <img src="/icons/calendar.svg" alt="Calendar" />
@@ -316,6 +310,84 @@ const PromoSection = () => {
                   </div>
                 ))}
               </Slider>
+            ) : (
+              promos.length <= 5 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5">
+                  {promos.map((promo, id) => (
+                    <div
+                      key={id}
+                      className="px-2 py-1"
+                      onClick={() => handlePromoClick(promo)}
+                    >
+                      <div className="relative w-full bg-white rounded-lg shadow-md h-full bg-transparent overflow-visible text-main hover:shadow-lg cursor-pointer">
+                        <div className="relative">
+                          <div className="absolute z-10 top-2 -right-1 w-[80px]">
+                            {/* Discount tag */}
+                            <img
+                              className="relative z-10 w-full"
+                              src="/discount-tag.png"
+                              alt="Diskon"
+                            />
+                            <p className="absolute z-20 top-2 left-2 text-xs text-white font-medium">
+                              Diskon {discountPercentage(promo.price, promo.afterDiscountPrice)}%
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Image */}
+                        <div className="relative">
+                          <img
+                            className="w-full cursor-pointer object-cover h-[136px] rounded-t-lg"
+                            src={promo.flight.arrival.imageUrl}
+                            alt={`${promo.flight.arrival.city} image`}
+                          />
+                        </div>
+
+                        {/* Text content */}
+                        <div className="p-3">
+                          <h3 className="text-sm font-semibold text-main mb-2">
+                            {promo.flight.departure.city} → {promo.flight.arrival.city}
+                          </h3>
+                          <div className="flex items-center gap-1 mb-1">
+                            <img src="/icons/calendar.svg" alt="Calendar" />
+                            <p className="text-darkgray font-medium text-xs">
+                              {formatDateToDayMonthYear(promo.flight.departure.time)}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-1 mb-1">
+                            <img
+                              src={promo.airplane.airline.logoUrl}
+                              alt={`${promo.airplane.airline.name} logo`}
+                              className="w-4 h-4"
+                            />
+                            <p className="text-darkgray font-medium text-xs">
+                              {promo.airplane.airline.name}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-1 mb-4">
+                            <p className="text-primary font-medium text-xs">
+                              {promo.type}
+                            </p>
+                          </div>
+
+                          <p className="text-danger text-base font-bold mt-2 text-right">
+                            {formatPrice(promo.afterDiscountPrice)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center text-center font-medium text-sm mt-16 text-main">
+                  <img
+                    src="/animations/notfound.gif"
+                    alt="Not found"
+                    className="w-[99px]"
+                  />
+                  <p className="text-main">Maaf, promo tidak ditemukan</p>
+                </div>
+              )
             )}
           </div>
         </>
